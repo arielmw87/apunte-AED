@@ -1,0 +1,479 @@
+\chapter{Introducción al Lenguaje C}
+
+\section{Del diagrama de flujo al código}
+
+En el bloque anterior aprendimos a representar algoritmos con diagramas de flujo. Ahora vamos a traducir esos diagramas a un lenguaje que la computadora puede compilar y ejecutar: el \textbf{lenguaje C}.
+
+C es un lenguaje de propósito general creado en los años 70. Es el lenguaje más usado en sistemas embebidos y microcontroladores por dos razones principales: es \textbf{eficiente} (genera código compacto y rápido) y ofrece \textbf{acceso directo al hardware} (registros, puertos, memoria). Todo lo que aprendamos en este bloque se va a aplicar directamente en la programación del microcontrolador.
+
+\section{Estructura de un programa en C}
+
+Todo programa en C tiene la siguiente estructura mínima:
+
+\begin{lstlisting}[style=estilo-c]
+#include <stdio.h>      // Incluir biblioteca estándar de entrada/salida
+
+int main(void) {        // Función principal — el programa empieza aquí
+    // instrucciones
+    return 0;           // Indicar que el programa terminó correctamente
+}
+\end{lstlisting}
+
+\textbf{Elementos obligatorios:}
+
+\begin{itemize}
+    \item \texttt{\#include <stdio.h>}: incluye la biblioteca que permite usar \texttt{printf} y \texttt{scanf} (entrada y salida por consola). En programas para microcontrolador esto cambiará, pero por ahora la usamos para probar en la PC.
+    \item \texttt{int main(void)}: función principal. Todo programa en C debe tener exactamente una función \texttt{main}. La ejecución empieza en la primera línea de \texttt{main} y termina cuando se llega al \texttt{return}.
+    \item \texttt{\{ \}}: las llaves definen un \textbf{bloque} de código. Todo lo que está entre \texttt{\{} y \texttt{\}} pertenece a ese bloque.
+    \item \texttt{;}: cada instrucción termina con punto y coma. Olvidarlo es uno de los errores más frecuentes.
+    \item \texttt{// comentario}: el compilador ignora todo lo que está a la derecha de \texttt{//} en esa línea. Los comentarios sirven para explicar el código.
+\end{itemize}
+
+\section{Variables y tipos de datos}
+
+Antes de usar una variable en C hay que \textbf{declararla}: indicar su nombre y el tipo de dato que va a almacenar.
+
+\begin{lstlisting}[style=estilo-c]
+tipo nombre;
+tipo nombre = valor_inicial;
+\end{lstlisting}
+
+\subsection{Tipos de datos básicos}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llp{5cm}l}
+\toprule
+Tipo & Tamaño típico & Rango aproximado & Uso \\
+\midrule
+\texttt{int} & 2 o 4 bytes & $-32.768$ a $32.767$ (2 bytes) & Números enteros \\
+\texttt{unsigned int} & 2 o 4 bytes & 0 a 65.535 (2 bytes) & Enteros sin signo \\
+\texttt{float} & 4 bytes & $\pm 3{,}4 \times 10^{38}$ & Números decimales (simple precisión) \\
+\texttt{double} & 8 bytes & $\pm 1{,}7 \times 10^{308}$ & Números decimales (doble precisión) \\
+\texttt{char} & 1 byte & $-128$ a $127$ & Un carácter ASCII o un entero de 8 bits \\
+\texttt{unsigned char} & 1 byte & 0 a 255 & Byte sin signo --- muy usado en embebidos \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{notabox}
+En programación de microcontroladores AVR, el tipo más usado es \texttt{uint8\_t} (equivalente a \texttt{unsigned char}, siempre 8 bits). Por ahora trabajamos con \texttt{int} y \texttt{float} para mayor comodidad.
+\end{notabox}
+
+\subsection{Ejemplos de declaración}
+
+\begin{lstlisting}[style=estilo-c]
+int edad;               // declara una variable entera sin valor inicial
+int contador = 0;       // declara e inicializa en 0
+float temperatura = 25.5;
+char letra = 'A';
+unsigned int suma = 0;
+\end{lstlisting}
+
+\subsection{Reglas para nombrar variables}
+
+\begin{itemize}
+    \item Solo letras, números y guion bajo \texttt{\_}. No puede empezar con un número.
+    \item C distingue mayúsculas de minúsculas: \texttt{Temperatura} y \texttt{temperatura} son variables distintas.
+    \item No se pueden usar palabras reservadas del lenguaje (\texttt{int}, \texttt{if}, \texttt{while}, \texttt{return}, etc.).
+    \item Elegir nombres descriptivos: \texttt{temperatura} es mejor que \texttt{t} o \texttt{x}.
+\end{itemize}
+
+\section{Operadores}
+
+\subsection{Aritméticos}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{cccc}
+\toprule
+Operador & Operación & Ejemplo & Resultado \\
+\midrule
+\texttt{+} & Suma & \texttt{3 + 2} & \texttt{5} \\
+\texttt{-} & Resta & \texttt{5 - 3} & \texttt{2} \\
+\texttt{*} & Multiplicación & \texttt{4 * 3} & \texttt{12} \\
+\texttt{/} & División & \texttt{7 / 2} & \texttt{3} (entera si ambos son \texttt{int}) \\
+\texttt{\%} & Módulo (resto) & \texttt{7 \% 2} & \texttt{1} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{advertenciabox}
+\textbf{Atención con la división entera:} en C, dividir dos \texttt{int} descarta los decimales. \texttt{7 / 2} da \texttt{3}, no \texttt{3.5}. Para obtener el decimal hay que usar \texttt{float}: \texttt{7.0 / 2} da \texttt{3.5}.
+\end{advertenciabox}
+
+\subsection{Relacionales}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{cl}
+\toprule
+Operador & Significado \\
+\midrule
+\texttt{==} & Igual (doble signo --- no confundir con \texttt{=} de asignación) \\
+\texttt{!=} & Distinto \\
+\texttt{>} & Mayor que \\
+\texttt{<} & Menor que \\
+\texttt{>=} & Mayor o igual \\
+\texttt{<=} & Menor o igual \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Lógicos}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{cl}
+\toprule
+Operador & Significado \\
+\midrule
+\texttt{\&\&} & AND lógico \\
+\texttt{||} & OR lógico \\
+\texttt{!} & NOT lógico \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Asignación}
+
+\begin{lstlisting}[style=estilo-c]
+x = 5;          // asigna 5 a x
+x = x + 1;      // incrementa x en 1
+x += 1;         // equivalente al anterior (forma abreviada)
+x++;            // también equivalente — incremento en 1
+x--;            // decremento en 1
+\end{lstlisting}
+
+\section{Entrada y salida por consola}
+
+Para los ejercicios en PC usamos dos funciones de \texttt{<stdio.h>}:
+
+\subsection{\texttt{printf} --- mostrar datos en pantalla}
+
+\begin{lstlisting}[style=estilo-c]
+printf("Hola mundo\n");             // imprime texto
+printf("El resultado es %d\n", x); // imprime texto + valor de x (entero)
+printf("Temperatura: %.2f\n", t);  // imprime t con 2 decimales
+\end{lstlisting}
+
+Los especificadores de formato más comunes:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{cl}
+\toprule
+Especificador & Tipo \\
+\midrule
+\texttt{\%d} & Entero (\texttt{int}) \\
+\texttt{\%f} & Decimal (\texttt{float} o \texttt{double}) \\
+\texttt{\%.2f} & Decimal con 2 cifras decimales \\
+\texttt{\%c} & Carácter (\texttt{char}) \\
+\texttt{\%s} & Cadena de texto \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El \texttt{\textbackslash n} al final provoca un salto de línea.
+
+\subsection{\texttt{scanf} --- leer datos del teclado}
+
+\begin{lstlisting}[style=estilo-c]
+int x;
+scanf("%d", &x);    // lee un entero y lo guarda en x
+
+float t;
+scanf("%f", &t);    // lee un decimal y lo guarda en t
+\end{lstlisting}
+
+\begin{notabox}
+El \texttt{\&} antes del nombre de la variable es obligatorio en \texttt{scanf}. Indica la \textbf{dirección de memoria} donde se debe guardar el dato. Olvidarlo causa comportamiento impredecible.
+\end{notabox}
+
+\section{Estructuras de control}
+
+\subsection{Secuencia}
+
+Las instrucciones se ejecutan en orden, de arriba a abajo. No requiere ninguna sintaxis especial.
+
+\begin{lstlisting}[style=estilo-c]
+int a, b, resultado;
+scanf("%d", &a);
+scanf("%d", &b);
+resultado = a + b;
+printf("Resultado: %d\n", resultado);
+\end{lstlisting}
+
+\subsection{Decisión: \texttt{if} / \texttt{else}}
+
+\begin{lstlisting}[style=estilo-c]
+if (condición) {
+    // se ejecuta si la condición es verdadera
+} else {
+    // se ejecuta si la condición es falsa (opcional)
+}
+\end{lstlisting}
+
+Para condiciones encadenadas:
+
+\begin{lstlisting}[style=estilo-c]
+if (temperatura > 26) {
+    printf("Hace calor\n");
+} else if (temperatura < 22) {
+    printf("Hace frio\n");
+} else {
+    printf("Temperatura agradable\n");
+}
+\end{lstlisting}
+
+\begin{advertenciabox}
+\textbf{Errores frecuentes:}
+\begin{itemize}
+    \item Usar \texttt{=} en lugar de \texttt{==} dentro del \texttt{if}: \texttt{if (x = 5)} asigna 5 a x y siempre es verdadero. Lo correcto es \texttt{if (x == 5)}.
+    \item Olvidar las llaves \texttt{\{\}} cuando el bloque tiene más de una instrucción.
+\end{itemize}
+\end{advertenciabox}
+
+\subsection{Repetición: \texttt{while}}
+
+La condición se evalúa \textbf{antes} de cada iteración. Si es falsa desde el principio, el cuerpo no se ejecuta.
+
+\begin{lstlisting}[style=estilo-c]
+while (condición) {
+    // cuerpo del bucle
+}
+\end{lstlisting}
+
+\begin{lstlisting}[style=estilo-c]
+int contador = 1;
+while (contador <= 10) {
+    printf("%d\n", contador);
+    contador++;
+}
+\end{lstlisting}
+
+\subsection{Repetición: \texttt{do-while}}
+
+El cuerpo se ejecuta \textbf{al menos una vez}; la condición se evalúa al final.
+
+\begin{lstlisting}[style=estilo-c]
+do {
+    // cuerpo del bucle
+} while (condición);
+\end{lstlisting}
+
+\begin{lstlisting}[style=estilo-c]
+int valor;
+do {
+    printf("Ingrese un numero positivo: ");
+    scanf("%d", &valor);
+} while (valor <= 0);
+\end{lstlisting}
+
+\subsection{Repetición: \texttt{for}}
+
+Forma compacta de escribir un bucle cuando se conoce de antemano la cantidad de iteraciones.
+
+\begin{lstlisting}[style=estilo-c]
+for (inicialización; condición; actualización) {
+    // cuerpo del bucle
+}
+\end{lstlisting}
+
+\begin{lstlisting}[style=estilo-c]
+for (int i = 1; i <= 10; i++) {
+    printf("%d\n", i);
+}
+\end{lstlisting}
+
+Equivale exactamente a:
+
+\begin{lstlisting}[style=estilo-c]
+int i = 1;
+while (i <= 10) {
+    printf("%d\n", i);
+    i++;
+}
+\end{lstlisting}
+
+\section{Equivalencia entre pseudocódigo y C}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ll}
+\toprule
+Pseudocódigo (PSeInt) & C \\
+\midrule
+\texttt{Leer variable} & \texttt{scanf("\%d", \&variable);} \\
+\texttt{Escribir "texto"} & \texttt{printf("texto\textbackslash n");} \\
+\texttt{Escribir variable} & \texttt{printf("\%d\textbackslash n", variable);} \\
+\texttt{variable \textleftarrow\ valor} & \texttt{variable = valor;} \\
+\texttt{Si condición Entonces ... Fin Si} & \texttt{if (condición) \{ ... \}} \\
+\texttt{Si ... Sino ... Fin Si} & \texttt{if (...) \{ ... \} else \{ ... \}} \\
+\texttt{Mientras condición Hacer ... Fin Mientras} & \texttt{while (condición) \{ ... \}} \\
+\texttt{Repetir ... Hasta Que condición} & \texttt{do \{ ... \} while (condición);} \\
+\texttt{MOD} & \texttt{\%} \\
+\texttt{Y} & \texttt{\&\&} \\
+\texttt{O} & \texttt{||} \\
+\texttt{NO} & \texttt{!} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Ejercicios: los algoritmos del TP en C}
+
+Los siguientes programas son la traducción directa de los diagramas de flujo del Bloque 4. Se pueden compilar y ejecutar en cualquier compilador de C estándar (online: repl.it, OnlineGDB, Tutorialspoint; local: VSCode con GCC).
+
+\subsection{Ejercicio 1 --- Suma de dos valores}
+
+\begin{lstlisting}[style=estilo-c]
+#include <stdio.h>
+
+int main(void) {
+    int a, b, resultado;
+
+    printf("Ingrese el primer numero: ");
+    scanf("%d", &a);
+
+    printf("Ingrese el segundo numero: ");
+    scanf("%d", &b);
+
+    resultado = a + b;
+
+    printf("La suma es: %d\n", resultado);
+
+    return 0;
+}
+\end{lstlisting}
+
+\subsection{Ejercicio 2 --- Operación con tres valores}
+
+\begin{lstlisting}[style=estilo-c]
+#include <stdio.h>
+
+int main(void) {
+    int a, b, c, resultado;
+
+    printf("Ingrese el primer numero: ");
+    scanf("%d", &a);
+
+    printf("Ingrese el segundo numero: ");
+    scanf("%d", &b);
+
+    printf("Ingrese el tercer numero: ");
+    scanf("%d", &c);
+
+    resultado = (a + b) - c;
+
+    printf("El resultado es: %d\n", resultado);
+
+    return 0;
+}
+\end{lstlisting}
+
+\subsection{Ejercicio 3 --- Módulo (valor absoluto)}
+
+\begin{lstlisting}[style=estilo-c]
+#include <stdio.h>
+
+int main(void) {
+    int numero, modulo;
+
+    printf("Ingrese un numero: ");
+    scanf("%d", &numero);
+
+    if (numero < 0) {
+        modulo = -numero;
+    } else {
+        modulo = numero;
+    }
+
+    printf("El modulo es: %d\n", modulo);
+
+    return 0;
+}
+\end{lstlisting}
+
+\begin{notabox}
+La biblioteca estándar \texttt{<math.h>} tiene la función \texttt{abs()} que hace esto automáticamente, pero aquí lo implementamos manualmente para practicar la estructura \texttt{if/else}.
+\end{notabox}
+
+\subsection{Ejercicio 4 --- Sensor de temperatura}
+
+\begin{lstlisting}[style=estilo-c]
+#include <stdio.h>
+
+int main(void) {
+    float temperatura;
+
+    printf("Ingrese la temperatura: ");
+    scanf("%f", &temperatura);
+
+    if (temperatura > 26.0) {
+        printf("Hace calor\n");
+    } else if (temperatura < 22.0) {
+        printf("Hace frio\n");
+    }
+
+    return 0;
+}
+\end{lstlisting}
+
+\begin{notabox}
+Cuando la temperatura está entre 22° y 26° el programa no imprime nada, tal como pide el enunciado.
+\end{notabox}
+
+\subsection{Ejercicio 5 --- Promedio de una serie de valores}
+
+\begin{lstlisting}[style=estilo-c]
+#include <stdio.h>
+
+int main(void) {
+    int numero;
+    float suma = 0;
+    int cantidad = 0;
+
+    printf("Ingrese numeros (0 para terminar):\n");
+
+    scanf("%d", &numero);
+
+    while (numero != 0) {
+        suma = suma + numero;
+        cantidad++;
+        scanf("%d", &numero);
+    }
+
+    if (cantidad > 0) {
+        printf("El promedio es: %.2f\n", suma / cantidad);
+    } else {
+        printf("No se ingresaron numeros.\n");
+    }
+
+    return 0;
+}
+\end{lstlisting}
+
+\begin{notabox}
+\textbf{Puntos importantes de este ejercicio:}
+\begin{itemize}
+    \item La suma se declara como \texttt{float} para que la división no pierda los decimales.
+    \item El \texttt{if (cantidad > 0)} evita la división por cero si el usuario ingresa 0 inmediatamente.
+    \item El 0 final \textbf{no se suma} porque la condición del \texttt{while} se evalúa antes de acumular.
+\end{itemize}
+\end{notabox}
+
+\section{Entorno de desarrollo}
+
+Para compilar y ejecutar programas en C se puede usar cualquiera de los siguientes entornos:
+
+\textbf{Online (sin instalación):}
+\begin{itemize}
+    \item \texttt{replit.com} --- crea un proyecto de tipo C.
+    \item \texttt{onlinegdb.com} --- compilador + depurador online.
+    \item \texttt{tutorialspoint.com/compile\_c\_online.php}
+\end{itemize}
+
+\textbf{Local:}
+\begin{itemize}
+    \item \textbf{VSCode} + extensión C/C++ + compilador GCC (a través de MinGW en Windows).
+\end{itemize}

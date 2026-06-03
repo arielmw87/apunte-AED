@@ -1,0 +1,392 @@
+% ============================================================
+%  APUNTES DE CÁTEDRA — AED II y III
+%  E.E.S.T. N° 1 — Vicente López
+%  Autor: Ariel Wels
+% ============================================================
+%
+% COMPILACIÓN:
+%   pdflatex main.tex && pdflatex main.tex
+%   (segunda pasada para índice y referencias cruzadas)
+%
+%   Con latexmk (recomendado, resuelve pasadas automáticamente):
+%   latexmk -pdf main.tex
+%
+%   Para compilar solo un capítulo (más rápido al editar):
+%   Descomentar la línea \includeonly{} correspondiente,
+%   luego compilar normalmente:
+%     \includeonly{capitulo1}    % solo Lógica Secuencial
+%     \includeonly{capitulo2}    % solo Memorias
+%     \includeonly{capitulo3}    % solo Sistemas Microprogramables
+%     \includeonly{capitulo4}    % solo Algoritmos
+%     \includeonly{capitulo5}    % solo Introducción a C
+%     \includeonly{capitulo6}    % solo C Embebido
+%
+% ============================================================
+
+\documentclass[a4paper,spanish,12pt]{report}
+
+% --- Fuente y codificación ---
+\usepackage{lmodern}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-nodecimaldot,es-noshorthands]{babel}
+
+% --- Geometría de página ---
+\usepackage[margin=1in,headsep=1cm,headheight=1.2in,top=1.8in]{geometry}
+
+% --- Matemática ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+
+% --- Tablas ---
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage[table]{xcolor}
+
+% --- Gráficos y figuras ---
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{pgf,tikz}
+\usetikzlibrary{arrows,shapes.symbols,shapes.arrows,calc,
+                intersections,through,backgrounds,patterns}
+
+% --- Encabezados y pies de página ---
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+% --- Formato de secciones ---
+\usepackage{titlesec}
+
+% --- Cajas y notas ---
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{breakable,skins}
+
+% --- Código fuente ---
+\usepackage{listings}
+\usepackage{textcomp}
+
+% --- Miscelánea ---
+\usepackage{calc}
+\usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{lscape}
+\usepackage{rotating}
+
+% --- Hipervínculos (cargar último) ---
+\usepackage[colorlinks=true,linkcolor=teal!80!black,
+            urlcolor=blue!70!black,citecolor=teal]{hyperref}
+
+% ============================================================
+%  RUTAS DE IMÁGENES
+% ============================================================
+\graphicspath{{imagenes/}}
+
+% ============================================================
+%  FORMATO DE CAPÍTULOS Y SECCIONES
+% ============================================================
+
+% Capítulo: barra teal oscura con número y título
+\titleformat{\chapter}[block]
+  {\sffamily\bfseries\LARGE}
+  {}
+  {0pt}
+  {\colorchapter}
+\titlespacing*{\chapter}{0pt}{0pt}{1.5\baselineskip}
+
+\newcommand{\colorchapter}[1]{%
+  \colorbox{teal!70}{%
+    \parbox{\dimexpr\textwidth-2\fboxsep}{%
+      \strut\color{white}\quad Capítulo \thechapter \quad—\quad #1\strut}}}
+
+% Sección: barra teal media (igual al ejemplo de la institución)
+\titleformat{name=\section}[block]
+  {\sffamily\bfseries\Large}
+  {}
+  {0pt}
+  {\colorsection}
+\titlespacing{\section}{0pt}{\baselineskip}{\baselineskip}
+
+\newcommand{\colorsection}[1]{%
+  \colorbox{teal!40}{\parbox{\dimexpr\textwidth-2\fboxsep}{\ #1}}}
+
+% Subsección: barra teal clara
+\titleformat{name=\subsection}[block]
+  {\sffamily\bfseries\large}
+  {}
+  {0pt}
+  {\colorsubsection}
+\titlespacing{\subsection}{0pt}{0.8\baselineskip}{0.5\baselineskip}
+
+\newcommand{\colorsubsection}[1]{%
+  \colorbox{teal!20}{\parbox{\dimexpr\textwidth-2\fboxsep}{\ #1}}}
+
+% Subsubsección: texto en negrita sin barra
+\titleformat{\subsubsection}[hang]
+  {\sffamily\bfseries\normalsize}
+  {\thesubsubsection.}{0.5em}{}
+\titlespacing{\subsubsection}{0pt}{0.6\baselineskip}{0.3\baselineskip}
+
+% Profundidad de numeración y de TOC
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+% Marcas para encabezado (sin mayúsculas forzadas)
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{#1}}
+
+% ============================================================
+%  CÓDIGO FUENTE — LISTINGS  (tema Atom One Light)
+% ============================================================
+
+% --- Paleta de colores: Atom One Light ---
+\definecolor{atm-bg}{HTML}{FAFAFA}       % fondo (blanco hueso)
+\definecolor{atm-fg}{HTML}{383A42}       % texto normal (gris oscuro)
+\definecolor{atm-purple}{HTML}{A626A4}   % keywords de control (if, while, return…)
+\definecolor{atm-red}{HTML}{E45649}      % tipos primitivos (int, char, void…)
+\definecolor{atm-blue}{HTML}{4078F2}     % funciones y registros AVR
+\definecolor{atm-green}{HTML}{50A14F}    % strings y char literals
+\definecolor{atm-comment}{HTML}{A0A1A7} % comentarios (gris claro)
+\definecolor{atm-num}{HTML}{986801}      % literales numéricos (ámbar)
+\definecolor{atm-directive}{HTML}{A626A4}% directivas preprocesador (#include)
+\definecolor{atm-linenum}{HTML}{C0C0C0} % números de línea
+\definecolor{atm-border}{HTML}{DBDBDC}  % borde sutil
+
+% --- Estilo C (Atom One Light) ---
+\lstdefinestyle{estilo-c}{
+  language=C,
+  % Colores base
+  backgroundcolor=\color{atm-bg},
+  basicstyle=\ttfamily\footnotesize\color{atm-fg},
+  % Comentarios: gris claro itálica
+  commentstyle=\color{atm-comment}\itshape,
+  % Palabras clave: violeta (if, else, while, for, return, switch…)
+  % y rojo para tipos (int, char, void, float, double…) — emph clase 1
+  keywordstyle=\color{atm-purple},
+  % Strings y char literals: verde
+  stringstyle=\color{atm-green},
+  % Directivas de preprocesador (#include, #define): violeta
+  directivestyle=\color{atm-directive},
+  % Números de línea: gris claro
+  numberstyle=\tiny\color{atm-linenum},
+  % Tipos primitivos del C: rojo-naranja (emph clase 1)
+  emph={[1]int,char,void,float,double,long,short,unsigned,signed,
+        uint8_t,uint16_t,uint32_t,int8_t,int16_t,int32_t,
+        size_t,bool,true,false,NULL,FILE},
+  emphstyle={[1]\color{atm-red}},
+  % Registros, macros e identificadores AVR: azul (emph clase 2)
+  emph={[2]ISR,sei,cli,_BV,bit_is_set,bit_is_clear,
+        loop_until_bit_is_set,loop_until_bit_is_clear,
+        DDRB,DDRC,DDRD,PORTB,PORTC,PORTD,PINB,PINC,PIND,
+        TCCR0A,TCCR0B,OCR0A,TIMSK0,TCNT0,TIFR0,
+        TIMER0_COMPA_vect,
+        OCIE0A,WGM01,WGM00,CS02,CS01,CS00,
+        F_CPU},
+  emphstyle={[2]\color{atm-blue}},
+  % Numeración y espaciado
+  numbers=left,
+  numbersep=8pt,
+  xleftmargin=1.8em,
+  % Frame: borde izquierdo fino, sin caja completa
+  frame=l,
+  framesep=4pt,
+  rulecolor=\color{atm-border},
+  framerule=1.5pt,
+  % Opciones de formato
+  breaklines=true,
+  breakatwhitespace=false,
+  tabsize=4,
+  keepspaces=true,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  captionpos=b,
+}
+
+% --- Estilo pseudocódigo (PSeInt) — misma paleta, sin directivas ---
+\lstdefinestyle{estilo-pseudocode}{
+  backgroundcolor=\color{atm-bg},
+  basicstyle=\ttfamily\footnotesize\color{atm-fg},
+  commentstyle=\color{atm-comment}\itshape,
+  keywordstyle=\color{atm-purple}\bfseries,
+  stringstyle=\color{atm-green},
+  numberstyle=\tiny\color{atm-linenum},
+  numbers=left,
+  numbersep=8pt,
+  xleftmargin=1.8em,
+  frame=l,
+  framesep=4pt,
+  framerule=1.5pt,
+  rulecolor=\color{atm-border},
+  breaklines=true,
+  tabsize=4,
+  keepspaces=true,
+  showstringspaces=false,
+}
+
+% --- Aplicar estilo C por defecto + soporte UTF-8 ---
+\lstset{
+  style=estilo-c,
+  literate=
+    {á}{{\'{a}}}1 {é}{{\'{e}}}1 {í}{{\'{\i}}}1 {ó}{{\'{o}}}1 {ú}{{\'{u}}}1
+    {Á}{{\'{A}}}1 {É}{{\'{E}}}1 {Í}{{\'{I}}}1 {Ó}{{\'{O}}}1 {Ú}{{\'{U}}}1
+    {ñ}{{\~{n}}}1 {Ñ}{{\~{N}}}1
+    {ü}{{\"u}}1   {Ü}{{\"U}}1
+    {—}{{---}}1   {–}{{--}}1
+    {°}{{\textdegree}}1
+    {²}{{$^2$}}1  {³}{{$^3$}}1
+    {¡}{{!`}}1    {¿}{{?`}}1,
+}
+
+% ============================================================
+%  CAJAS TCOLORBOX
+% ============================================================
+
+\newtcolorbox{notabox}{
+  enhanced,
+  colback=amber!8,
+  colframe=orange!60!black,
+  boxrule=1pt,
+  leftrule=4pt,
+  title=\textbf{Nota},
+  fonttitle=\sffamily\bfseries\small,
+  attach boxed title to top left={xshift=6pt,yshift=-3pt},
+  boxed title style={colback=orange!60!black,colframe=orange!60!black},
+  breakable,
+}
+
+\newtcolorbox{advertenciabox}{
+  enhanced,
+  colback=red!5,
+  colframe=red!60!black,
+  boxrule=1pt,
+  leftrule=4pt,
+  title=\textbf{Atención},
+  fonttitle=\sffamily\bfseries\small,
+  attach boxed title to top left={xshift=6pt,yshift=-3pt},
+  boxed title style={colback=red!60!black,colframe=red!60!black},
+  breakable,
+}
+
+\newtcolorbox{importantebox}{
+  enhanced,
+  colback=teal!5,
+  colframe=teal!60!black,
+  boxrule=1pt,
+  leftrule=4pt,
+  title=\textbf{Importante},
+  fonttitle=\sffamily\bfseries\small,
+  attach boxed title to top left={xshift=6pt,yshift=-3pt},
+  boxed title style={colback=teal!60!black,colframe=teal!60!black},
+  breakable,
+}
+
+% Colores predefinidos extra
+\colorlet{amber}{yellow!80!red}
+
+% ============================================================
+%  IMAGEN PENDIENTE (placeholder hasta insertar figuras reales)
+% ============================================================
+\newcommand{\imagenPendiente}[1]{%
+  \begin{figure}[H]
+    \centering
+    \setlength{\fboxsep}{12pt}
+    \fbox{\parbox{0.75\textwidth}{%
+      \centering\color{gray!70}%
+      \textit{[Imagen pendiente: #1]}}}
+    \caption[#1]{#1}
+  \end{figure}%
+}
+
+% ============================================================
+%  ENCABEZADO Y PIE DE PÁGINA
+% ============================================================
+\pagestyle{fancy}
+\fancyhf{}
+
+\lhead{%
+  \begin{tikzpicture}[baseline=(current bounding box.center)]
+    \node (logo) at (0,0) {\includegraphics[width=0.5in]{logo}};
+    \node [text width=8cm,align=left,xshift=4.5cm] at (0,0) {%
+      \textbf{E.E.S.T.\ N$^\circ$\ 1\ ---\ Vte.\ López}\\
+      AED\ II\ y\ III\\
+      Apuntes de Cátedra};
+  \end{tikzpicture}%
+}
+
+\rhead{\nouppercase{\leftmark} \\ \nouppercase{\rightmark}}
+
+\renewcommand{\headrulewidth}{2pt}
+\renewcommand{\footrulewidth}{1pt}
+
+\rfoot{\thepage\ de \pageref{LastPage}}
+\cfoot{%
+  \footnotesize
+  \textbf{Escuela de Educación Secundaria Técnica N$^\circ$ 1 --- Vicente López}\\
+  Cerrito N$^\circ$ 3966 (1605) Villa Adelina, Partido de Vicente López.%
+}
+
+% ============================================================
+%  DOCUMENTO
+% ============================================================
+\begin{document}
+
+% --- Portada ---
+\begin{titlepage}
+  \centering
+  \vspace*{1cm}
+  {\includegraphics[width=0.45\textwidth]{logo}\par}
+  \vspace{1cm}
+  {\bfseries\LARGE
+    Escuela de Educación Secundaria Técnica N\(^{\circ}\) 1\\[0.3em]
+    de Vicente López --- Eduardo Ader\par}
+  \vspace{0.8cm}
+  {\large Aplicaciones de Electrónica Digital II y III\quad---\quad 5\(^{\circ}\) Año\par}
+  \vspace{3cm}
+  {\Huge\bfseries\color{teal!80!black} Apuntes de Cátedra\par}
+  \vspace{2cm}
+  {\Large Docente: Ariel Wels\par}
+  \vfill
+  {\large Ciclo Lectivo 2025\par}
+\end{titlepage}
+
+% --- Índice ---
+\clearpage
+\fancyhead{}
+\fancyhead[C]{\textbf{ÍNDICE}}
+\tableofcontents
+\clearpage
+
+% Restaurar encabezado completo después del índice
+\fancyhead{}
+\lhead{%
+  \begin{tikzpicture}[baseline=(current bounding box.center)]
+    \node (logo) at (0,0) {\includegraphics[width=0.5in]{logo}};
+    \node [text width=8cm,align=left,xshift=4.5cm] at (0,0) {%
+      \textbf{E.E.S.T.\ N$^\circ$\ 1\ ---\ Vte.\ López}\\
+      AED\ II\ y\ III\\
+      Apuntes de Cátedra};
+  \end{tikzpicture}%
+}
+\rhead{\nouppercase{\leftmark} \\ \nouppercase{\rightmark}}
+
+% ============================================================
+%  CAPÍTULOS
+%  Para compilar solo un capítulo, descomentar la línea:
+%  \includeonly{capitulo1}
+% ============================================================
+
+\include{capitulo1}
+\include{capitulo2}
+\include{capitulo3}
+\include{capitulo4}
+\include{capitulo5}
+\include{capitulo6}
+
+\end{document}

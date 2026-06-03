@@ -1,0 +1,297 @@
+\chapter{Sistemas Microprogramables}
+
+\section{Lógica cableada y lógica programada}
+
+En electrónica digital se pueden diferenciar dos grandes enfoques para resolver un problema:
+
+\textbf{Lógica cableada:} Para cada aplicación se diseña un circuito específico basado en compuertas lógicas. Una vez construido es muy difícil o imposible de modificar. El comportamiento del sistema queda determinado por el hardware.
+
+\textbf{Lógica programada:} Un mismo dispositivo puede resolver distintos problemas simplemente cambiando su programa. El comportamiento del sistema queda determinado por el software que se le carga.
+
+\section{Definición de sistema microprogramable}
+
+Un sistema microprogramable es un dispositivo, o conjunto de dispositivos, de propósito general que se programa para resolver distintos problemas. Su versatilidad radica en que basta con cambiar el software para cambiar completamente su función.
+
+Algunas aplicaciones típicas:
+
+\begin{itemize}
+  \item \textbf{Informática:} computadoras personales, periféricos (teclado, impresora, escáner).
+  \item \textbf{Cálculo:} calculadoras científicas, supercomputadoras.
+  \item \textbf{Procesos industriales:} PLCs para control de robots y líneas de montaje.
+  \item \textbf{Electrodomésticos:} lavadoras, hornos, televisores, reproductores de audio/video.
+  \item \textbf{Comunicaciones:} teléfonos fijos y móviles, equipos de red.
+  \item \textbf{Automoción:} control de climatización, ABS, airbags.
+  \item \textbf{Supervisión y alarmas:} ascensores, calefacción, alarmas contra incendio y robo.
+  \item \textbf{Otros:} instrumentación, electromedicina, sistemas de navegación, tarjetas inteligentes (SUBE, monedero electrónico).
+\end{itemize}
+
+\section{Clasificación de los sistemas microprogramables}
+
+Los sistemas microprogramables se clasifican según su grado de integración, capacidad de procesamiento y forma de trabajo:
+
+\subsection{Microprocesadores}
+
+El sistema está distribuido en varios circuitos integrados. El más importante es el \textbf{microprocesador}, que contiene únicamente la Unidad Central de Proceso (CPU). La memoria, los puertos de entrada/salida y demás periféricos son componentes externos que se interconectan mediante buses.
+
+Se utiliza cuando se requieren grandes cantidades de memoria, alta velocidad o se prevén futuras ampliaciones. Ejemplo típico: la computadora personal.
+
+\subsection{Microcontroladores}
+
+Todo el sistema microprogramable ---CPU, memoria, puertos de E/S y periféricos--- está integrado en un \textbf{único circuito integrado}. Esto reduce el costo y el tamaño del sistema final, aunque su capacidad de procesamiento es menor que la de los microprocesadores. Son ideales para aplicaciones embebidas donde se necesita un procesador compacto y de bajo consumo.
+
+Se encuentran en prácticamente todos los dispositivos electrónicos modernos: electrodomésticos, juguetes, instrumentos, automóviles, etc.
+
+\subsection{Dispositivos PLDs}
+
+Los PLD (\textit{Programmable Logic Device}) integran una matriz de compuertas lógicas cuya interconexión puede ser programada por el usuario. A diferencia de los microprocesadores y microcontroladores, \textbf{no están basados en una CPU} que lee instrucciones de una memoria: su lógica queda grabada en la estructura del dispositivo.
+
+Son adecuados para resolver problemas combinacionales o secuenciales de alta velocidad pero de lógica fija, como decodificadores, máquinas de estado o interfaces de hardware.
+
+\section{Hardware, Software y Firmware}
+
+Un sistema microprogramable se compone de tres elementos:
+
+\begin{itemize}
+  \item \textbf{Hardware:} la parte física del sistema; el conjunto de circuitos electrónicos.
+  \item \textbf{Software:} el conjunto de programas e instrucciones que se cargan en el sistema para indicarle qué hacer. También se denomina software al conjunto de lenguajes utilizados para escribir esos programas.
+  \item \textbf{Firmware:} software grabado en la memoria interna del dispositivo que el usuario normalmente no puede modificar. Cumple la función de intermediario entre el hardware y el software de aplicación. En una PC, la BIOS es un ejemplo de firmware.
+\end{itemize}
+
+\section{Arquitectura de un sistema basado en CPU}
+
+Todo sistema microprogramable ---ya sea basado en microprocesador o en microcontrolador--- comparte la misma estructura fundamental. Sus elementos esenciales son:
+
+\begin{itemize}
+  \item Reloj
+  \item CPU (ALU + Registros + Unidad de Control)
+  \item Memoria
+  \item Unidad de Entrada/Salida
+  \item Buses del sistema
+\end{itemize}
+
+\subsection{Reloj}
+
+El reloj es un generador de señal cuadrada de frecuencia constante, normalmente producida por un cristal de cuarzo (aunque también pueden usarse osciladores RC). Todos los elementos del sistema operan sincronizados con esta señal, que determina la velocidad de trabajo del sistema.
+
+A partir de la señal de reloj se define el \textbf{ciclo de máquina}, compuesto por dos fases:
+
+\begin{enumerate}
+  \item \textbf{Fase de búsqueda (Fetch):} la CPU lee la próxima instrucción de la memoria y la almacena en el registro correspondiente.
+  \item \textbf{Fase de ejecución (Execute):} la CPU ejecuta la instrucción leída.
+\end{enumerate}
+
+Algunos microprocesadores completan una instrucción en un único ciclo de máquina; otros requieren varios ciclos para instrucciones más complejas. La frecuencia del reloj y la cantidad de ciclos por instrucción determinan juntos la velocidad real de procesamiento.
+
+\subsection{CPU (Unidad Central de Proceso)}
+
+Es el elemento más importante del sistema. Se encarga de:
+
+\begin{itemize}
+  \item Interpretar y ejecutar las instrucciones del programa.
+  \item Generar las señales de control para coordinar el resto del sistema.
+  \item Realizar las operaciones aritméticas y lógicas.
+  \item Transferir datos hacia y desde la memoria.
+\end{itemize}
+
+La CPU está formada por tres bloques:
+
+\subsubsection{Unidad Aritmético-Lógica (ALU)}
+
+Es un circuito combinacional que realiza operaciones aritméticas (suma, resta, multiplicación) y lógicas (AND, OR, NOT, XOR), así como desplazamientos de bits. Las operaciones las realiza sobre datos provenientes de los registros internos o de posiciones de memoria, y deposita el resultado en un registro (habitualmente el acumulador).
+
+\subsubsection{Registros}
+
+Los registros son pequeñas memorias internas de alta velocidad donde la CPU almacena datos e instrucciones de manera temporal. Están formados por biestables y su tamaño (en bits) define la arquitectura del procesador (8, 16, 32 o 64 bits).
+
+Los registros más importantes son:
+
+\textbf{Registro acumulador:} almacena uno de los operandos de la ALU y recibe el resultado de la operación. Todas las operaciones aritméticas y lógicas pasan por él.
+
+\textbf{Registro de estado (flags):} conjunto de biestables que reflejan el resultado de la última operación realizada por la ALU. Los flags más comunes son:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lll}
+\toprule
+Flag & Nombre & Se activa cuando\ldots \\
+\midrule
+Z & Zero & El resultado de la operación es cero \\
+C & Carry & Hubo acarreo en el bit de mayor peso \\
+N / S & Negativo / Signo & El resultado es negativo \\
+V / OV & Overflow & El resultado excede el rango del tipo de dato \\
+I & Interrupt & Las interrupciones globales están habilitadas \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Registros auxiliares o de propósito general:} registros que el programador puede usar libremente para almacenar datos intermedios. Su cantidad varía según la arquitectura.
+
+\textbf{Stack Pointer (SP):} puntero que apunta a la cima de la pila (\textit{stack}). La pila es una zona de memoria con estructura LIFO (\textit{Last In, First Out}): el último dato en entrar es el primero en salir. Se utiliza para guardar la dirección de retorno cuando se llama a una subrutina, y para preservar el estado de los registros durante el manejo de interrupciones.
+
+\textbf{Contador de Programa (PC):} registro que contiene la dirección de la próxima instrucción a ejecutar. Se incrementa automáticamente en cada ciclo de fetch. Cuando se produce un salto o llamada a subrutina, este registro se actualiza con la nueva dirección.
+
+\subsubsection{Unidad de Control (UC)}
+
+Gobierna el funcionamiento de todo el sistema. Recibe las instrucciones del programa, las decodifica mediante el \textbf{decodificador de instrucciones} y genera las señales de control necesarias para que cada elemento realice su tarea en el momento correcto. También contiene el Contador de Programa.
+
+\subsection{Memoria}
+
+La memoria almacena los programas y los datos que el sistema necesita para funcionar. Se divide en dos zonas funcionales:
+
+\begin{itemize}
+  \item \textbf{Memoria de programa:} contiene las instrucciones a ejecutar. No se modifica durante la ejecución. Suele implementarse en memoria no volátil (ROM, Flash).
+  \item \textbf{Memoria de datos:} almacena los datos y resultados intermedios del programa. Se modifica constantemente durante la ejecución. Siempre es RAM (volátil).
+\end{itemize}
+
+\begin{notabox}
+No confundir con las memorias de almacenamiento masivo (disco duro, pendrive), que son periféricos externos.
+\end{notabox}
+
+\subsection{Unidad de Entrada/Salida (E/S)}
+
+Permite la comunicación del sistema con el mundo exterior. Está formada por registros que, controlados por los buses del sistema, permiten leer señales del exterior (entradas) o escribir señales hacia afuera (salidas). Su función principal es adaptar las velocidades y niveles lógicos del sistema interno con los de los dispositivos externos.
+
+\subsection{Buses del sistema}
+
+Los elementos del sistema se interconectan mediante \textbf{buses}: conjuntos de conductores paralelos que transportan información del mismo tipo. El número de líneas de un bus determina su \textbf{ancho} y por ende la cantidad de información que puede transmitirse simultáneamente.
+
+En un sistema basado en CPU existen tres buses fundamentales:
+
+\subsubsection{Bus de direcciones (\textit{Address Bus})}
+
+Transporta la dirección de la posición de memoria o del registro de E/S que se desea acceder. Es \textbf{unidireccional}: solo la CPU pone datos en él.
+
+La cantidad de líneas del bus de direcciones determina la cantidad máxima de posiciones de memoria que el sistema puede direccionar:
+
+$$N_{\text{direcciones}} = 2^{N_{\text{líneas}}}$$
+
+Por ejemplo, un bus de 16 líneas puede direccionar $2^{16} = 65.536$ posiciones. Si cada posición almacena 1 byte, la memoria máxima es 64 KB.
+
+Las líneas se nombran A0 (bit de menor peso) a An (bit de mayor peso).
+
+\subsubsection{Bus de datos (\textit{Data Bus})}
+
+Transporta los datos entre la CPU, la memoria y los periféricos. Es \textbf{bidireccional}: los datos pueden ir en ambas direcciones según se trate de una lectura o escritura. Su ancho define la cantidad de bits que se transfieren en paralelo en cada operación.
+
+Las líneas se nombran D0 a Dn.
+
+\subsubsection{Bus de control (\textit{Control Bus})}
+
+Transporta las señales de coordinación del sistema: órdenes de lectura/escritura, habilitación de dispositivos, señales de interrupción, reset, etc. Permite que todos los elementos del sistema funcionen en sincronía y sin conflictos en el uso de los buses compartidos.
+
+\subsubsection{Operaciones de lectura y escritura}
+
+\textbf{Escritura:} la CPU coloca la dirección en el bus de direcciones, activa la señal de escritura en el bus de control y coloca el dato en el bus de datos. El dispositivo seleccionado almacena el dato.
+
+\textbf{Lectura:} la CPU coloca la dirección en el bus de direcciones y activa la señal de lectura en el bus de control. El dispositivo seleccionado deposita su contenido en el bus de datos, y la CPU lo lee. La operación de lectura es \textbf{no destructiva}: el dato sigue almacenado en la memoria después de ser leído.
+
+\section{Arquitecturas Von Neumann y Harvard}
+
+La relación entre la CPU y la memoria puede organizarse de dos maneras distintas:
+
+\subsection{Arquitectura Von Neumann}
+
+La CPU se conecta a una \textbf{única memoria} mediante un \textbf{único juego de buses}. Tanto las instrucciones del programa como los datos se almacenan en el mismo espacio de memoria y viajan por el mismo bus.
+
+\imagenPendiente{diagrama de bloques Von Neumann (CPU --- bus único --- memoria única)}
+
+\textbf{Limitaciones:}
+\begin{itemize}
+  \item El bus único genera un cuello de botella: mientras la CPU busca una instrucción no puede acceder a datos, y viceversa.
+  \item El tamaño de las instrucciones está condicionado por el ancho del bus de datos.
+\end{itemize}
+
+Es la arquitectura típica de los microprocesadores de uso general (PCs).
+
+\subsection{Arquitectura Harvard}
+
+La CPU se conecta a \textbf{dos memorias separadas} mediante \textbf{dos juegos de buses independientes}: uno para instrucciones y otro para datos.
+
+\imagenPendiente{diagrama de bloques Harvard (CPU --- bus de programa --- memoria de programa / bus de datos --- memoria de datos)}
+
+\textbf{Ventajas:}
+\begin{itemize}
+  \item La CPU puede leer la próxima instrucción y acceder a datos \textbf{simultáneamente}, eliminando el cuello de botella.
+  \item El ancho del bus de programa puede ser diferente al del bus de datos, permitiendo optimizar ambos de forma independiente.
+  \item Aumenta significativamente la velocidad de procesamiento.
+\end{itemize}
+
+Es la arquitectura utilizada por la mayoría de los \textbf{microcontroladores}, incluyendo la familia AVR (ATmega).
+
+\section{Software: instrucciones y lenguajes de programación}
+
+\subsection{Formato de una instrucción}
+
+Las instrucciones que ejecuta la CPU tienen dos partes:
+
+\begin{lstlisting}[style=estilo-pseudocode]
++----------------------+----------------------+
+|   Codigo de          |      Operando        |
+|   operacion          |   (puede no estar)   |
++----------------------+----------------------+
+\end{lstlisting}
+
+\begin{itemize}
+  \item \textbf{Código de operación:} indica qué hacer (sumar, restar, mover un dato, comparar, saltar\ldots).
+  \item \textbf{Operando:} indica con qué dato realizar la operación, o la dirección de memoria donde se encuentra ese dato.
+\end{itemize}
+
+\subsection{Tipos de instrucciones}
+
+\begin{itemize}
+  \item \textbf{Aritméticas:} suma, resta, multiplicación, división.
+  \item \textbf{Lógicas:} AND, OR, NOT, XOR.
+  \item \textbf{Desplazamiento:} rotación y corrimiento de bits.
+  \item \textbf{Transferencia de datos:} mover datos entre registros, entre registros y memoria, o entre registros y puertos E/S.
+  \item \textbf{Salto:} condicionales (ejecutan un salto solo si se cumple una condición de los flags) e incondicionales (saltan siempre).
+  \item \textbf{Control:} inicialización, detención, no-operación (NOP), habilitación/deshabilitación de interrupciones.
+\end{itemize}
+
+\subsection{Lenguajes de programación}
+
+Para que un programador pueda escribir el programa, y para que luego ese programa pueda ser ejecutado por la CPU, existen distintos niveles de lenguaje:
+
+\subsubsection{Lenguaje máquina (código máquina)}
+
+Es el único lenguaje que la CPU entiende directamente: secuencias de bits (ceros y unos) que representan instrucciones y datos. Aunque es el más eficiente, es extremadamente difícil de escribir y leer por un ser humano.
+
+\subsubsection{Lenguaje ensamblador (\textit{Assembler})}
+
+Reemplaza los códigos binarios por \textbf{mnemónicos}: abreviaturas en inglés que recuerdan la función de cada instrucción (\texttt{MOV}, \texttt{ADD}, \texttt{JMP}, etc.). Las direcciones de memoria pueden referenciarse con etiquetas simbólicas. Es específico de cada arquitectura.
+
+Un programa llamado \textbf{ensamblador} traduce el código escrito en lenguaje ensamblador al código máquina correspondiente.
+
+\subsubsection{Lenguajes de alto nivel}
+
+Son los más cercanos al lenguaje humano y los más fáciles de escribir y mantener. No están atados a una arquitectura específica, lo que permite reutilizar el código en distintos sistemas. Algunos ejemplos: C, C++, Python, Java, Basic.
+
+Para ejecutarse, deben ser traducidos a código máquina mediante un \textbf{compilador} (que traduce todo el programa de una vez) o un \textbf{intérprete} (que traduce y ejecuta instrucción por instrucción).
+
+En sistemas embebidos, el lenguaje más utilizado es \textbf{C}, por su combinación de legibilidad, eficiencia y acceso a bajo nivel de hardware.
+
+\section{El ATmega328 en este curso}
+
+El microcontrolador utilizado en este curso es el \textbf{ATmega328P}, fabricado por Microchip (familia AVR). Se trabaja sobre placas Arduino Nano como plataforma de desarrollo, pero \textbf{sin utilizar el framework ni las bibliotecas de Arduino}: se programa directamente en C, accediendo a los registros del hardware.
+
+Características principales:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ll}
+\toprule
+Característica & Valor \\
+\midrule
+Arquitectura & Harvard, RISC de 8 bits \\
+Frecuencia máxima & 20 MHz \\
+Memoria de programa & 32 KB Flash \\
+Memoria de datos (RAM) & 2 KB SRAM \\
+Memoria no volátil de datos & 1 KB EEPROM \\
+Puertos de E/S digitales & Hasta 23 pines \\
+Periféricos integrados & Timers, UART, SPI, I$^2$C, ADC (10 bits), Watchdog \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Al ser una arquitectura Harvard, el ATmega328 tiene buses separados para memoria de programa (Flash) y memoria de datos (SRAM), lo que le permite ejecutar la mayoría de las instrucciones en un solo ciclo de reloj.
+
+En los bloques siguientes se verá en detalle cómo programar este microcontrolador: cómo se organizan sus registros internos, cómo se configuran sus puertos y cómo se utilizan sus periféricos.
