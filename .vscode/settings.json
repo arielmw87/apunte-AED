@@ -1,0 +1,6 @@
+{
+  // Guarda los archivos al perder el foco del editor.
+  // Así, al hacer clic en los botones de Project Actions (Compilar / Preview),
+  // VS Code guarda los cambios antes de que arranque la compilación.
+  "files.autoSave": "onFocusChange"
+}

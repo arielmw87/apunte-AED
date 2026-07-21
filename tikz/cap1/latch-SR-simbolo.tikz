@@ -1,0 +1,36 @@
+% ============================================================
+%  Símbolo lógico (en bloque) del latch SR — dos versiones
+%   Izquierda:  latch SR con NOR  -> entradas S, R activas en ALTO
+%   Derecha:    latch SR con NAND -> entradas activas en BAJO
+%               (burbuja en la entrada y nombre con barra: Sbar, Rbar)
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Tamaño de cada caja:        las coordenadas del \draw ... rectangle
+%   - Separación entre símbolos:  el shift={(5,0)} del segundo scope
+%   - Largo de los pines:         los ++(±0.7,0)
+%   - Altura de los pines:        el ±0.5 de las entradas/salidas
+% ============================================================
+\begin{tikzpicture}[transform shape]
+
+  % ---------- Versión NOR (entradas activas en ALTO) ----------
+  \draw[thick] (-0.9,-0.95) rectangle (0.9,0.95);
+  \draw (-0.9, 0.5) node[right]{\small S} -- ++(-0.7,0) ;
+  \draw (-0.9,-0.5) node[right]{\small R} -- ++(-0.7,0) ;
+  \draw ( 0.9, 0.5) node[left]{\small $Q$} -- ++(0.7,0 ) ;
+  \draw ( 0.9,-0.5) node[left]{\small $\overline{Q}$} -- ++(0.7,0 ) ;
+  \node[font=\scriptsize\itshape] at (0,-1.4) {activo en alto};
+
+  % ---------- Versión NAND (entradas activas en BAJO) ----------
+  \begin{scope}[shift={(5,0)}]
+    \draw[thick] (-0.9,-0.95) rectangle (0.9,0.95);
+    % burbujas de "activo en bajo" pegadas al borde de la caja
+    \draw (-0.8, 0.5 ) node[right]{\small $\overline{S}$} -- ++(-0.6,0) ;
+    \draw (-0.8,-0.5 ) node[right]{\small $\overline{R}$} -- ++(-0.6,0) ;
+    \node[circle,draw,thick,inner sep=1.7pt,fill=white] (bs) at (-0.9, 0.5){};
+    \node[circle,draw,thick,inner sep=1.7pt,fill=white] (br) at (-0.9,-0.5){};
+    \draw ( 0.9, 0.5) node[left]{\small $Q$}  -- ++(0.7,0) ;
+    \draw ( 0.9,-0.5) node[left]{\small $\overline{Q}$}  -- ++(0.7,0) ;
+    \node[font=\scriptsize\itshape] at (0,-1.4) {activo en bajo};
+  \end{scope}
+
+\end{tikzpicture}

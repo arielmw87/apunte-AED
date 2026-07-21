@@ -1,0 +1,80 @@
+% ============================================================
+%  Contador síncrono de 4 bits con flip-flops JK (figura 8.16 Floyd)
+%  - TODOS los FF comparten el MISMO reloj (CLK)  -> "síncrono"
+%    (bus de reloj inferior común a los cuatro).
+%  - Cada FF bascula sólo cuando todos los bits menos significativos
+%    valen 1 (lógica de acarreo con puertas AND):
+%       J0 = K0 = 1
+%       J1 = K1 = Q0
+%       J2 = K2 = Q0·Q1            (AND_a)
+%       J3 = K3 = Q0·Q1·Q2        (AND_b = AND_a · Q2)
+%  - En cada FF, J y K van unidos (tie a la izquierda) y reciben por
+%    arriba la señal de habilitación.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Separación entre FF:        la x de cada \node (acá 3.4)
+%   - Posición de las AND:        coordenadas de (Aa) y (Ab)
+%   - Altura del bus de reloj:    el y=-2.6 de (busL)/(busR)
+%   - Largo del tie J=K:          el -0.45 de los \draw ... ++(-0.45,0)
+%   NOTA: los cruces de cables SIN punto son redes distintas (no conectan);
+%         el punto negro (\circ) marca una derivación real.
+%   Pines «flipflop JK»: pin1=J, pin2=CLK(centro), pin3=K, pin6=Q, pin4=Qbar.
+% ============================================================
+\begin{circuitikz}[scale=0.5, transform shape]
+
+  % ---------- 1) Cuatro flip-flops JK ----------
+  \node[flipflop JK] (ff0) at (0,0)    {};
+  \node[flipflop JK] (ff1) at (5,0)  {};
+  \node[flipflop JK] (ff2) at (10,0)  {};
+  \node[flipflop JK] (ff3) at (15,0) {};
+
+  % ---------- 2) Atado J=K en cada FF (lado izquierdo) ----------
+  \foreach \n in {0,1,2,3}{
+    \draw (ff\n.pin 1) -- ++(-0.5,0) coordinate (j\n);   % extremo superior del tie
+    \draw (ff\n.pin 3) -- ++(-0.5,0) coordinate (k\n);   % extremo inferior del tie
+    \draw (j\n) node[circ]{} -- (k\n) ;                                  % vertical que une J y K
+  }
+
+  % ---------- 3) Reloj común: bus inferior + riser a cada pin 2 ----------
+  \coordinate (busL) at (-2.6,-2);
+  \coordinate (busR) at (14,-2);
+  \draw (busL) -- (busR);
+  \draw (busL) -- ++(-0.7,0) node[left]{\scriptsize CLK};
+  \foreach \n in {0,1,2,3}
+    \draw (ff\n.pin 2) -- ++(-1,0) -- ++(0,-2) node[circ]{};      % baja al bus (cruza K sin punto)
+
+  % ---------- 4) Salidas Q0..Q3 ----------
+  \draw (ff0.pin 6) -- ++(0.3,0) coordinate (q0) node[above]{\scriptsize $Q_0$};
+  \draw (ff1.pin 6) -- ++(0.3,0) coordinate (q1) node[above]{\scriptsize $Q_1$};
+  \draw (ff2.pin 6) -- ++(0.3,0) coordinate (q2) node[above]{\scriptsize $Q_2$};
+  \draw (ff3.pin 6) -- ++(0.3,0)              node[above]{\scriptsize $Q_3$};
+
+  % ---------- 5) Habilitaciones ----------
+  % FF0 siempre bascula: J0=K0=1
+  \draw (j0) -- ++(-2,0.0) node[left]{\scriptsize 1};
+
+  % Puertas AND de acarreo
+  \node[ieeestd and port, scale=0.5] (Aa) at (7.51,1.5) {};
+  \node[ieeestd and port, scale=0.5] (Ab) at (12.55,1.5) {};
+
+  % Q0 -> habilita FF1 (a j1) y -> AND_a entrada 1
+  \draw (q0) -- ++(1.0,0)coordinate (q0_2) node[circ]{} -- (j1);
+  \draw (q0_2) |- (Aa.in 1);
+  %\node[circ] at (q0) {};
+
+  % Q1 -> AND_a entrada 2
+  \draw (q1) -| (Aa.in 2);
+
+  % AND_a -> habilita FF2 (a j2) y -> AND_b entrada 1
+  \draw (Aa.out) -- ++(0.25,0) coordinate (oa);
+  \draw (oa) |- (j2);
+  \draw (oa) |- (Ab.in 1);
+  \node[circ] at (oa) {};
+
+  % Q2 -> AND_b entrada 2
+  \draw (q2) -| (Ab.in 2);
+
+  % AND_b -> habilita FF3 (a j3)
+  \draw (Ab.out) |- (j3);
+
+\end{circuitikz}

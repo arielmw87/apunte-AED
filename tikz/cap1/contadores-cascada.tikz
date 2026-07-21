@@ -1,0 +1,55 @@
+% ============================================================
+%  Contadores en cascada: dos de 4 bits -> uno de 8 bits (figura 8.38 Floyd)
+%  - El reloj (CLK) es común a los dos contadores (cascada síncrona).
+%  - La salida de fin de cuenta (TC, terminal count) del contador A
+%    habilita (EN) el conteo del contador B: B sólo avanza cuando A
+%    completó su cuenta.
+%  - Salidas: A -> Q0..Q3 (4 bits bajos),  B -> Q4..Q7 (4 bits altos).
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Tamaño de los bloques:  minimum width/height del estilo "bloque"
+%   - Separación A--B:        la coordenada x del nodo (B)  (acá 5.5)
+%   - Texto de los bloques:   el contenido de cada \node[bloque]
+%   - Posición de los puertos: las coordenadas de Aen/Atc/Ben/Btc (relativas)
+% ============================================================
+\begin{tikzpicture}[
+    bloque/.style={draw, thick, minimum width=3cm, minimum height=2.2cm,
+                   align=center, font=\small\sffamily},
+    port/.style={font=\scriptsize\sffamily},      % etiquetas de puerto
+    >=Stealth
+  ]
+
+  % --- 1) Los dos bloques contadores ---
+  \node[bloque] (A) at (0,0)    {Contador\\de 4 bits\\\textbf{(A)}};
+  \node[bloque] (B) at (5.5,0)  {Contador\\de 4 bits\\\textbf{(B)}};
+
+  % --- 2) Reloj común: bus por arriba que baja a cada bloque ---
+  \draw (-3,1.9) node[left]{\small CLK} -- (5.5,1.9);   % bus de reloj
+  \draw (0,1.9)   -- (A.north);                          % bajada al bloque A
+  \draw (5.5,1.9) -- (B.north);                          % bajada al bloque B
+  \node[circ] at (0,1.9) {};                             % derivación (punto de unión)
+
+  % --- 3) Habilitación (EN) ---
+  % A siempre habilitado: EN = 1
+  \coordinate (Aen) at ($(A.south west)+(0,0.5)$);
+  \draw (Aen) -- ++(-1,0) node[left]{\small 1};
+  \node[port, above right] at (Aen) {EN};
+  % B habilitado por TC de A
+  \coordinate (Atc) at ($(A.north east)+(0,-0.5)$);
+  \coordinate (Ben) at ($(B.south west)+(0,0.5)$);
+  \draw (Atc) -- ++(0.75,0) |- (Ben);                   % TC(A) -> EN(B)
+  \node[port, above left]  at (Atc) {TC};
+  \node[port, above right] at (Ben) {EN};
+
+  % --- 4) Salidas de datos (4 bits cada una) hacia abajo ---
+  \draw[->,thick] (A.south) -- ++(0,-0.9)
+        node[below, align=center]{\scriptsize $Q_0$–$Q_3$\\(4 bits)};
+  \draw[->,thick] (B.south) -- ++(0,-0.9)
+        node[below, align=center]{\scriptsize $Q_4$–$Q_7$\\(4 bits)};
+
+  % --- 5) TC del bloque B disponible para una etapa siguiente (opcional) ---
+  \coordinate (Btc) at ($(B.north east)+(0,-0.5)$);
+  \draw (Btc) -- ++(0.9,0) node[right, align=left]{\scriptsize TC\\(a etapa\\siguiente)};
+  \node[port, above left] at (Btc) {TC};
+
+\end{tikzpicture}

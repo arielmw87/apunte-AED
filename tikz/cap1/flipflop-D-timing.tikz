@@ -1,0 +1,23 @@
+\begin{tikztimingtable}[
+  timing/slope=0,
+  timing/coldist=2pt,
+  timing/rowdist=3.8ex,
+  timing/name/.style={font=\small\sffamily, right},
+  xscale=0.9
+]
+  CLK & LHLHLHLHLH \\
+  D   & 4H 3L 3H  \\
+  Q   & X 4H 3L 2H \\
+  \extracode
+    \begin{pgfonlayer}{background}
+      % líneas en los flancos de subida del reloj
+      \foreach \t in {1,3,5,7,9}
+        \draw[lightgray,dashed] (\t,0.4) -- (\t,-4.8);
+    \end{pgfonlayer}
+    % marcas de captura sobre el CLK
+    \foreach \t/\val in {1/$\uparrow$,3/$\uparrow$,5/$\uparrow$,7/$\uparrow$,9/$\uparrow$}
+      \node[font=\tiny\sffamily,above] at (\t,0.4) {\val};
+    % nota de captura
+    \node[font=\footnotesize\itshape,anchor=west] at (0,-5.5)
+      {Q captura D en cada flanco $\uparrow$ de CLK};
+\end{tikztimingtable}

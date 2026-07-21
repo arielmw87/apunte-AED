@@ -1,0 +1,53 @@
+% ============================================================
+%  Multiplexado de 4 displays de 7 segmentos (cátodo común)
+%  IDEA CLAVE:
+%   1) Las 7 líneas de segmento (a–g) son COMPARTIDAS por los 4 displays
+%      (bus superior, dibujado como una sola línea con la marca /7).
+%   2) Cada display se enciende de a uno mediante su transistor de
+%      selección de dígito (D0..D3), que conecta el cátodo común a masa.
+%   El micro rota D0->D1->D2->D3 muy rápido (>50 Hz) y el ojo los ve a todos.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Cantidad/separación de displays: el \foreach y el paso 2.2 en la x
+%   - Altura del bus de segmentos:     el y=1.7
+%   - Altura del riel de masa:         el y=-2.9
+%   - Tamaño general:                  scale= en \begin{tikzpicture}
+% ============================================================
+\begin{tikzpicture}[
+    scale=0.9, transform shape,
+    disp/.style={draw, thick, minimum width=1.15cm, minimum height=1.25cm,
+                 font=\Large\bfseries},
+    >=Stealth
+  ]
+
+  % --- 1) Los 4 displays en fila (x = 0, 2.2, 4.4, 6.6) ---
+  \foreach \i in {0,1,2,3}
+    \node[disp] (d\i) at (2.2*\i,0) {8.};
+
+  % --- 2) Bus de segmentos compartido (arriba) ---
+  \draw[thick] (-2.2,1.7) -- (7.4,1.7);
+  \node[left, align=center] at (-2.2,1.7) {\small segmentos\\\small a--g\\\small (del micro)};
+  % marca de "7 líneas" sobre el bus
+  \draw (-1.5,1.55) -- (-1.2,1.9);
+  \node at (-1.25,2.05) {\scriptsize 7};
+  % bajada del bus a cada display
+  \foreach \i in {0,1,2,3}
+    \draw (d\i.north) -- (d\i.north |- 0,1.7);
+
+  % --- 3) Transistor de selección de dígito bajo cada display ---
+  \foreach \i in {0,1,2,3}{
+    \node[nmos] (t\i) at (2.2*\i,-1.9) {};
+    \draw (t\i.D) -- (d\i.south);                 % cátodo común -> drenador
+    \draw (t\i.S) -- (2.2*\i,-2.9);               % source -> riel de masa
+    \draw (t\i.G) -- ++(-0.5,0) node[left]{\scriptsize D\i};  % compuerta -> selección
+  }
+
+  % --- 4) Riel de masa común ---
+  \draw (-0.6,-2.9) -- (7,-2.9);
+  \node[ground] at (7,-2.9) {};
+
+  % --- 5) Nota de la selección de dígito ---
+  \node[align=left, font=\scriptsize] at (2.6,-3.6)
+    {D0--D3: selección de dígito (del micro) --- se activa uno a la vez};
+
+\end{tikzpicture}

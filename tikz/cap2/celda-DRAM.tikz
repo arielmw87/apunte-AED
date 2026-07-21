@@ -1,0 +1,31 @@
+% ============================================================
+%  Celda básica de memoria DRAM: 1 transistor + 1 capacitor
+%  - El transistor NMOS es la "llave de acceso".
+%  - El capacitor C_s almacena el bit como CARGA eléctrica
+%    (cargado = 1, descargado = 0).
+%  - Línea de palabra (WL): va a la compuerta; al ponerla en alto
+%    abre la llave y conecta el capacitor con la línea de bit.
+%  - Línea de bit (BL): por donde se lee o escribe el dato.
+%  El capacitor pierde carga con el tiempo -> necesita REFRESCO periódico.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Tamaño general:        scale= en \begin{circuitikz}
+%   - Largo de WL:           el -1.6 del primer \draw
+%   - Largo de BL:           el 1.2 del segundo \draw
+%   - Etiqueta del capacitor: el l_=$C_s$
+% ============================================================
+\begin{circuitikz}[scale=1.15, transform shape]
+
+  % --- Transistor NMOS de acceso (compuerta a la izquierda) ---
+  \node[nmos] (t) at (0,0) {};
+
+  % --- Línea de palabra (WL) -> compuerta ---
+  \draw (t.G) -- ++(-1.6,0) node[left]{\small WL};
+
+  % --- Línea de bit (BL) -> drenador (arriba) ---
+  \draw (t.D) -- ++(0,1.2) node[above]{\small BL};
+
+  % --- Source -> capacitor de almacenamiento -> tierra ---
+  \draw (t.S) -- ++(0,-0.35) to[C, l_=$C_s$] ++(0,-1.3) node[ground]{};
+
+\end{circuitikz}

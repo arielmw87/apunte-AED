@@ -1,0 +1,50 @@
+% ============================================================
+%  Celda básica de memoria SRAM (estática)
+%  - El elemento de almacenamiento es un LATCH: dos inversores
+%    acoplados en cruz (la salida de cada uno alimenta la entrada del
+%    otro). Guarda el bit de forma estable mientras haya alimentación.
+%  - Dos transistores de acceso (NMOS) conectan los nodos internos A y B
+%    con las líneas de bit BL y BLbar.
+%  - Línea de palabra (WL): va a las compuertas de los dos transistores;
+%    al activarla se conecta la celda con las líneas de bit para leer/escribir.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Tamaño general:               scale= en \begin{circuitikz}
+%   - Separación de las líneas BL:  el x = ±3.4 de las líneas de bit
+%   - Altura de la línea WL:        el y = -2
+%   - Posición de los transistores: la x = ±2 de (m1)/(m2)
+%   NOTA: los cruces de cable SIN punto no conectan; el punto (\circ) sí.
+% ============================================================
+\begin{circuitikz}[scale=0.9, transform shape]
+
+  % ---------- 1) Latch: dos inversores acoplados en cruz ----------
+  \node[not port] (i1) at (0, 1.1) {};            % inversor superior (apunta ->)
+  \node[not port, xscale=-1] (i2) at (0,-1.1) {}; % inversor inferior (apunta <-)
+
+  \draw (i1.in)  -- (i2.out);   % nodo A (vertical izquierdo)
+  \draw (i1.out) -- (i2.in);    % nodo B (vertical derecho)
+
+  \node[left=1pt]  at (i1.in)  {\scriptsize A};
+  \node[right=1pt] at (i1.out) {\scriptsize B};
+
+  % ---------- 2) Transistores de acceso (rotate=90 -> canal horizontal) ----------
+  \node[nmos, rotate=90] (m1) at (-2,0) {};   % conecta BL    con el nodo A
+  \node[nmos, rotate=90] (m2) at ( 2,0) {};   % conecta nodo B con BLbar
+
+  % M1: source -> nodo A ;  drain -> línea BL
+  \draw (m1.S) -- (-0.5,0);   \node[circ] at (-0.5,0){};
+  \draw (m1.D) -- (-3.4,0);
+  % M2: drain -> nodo B ;  source -> línea BLbar
+  \draw (m2.D) -- (0.5,0);    \node[circ] at (0.5,0){};
+  \draw (m2.S) -- (3.4,0);
+
+  % ---------- 3) Líneas de bit (verticales, hacia arriba) ----------
+  \draw (-3.4,0) -- (-3.4,1.9) node[above]{\small BL};
+  \draw ( 3.4,0) -- ( 3.4,1.9) node[above]{\small $\overline{\text{BL}}$};
+
+  % ---------- 4) Línea de palabra (WL) -> las dos compuertas ----------
+  \draw (m1.G) -- (-2,-2);   \node[circ] at (-2,-2){};
+  \draw (m2.G) -- ( 2,-2);   \node[circ] at ( 2,-2){};
+  \draw (-3.4,-2) node[left]{\small WL} -- (3.4,-2);
+
+\end{circuitikz}

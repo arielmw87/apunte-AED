@@ -1,0 +1,70 @@
+% ============================================================
+%  Eliminador de rebote (antirrebote) de un pulsador con latch SR
+%  (figura 7.6 Floyd)
+%  - Pulsador SPDT (un polo, dos contactos): el común va a MASA.
+%  - Dos resistencias de pull-up llevan las entradas del latch a VCC.
+%  - El latch es SR con NAND (entradas activas en bajo: Sbar, Rbar).
+%  Al cambiar el pulsador, el PRIMER contacto ya fija el latch; los
+%  rebotes posteriores no cambian su estado -> salida limpia.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Altura de VCC:           el y=3 del riel superior
+%   - Valor/posición de R1,R2: los \draw ... to[R]
+%   - Posición del pulsador:   las coordenadas (pole)/(cA)/(cB)
+%   - Tamaño general:          scale= en \begin{circuitikz}
+%   NOTA: R2 cruza (sin punto) la línea de Sbar: son redes distintas.
+% ============================================================
+\begin{circuitikz}[transform shape, scale=0.9]
+
+  % ----- Latch SR con NAND (entradas activas en bajo) -----
+  \draw[thick] (4,-1.15) rectangle (5.9,1.15);
+  \node[circle,draw,thick,inner sep=1.7pt,fill=white] (si) at (4, 0.55){};
+  \node[circle,draw,thick,inner sep=1.7pt,fill=white] (ri) at (4,-0.55){};
+  \node[right=1pt,font=\scriptsize] at (si) {$\overline{S}$};
+  \node[right=1pt,font=\scriptsize] at (ri) {$\overline{R}$};
+  \draw (5.9, 0.55) node[left]{\small $Q$} -- ++(0.7,0) ;
+  \draw (5.9,-0.55) node[left]{\small $\overline{Q}$} -- ++(0.7,0) ;
+  \node[font=\scriptsize] at (4.95,1.5) {Latch SR};
+
+  % ----- VCC y resistencias de pull-up -----
+  \draw (0.4,3) -- (3,3) node[right]{\small $V_{CC}$};
+  \node[circ] at (1,3){};   \node[circ] at (2.5,3){};
+  \draw (1,3)   to[R, l_= $R_1$] (1  ,1); % pull-up de la entrada Sbar
+  \draw (2.5,3) to[R, l_= $R_2$] (2.5,1); % pull-up de la entrada Rbar
+
+  % ----- Nodos A (Sbar) y B (Rbar) hacia el latch -----
+  \draw (1,  1)    -- (1,0.55) coordinate(A) -- (si.west);
+  \draw (2.5,1)-- (2.5,-0.55) coordinate(B) -- (ri.west);
+  \node[circ] at (A){};   \node[circ] at (B){};
+
+  % ----- Pulsador SPDT: contactos en A y B, común a masa -----
+  \draw (A) -- (1,-1.5)   coordinate(cA);    % baja al contacto A
+  \draw (B) -- (2.5,-1.5) coordinate(cB);    % baja al contacto B
+  \draw[fill=black] (cA) circle (1.3pt);
+  \draw[fill=black] (cB) circle (1.3pt);
+  \coordinate (pole) at (1.75,-2.3);
+  \draw[->] (pole) -- (1.1,-1.6);%(cA);                      % brazo móvil (tocando A)
+  \draw[fill=black] (pole) circle (1.3pt);
+
+  \draw (pole) -- (1.75,-3) node[ground]{};  % común -> masa
+  \node[left,font=\scriptsize] at (1,-2) {Sw};
+
+  % ----- Grafico de tiempo en Q, al accionar el pulsador -----
+  
+  % la altura del cable de salida es 0.55
+  \draw ( 7 ,0.55 ) -- ( 7.5 , 0.55 );
+  \draw[->] ( 7.5 ,0.55 ) -- ( 7.5 , 1.55 );
+  \draw ( 7.5 ,1.55 ) -- ( 7.75 ,1.55 );
+  \draw[dotted] ( 7.75 ,1.55 ) -- ( 8.25 ,1.55 );
+  \draw ( 8.25, 1.55 ) -- ( 8.5 ,1.55 );
+  \draw[->] ( 8.5, 1.55 ) -- ( 8.5 ,0.55 );
+  \draw ( 8.5, 0.55 ) -- ( 9 ,0.55 );
+  
+  %flechas marcando flanco
+  
+  \draw[->] ( 7.5, -0.2 ) node[below]{\tiny Sw $ \rightarrow \overline{S}$}-- ( 7.5, 0.3 );
+  \draw[->] ( 8.5, -0.6 ) node[below]{\tiny Sw $ \rightarrow \overline{R}$}-- ( 8.5, 0.3 );
+  
+  
+
+\end{circuitikz}

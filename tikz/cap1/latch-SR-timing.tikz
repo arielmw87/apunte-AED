@@ -1,0 +1,26 @@
+\begin{tikztimingtable}[
+  timing/slope=0,
+  timing/coldist=2pt,
+  timing/rowdist=3.8ex,
+  timing/name/.style={font=\small\sffamily, right},
+  xscale=0.9
+]
+  $S$            & 2L 2H 8L \\
+  $R$            & 8L 2H 2L \\
+  $Q$            & 2X 6H 4L \\
+  $\overline{Q}$ & 2X 6L 4H \\
+  \extracode
+    % líneas de referencia en las transiciones
+    \begin{pgfonlayer}{background}
+      \draw[lightgray, dashed] (2,0.4) -- (2,-5.2);
+      \draw[lightgray, dashed] (4,0.4) -- (4,-5.2);
+      \draw[lightgray, dashed] (8,0.4) -- (8,-5.2);
+      \draw[lightgray, dashed] (10,0.4) -- (10,-5.2);
+    \end{pgfonlayer}
+    % etiquetas de fase (encima de la primera señal)
+    \node[font=\footnotesize\sffamily,above] at (1, 0.4)  {Hold};
+    \node[font=\footnotesize\sffamily,above] at (3, 0.4)  {SET};
+    \node[font=\footnotesize\sffamily,above] at (6, 0.4)  {Hold};
+    \node[font=\footnotesize\sffamily,above] at (9, 0.4)  {RESET};
+    \node[font=\footnotesize\sffamily,above] at (11,0.4)  {Hold};
+\end{tikztimingtable}

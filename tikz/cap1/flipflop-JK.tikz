@@ -1,0 +1,46 @@
+% Flip-flop JK disparado por flanco positivo (figura 7.22 Floyd)
+% Símbolo lógico + diagrama de tiempos con las cuatro operaciones.
+% Usa el shape nativo «flipflop JK» de circuitikz (mismo que la fig. de símbolos)
+% y tikz-timing para las formas de onda.
+
+% --- Símbolo lógico ---
+\begin{circuitikz}[scale=1.1, transform shape]
+  \node[flipflop JK] (ffjk) at (0,0) {FF-JK};
+  \draw (ffjk.pin 1) -- ++(-0.6,0);% node[left]{\small J};
+  \draw (ffjk.pin 2) -- ++(-0.6,0) node[left]{\small CLK};
+  \draw (ffjk.pin 3) -- ++(-0.6,0);% node[left]{\small K};
+  \draw (ffjk.pin 6) -- ++(0.6,0);% node[right]{\small $Q$};
+  \draw (ffjk.pin 4) -- ++(0.6,0);% node[right]{\small $\overline{Q}$};
+  \node[below=0.2 of ffjk, font=\small] {Disparo por flanco $\uparrow$};
+\end{circuitikz}
+
+%\vspace{1.8em}
+
+% --- Diagrama de tiempos: mantiene / SET / RESET / bascula ---
+\begin{tikztimingtable}[
+  timing/slope=0,
+  timing/coldist=3pt,
+  timing/rowdist=4ex,
+  timing/name/.style={font=\small\sffamily, left},
+  xscale=2.4
+]
+  CLK & LHLHLHLHLH \\
+  J   & 2L 2H 2L 4H \\
+  K   & 4L 6H \\
+  Q   & 3L 2H 2L 2H L \\
+  \extracode
+    \begin{pgfonlayer}{background}
+      % línea punteada en cada flanco de subida
+      \foreach \t in {1,3,5,7,9}
+        \draw[gray,dashed] (\t,0.4) -- (\t,-7.3);
+    \end{pgfonlayer}
+    % marcas de flanco de subida sobre el CLK
+    \foreach \t in {1,3,5,7,9}
+      \node[font=\small\sffamily,above] at (\t,-0.7) {$\uparrow$};
+    % operación que ejecuta el FF en cada flanco
+    \node[font=\tiny\sffamily,anchor=north] at (1,-7.5) {Memoria};
+    \node[font=\tiny\sffamily,anchor=north] at (3,-7.5) {SET};
+    \node[font=\tiny\sffamily,anchor=north] at (5,-7.5) {RESET};
+    \node[font=\tiny\sffamily,anchor=north] at (7,-7.5) {Toggle};
+    \node[font=\tiny\sffamily,anchor=north] at (9,-7.5) {Toggle};
+\end{tikztimingtable}

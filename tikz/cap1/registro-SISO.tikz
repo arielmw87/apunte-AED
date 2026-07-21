@@ -1,0 +1,49 @@
+% ============================================================
+%  Registro de desplazamiento SISO de 4 bits (figura 9.3 Floyd)
+%  Entrada serie / Salida serie: 4 flip-flops D en cascada.
+%  La salida Q de cada FF alimenta la entrada D del siguiente.
+%  El reloj (CLK) es común a los cuatro.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Separación entre flip-flops:  el "2.2cm" de cada \node[right=2.2cm of ...]
+%   - Tamaño general:               scale= en \begin{circuitikz}
+%   - Altura del bus de reloj:      el "-0.9" de la coordenada (bL)/(bR)
+%   - Agregar/quitar una etapa:     copiar/borrar un \node[flipflop D] y
+%                                   rehacer su conexión Q->D y su bajada de reloj.
+%  Pines del shape «flipflop D»: pin 1 = D (arriba-izq), pin 3 = CLK (abajo-izq),
+%                                pin 6 = Q (arriba-der), pin 4 = Qbar (abajo-der).
+% ============================================================
+\begin{circuitikz}[scale=0.9, transform shape]
+
+  % --- 1) Los cuatro flip-flops D, alineados de izquierda a derecha ---
+  \node[flipflop D] (ff0) at (0,0) {};
+  \node[flipflop D, right=2.2cm of ff0] (ff1) {};
+  \node[flipflop D, right=2.2cm of ff1] (ff2) {};
+  \node[flipflop D, right=2.2cm of ff2] (ff3) {};
+
+  % --- 2) Entrada serie -> D del primer flip-flop (pin 1) ---
+  \draw (ff0.pin 1) -- ++(-1.2,0) node[left, align=center]{\small Entrada\\serie};
+
+  % --- 3) Cascada: Q(n) (pin 6) -> D(n+1) (pin 1) ---
+  \draw (ff0.pin 6) -- (ff1.pin 1);
+  \draw (ff1.pin 6) -- (ff2.pin 1);
+  \draw (ff2.pin 6) -- (ff3.pin 1);
+
+  % --- 4) Salida serie desde Q del último flip-flop ---
+  \draw (ff3.pin 6) -- ++(1.2,0) node[right, align=center]{\small Salida\\serie};
+
+  % --- 5) Etiqueta Q0..Q3 sobre cada salida ---
+  \node[above=2pt] at (ff0.pin 6) {\scriptsize $Q_0$};
+  \node[above=2pt] at (ff1.pin 6) {\scriptsize $Q_1$};
+  \node[above=2pt] at (ff2.pin 6) {\scriptsize $Q_2$};
+  \node[above=2pt] at (ff3.pin 6) {\scriptsize $Q_3$};
+
+  % --- 6) Reloj común: bus horizontal por debajo y bajada a cada pin 3 (CLK) ---
+  \coordinate (bL) at ($(ff0.pin 3)+(0,-0.9)$);   % extremo izquierdo del bus
+  \coordinate (bR) at ($(ff3.pin 3)+(0,-0.9)$);   % extremo derecho del bus
+  \draw (bL) -- (bR);                              % bus de reloj
+  \foreach \f in {ff0,ff1,ff2,ff3}
+    \draw (\f.pin 3) -- (\f.pin 3 |- bL);          % bajada de cada FF al bus
+  \draw (bL) -- ++(-1.2,0) node[left]{\small CLK}; % entrada de reloj
+
+\end{circuitikz}

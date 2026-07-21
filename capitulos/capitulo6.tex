@@ -341,7 +341,7 @@ Un display de 7 segmentos tiene 7 LEDs (a, b, c, d, e, f, g) y opcionalmente un
 punto decimal (dp), que se encienden en distintas combinaciones para mostrar un
 dígito.
 
-\imagenPendiente{disposición de los segmentos a-g en el display y su numeración}
+\tikzCircuito{cap6/display-7seg}{Disposición de los segmentos a--g en un display de 7 segmentos de cátodo común}
 
 Existen dos tipos:
 \begin{itemize}
@@ -566,7 +566,7 @@ requeriría demasiados pines del microcontrolador. La solución es el
 activar un display a la vez, rotando muy rápido ($>$50 Hz) para que el ojo humano
 perciba todos encendidos simultáneamente.
 
-\imagenPendiente{esquema de multiplexado de 4 displays --- pines de segmentos compartidos, pines de selección individuales}
+\tikzCircuito{cap6/mux-displays}{Esquema de multiplexado de 4 displays de 7 segmentos: segmentos compartidos, selección individual por dígito}
 
 \subsection{Principio de funcionamiento}
 

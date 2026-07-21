@@ -1,0 +1,63 @@
+% Señal ideal vs. señal real con rebote de contactos (contact bounce)
+% Compara la forma de onda limpia esperada contra la real con múltiples transiciones.
+\begin{tikzpicture}[>=Stealth, x=0.85cm, y=0.65cm, font=\small\sffamily]
+
+  \def\w{10}
+  \def\tpress{3.5}
+  \def\hi{1}
+  \def\lo{0}
+  \def\vsep{2.5}
+
+  % ================================================================
+  % SEÑAL IDEAL: transición limpia, un solo flanco
+  % ================================================================
+  \draw[very thick, blue!80!black]
+    (0,\hi+\vsep) -- (\tpress,\hi+\vsep)
+    -- (\tpress,\lo+\vsep) -- (\w,\lo+\vsep);
+
+  % ================================================================
+  % SEÑAL REAL: primer contacto + rebotes + estabilización
+  % ================================================================
+  \def\b{\tpress}
+  \def\bw{0.9}  % ancho de la zona de rebote
+  \draw[very thick, red!70!black]
+    (0,\hi) -- (\b,\hi)
+    -- (\b,\lo)                          % primer contacto
+    -- (\b+0.18,\lo) -- (\b+0.18,\hi)   % rebote 1 (vuelve a H)
+    -- (\b+0.36,\hi) -- (\b+0.36,\lo)   % rebote 2 (vuelve a L)
+    -- (\b+0.55,\lo) -- (\b+0.55,\hi)   % rebote 3
+    -- (\b+0.72,\hi) -- (\b+0.72,\lo)   % rebote 4
+    -- (\b+\bw,\lo)  -- (\w,\lo);       % estabilización final
+
+  % ================================================================
+  % ETIQUETAS DE FILA
+  % ================================================================
+  \node[left, align=right] at (-0.15, \hi+\vsep) {Sin\\[-2pt]rebote};
+  \node[left, align=right] at (-0.15, \hi/2) {Con\\[-2pt]rebote};
+
+  % ================================================================
+  % LÍNEAS DE REFERENCIA
+  % ================================================================
+  \draw[gray, dashed] (\tpress,-0.6) -- (\tpress,\hi+\vsep+0.6);
+  \draw[gray, dashed] (\b+\bw,-0.6) -- (\b+\bw,\hi+\vsep+0.6);
+
+  % ================================================================
+  % ANOTACIONES
+  % ================================================================
+  \node[above, font=\footnotesize\itshape] at (\tpress,\hi+\vsep+0.6)
+    {pulsación};
+
+  \draw[<->, teal!80!black, thick] (\b,-1.05) -- (\b+\bw,-1.05);
+  \node[below, font=\tiny\sffamily, teal!80!black] at (\b+\bw/2,-1.05)
+    {rebote (1--20\,ms)};
+
+  % Niveles H/L al margen derecho
+  \node[right, font=\tiny] at (\w, \hi+\vsep+0.08) {Vcc};
+  \node[right, font=\tiny] at (\w, \lo+\vsep-0.08) {GND};
+  \node[right, font=\tiny] at (\w, \hi+0.08) {Vcc};
+  \node[right, font=\tiny] at (\w, \lo-0.08) {GND};
+
+  % Eje de tiempo
+  \draw[->] (0,-1.6) -- (\w+0.5,-1.6) node[right] {$t$};
+
+\end{tikzpicture}

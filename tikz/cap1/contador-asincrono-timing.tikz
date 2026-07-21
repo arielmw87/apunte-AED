@@ -1,0 +1,22 @@
+\begin{tikztimingtable}[
+  timing/slope=0,
+  timing/coldist=2pt,
+  timing/rowdist=3.8ex,
+  timing/name/.style={font=\small\sffamily, right},
+  xscale=0.62
+]
+  CLK & 8{LH}L \\
+  Q0  & L 4{2H2L} L \\
+  Q1  & L L 4{4H4L} L L \\
+  Q2  & 9L 8H L \\
+  \extracode
+    \begin{pgfonlayer}{background}
+      % líneas verticales en los flancos de bajada del CLK (cuando Q0 cambia)
+      \foreach \t in {2,4,6,8,10,12,14,16}
+        \draw[lightgray,dashed,thin] (\t,0.5) -- (\t,-5.5);
+    \end{pgfonlayer}
+    % conteo binario debajo del diagrama
+    \foreach \t/\cnt in {1/0,3/1,5/2,7/3,9/4,11/5,13/6,15/7,17/0}
+      \node[font=\tiny\sffamily] at (\t,-6.2) {\cnt};
+    \node[font=\footnotesize\sffamily,anchor=east] at (0,-6.2) {Cuenta:};
+\end{tikztimingtable}

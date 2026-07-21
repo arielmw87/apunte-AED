@@ -54,8 +54,10 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{pgf,tikz}
-\usetikzlibrary{arrows,shapes.symbols,shapes.arrows,calc,
-                intersections,through,backgrounds,patterns}
+\usepackage[siunitx]{circuitikz}
+\usetikzlibrary{arrows,arrows.meta,shapes.symbols,shapes.arrows,calc,
+                intersections,through,backgrounds,patterns,
+                automata,positioning}
 
 % --- Encabezados y pies de página ---
 \usepackage{fancyhdr}
@@ -80,6 +82,8 @@
 \usepackage{rotating}
 
 % --- Hipervínculos (cargar último) ---
+\usepackage{tikz-timing}
+\usetikztiminglibrary{either}
 \usepackage[colorlinks=true,linkcolor=teal!80!black,
             urlcolor=blue!70!black,citecolor=teal]{hyperref}
 
@@ -291,6 +295,38 @@
 \colorlet{amber}{yellow!80!red}
 
 % ============================================================
+%  INSERCIÓN DE ARCHIVOS .tikz EXTERNOS
+%  Uso: \tikzCircuito{nombre-sin-extension}{caption}
+%  Si el archivo tikz/<nombre>.tikz existe → lo muestra con banner.
+%  Si todavía no existe → cae a \imagenPendiente automáticamente.
+% ============================================================
+\newcommand{\tikzCircuito}[2]{%
+  \IfFileExists{tikz/#1.tikz}{%
+    \bannerRevision
+    \begin{figure}[H]
+    \centering
+    \input{tikz/#1.tikz}%
+    \caption{#2}%
+    \end{figure}%
+  }{%
+    \imagenPendiente{#2}%
+  }%
+}
+
+% ============================================================
+%  BANNER TEMPORAL — marca diagramas CircuiTikZ para revisar
+% ============================================================
+\newcommand{\bannerRevision}{%
+  \vspace{4pt}%
+  \noindent\begin{tcolorbox}[colback=yellow!25,colframe=orange!70!black,
+    left=5pt,right=5pt,top=2pt,bottom=2pt,
+    boxrule=1pt,arc=2pt]%
+    {\sffamily\bfseries\footnotesize\color{orange!80!black}%
+     $\blacktriangleright$\ Diagrama generado en CircuiTikZ\ ---
+     revisar antes de la versión final}%
+  \end{tcolorbox}\vspace{2pt}\noindent}
+
+% ============================================================
 %  IMAGEN PENDIENTE (placeholder hasta insertar figuras reales)
 % ============================================================
 \newcommand{\imagenPendiente}[1]{%
@@ -379,14 +415,14 @@
 % ============================================================
 %  CAPÍTULOS
 %  Para compilar solo un capítulo, descomentar la línea:
-%  \includeonly{capitulo1}
+%  \includeonly{capitulos/capitulo1}
 % ============================================================
 
-\include{capitulo1}
-\include{capitulo2}
-\include{capitulo3}
-\include{capitulo4}
-\include{capitulo5}
-\include{capitulo6}
+\include{capitulos/capitulo1}
+\include{capitulos/capitulo2}
+\include{capitulos/capitulo3}
+\include{capitulos/capitulo4}
+\include{capitulos/capitulo5}
+\include{capitulos/capitulo6}
 
 \end{document}

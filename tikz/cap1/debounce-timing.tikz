@@ -1,0 +1,71 @@
+% Diagrama de tiempos del circuito antirrebote con latch SR
+% Muestra: entrada S-bar con rebotes → salida Q limpia.
+% El latch captura el PRIMER contacto; los rebotes posteriores
+% no cambian el estado porque la salida ya fue seteada.
+\begin{tikzpicture}[>=Stealth, x=0.85cm, y=0.65cm, font=\small\sffamily]
+
+  \def\w{10}
+  \def\tpress{3.5}
+  \def\hi{1}
+  \def\lo{0}
+  \def\vsep{2.5}
+
+  % ================================================================
+  % ENTRADA /S (con rebote): arranca HIGH (inactiva), baja al presionar
+  % El latch NAND activa con nivel bajo → S-bar=L activa SET
+  % ================================================================
+  \def\b{\tpress}
+  \def\bw{0.9}
+  \draw[very thick, red!70!black]
+    (0,\hi+\vsep) -- (\b,\hi+\vsep)
+    -- (\b,\lo+\vsep)                                % primer contacto → SET inmediato
+    -- (\b+0.18,\lo+\vsep) -- (\b+0.18,\hi+\vsep)   % rebote 1
+    -- (\b+0.36,\hi+\vsep) -- (\b+0.36,\lo+\vsep)   % rebote 2
+    -- (\b+0.55,\lo+\vsep) -- (\b+0.55,\hi+\vsep)   % rebote 3
+    -- (\b+0.72,\hi+\vsep) -- (\b+0.72,\lo+\vsep)   % rebote 4
+    -- (\b+\bw,\lo+\vsep)  -- (\w,\lo+\vsep);        % estabilización final (LOW)
+
+  % ================================================================
+  % SALIDA Q: transición limpia en el primer contacto, inmune al rebote
+  % ================================================================
+  \draw[very thick, blue!80!black]
+    (0,\lo) -- (\b,\lo)       % Q=0 antes de la pulsación
+    -- (\b,\hi) -- (\w,\hi);  % Q=1 limpio desde el primer contacto
+
+  % ================================================================
+  % ETIQUETAS DE FILA
+  % ================================================================
+  \node[left, align=right] at (-0.15, \lo/2+\vsep+\hi/2)
+    {$\overline{S}$\\[-2pt]\footnotesize(entrada)};
+  \node[left, align=right] at (-0.15, \hi/2)
+    {$Q$\\[-2pt]\footnotesize(salida)};
+
+  % ================================================================
+  % LÍNEA EN EL PRIMER CONTACTO
+  % ================================================================
+  \draw[gray, dashed] (\tpress,-0.6) -- (\tpress,\hi+\vsep+0.6);
+
+  \node[above, font=\footnotesize\itshape] at (\tpress,\hi+\vsep+0.6)
+    {primer contacto};
+
+  % ================================================================
+  % ZONA DE REBOTE (bracket inferior)
+  % ================================================================
+  \draw[<->, teal!80!black, thick] (\b,-1.05) -- (\b+\bw,-1.05);
+  \node[below, font=\tiny\sffamily, teal!80!black] at (\b+\bw/2,-1.05)
+    {rebotes ignorados};
+
+  % Nota a la derecha de Q
+  \node[right, align=left, font=\tiny\itshape] at (\b+0.15, \hi+0.35)
+    {Q seteado,\\rebotes sin efecto};
+
+  % Niveles H/L
+  \node[right, font=\tiny] at (\w, \hi+\vsep+0.08) {H (inact.)};
+  \node[right, font=\tiny] at (\w, \lo+\vsep-0.08) {L (SET)};
+  \node[right, font=\tiny] at (\w, \hi+0.08)       {1};
+  \node[right, font=\tiny] at (\w, \lo-0.08)        {0};
+
+  % Eje de tiempo
+  \draw[->] (0,-1.6) -- (\w+0.5,-1.6) node[right] {$t$};
+
+\end{tikzpicture}

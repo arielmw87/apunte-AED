@@ -1,0 +1,50 @@
+% ============================================================
+%  Latch SR — implementación con compuertas (figura 7.1 Floyd)
+%   Izquierda:  con NOR  -> entradas S, R activas en ALTO
+%   Derecha:    con NAND -> entradas Sbar, Rbar activas en BAJO
+%  Las compuertas están acopladas en CRUZ: la salida de cada una
+%  realimenta una entrada de la otra (el lazo de realimentación se
+%  dibuja rodeando el par de compuertas).
+%
+%  LÓGICA (importante): en el latch NOR, S debe poner Q=1. Como el NOR
+%  invierte, S entra en la compuerta cuya salida es Qbar (abajo) y R en
+%  la de salida Q (arriba). Por eso R queda arriba y S abajo.
+%  (En el NAND activo-bajo, Sbar arriba sí produce Q arriba.)
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Separación vertical de compuertas: el y=±1.2 de cada \node
+%   - Separación NOR/NAND:               el shift={(8,0)} del 2º scope
+%   - Tamaño del lazo de realimentación: los ++(0,±4) y ++(-5.x,0)
+%   NOTA: el único cruce de cable SIN punto (realim. Qbar sobre la
+%         línea de Q) NO conecta; el punto (\circ) marca la derivación.
+% ============================================================
+\begin{circuitikz}[transform shape, scale=0.8]
+
+  % ===================== Latch con NOR (activo en alto) =====================
+  \node[ieeestd nor port] (a) at (0, 1.2) {};    % salida Q
+  \node[ieeestd nor port] (b) at (0,-1.2) {};    % salida Qbar
+  \draw (a.in 1) -- ++(-1.2,0)node[left]{\small $R$};
+  \draw (b.in 2) -- ++(-1.2,0)node[left]{\small $S$};
+  \draw (a.out) -- ++(0.2,0) coordinate(qa) -- ++(0.6,0) node[right]{\small $Q$}            ;
+  \draw (b.out) -- ++(0.2,0) coordinate(qb) -- ++(0.6,0) node[right]{\small $\overline{Q}$} ;
+  \node[circ] at (qa){};   
+  \node[circ] at (qb){};
+  \draw (qa) -- ++(0,-0.5) --++(-2.5,-1) |- (b.in 1);
+  \draw (qb) -- ++(0, 0.5) --++(-2.5, 1) |- (a.in 2);
+
+
+  % ===================== Latch con NAND (activo en bajo) =====================
+  \begin{scope}[shift={(8,0)}]
+    \node[ieeestd nand port] (c) at (0, 1.2) {};   % salida Q
+    \node[ieeestd nand port] (d) at (0,-1.2) {};   % salida Qbar
+    \draw (c.in 1) -- ++(-1.2,0)node[left]{\small $\overline{S}$};
+    \draw (d.in 2) -- ++(-1.2,0)node[left]{\small $\overline{R}$};
+    \draw (c.out) -- ++(0.2,0) coordinate(qc) -- ++(0.6,0) node[right]{\small $Q$}            ;
+    \draw (d.out) -- ++(0.2,0) coordinate(qd) -- ++(0.6,0) node[right]{\small $\overline{Q}$} ;
+    \node[circ] at (qc){};   
+    \node[circ] at (qd){};
+    \draw (qc) -- ++(0,-0.5) --++(-2.5,-1) |- (d.in 1);
+    \draw (qd) -- ++(0, 0.5) --++(-2.5, 1) |- (c.in 2);
+  \end{scope}
+
+\end{circuitikz}

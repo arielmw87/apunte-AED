@@ -1,0 +1,58 @@
+% ============================================================
+%  Contador asíncrono (ripple) de 4 bits con flip-flops JK
+%  - J = K = 1 en todos los FF -> cada flanco hace bascular la salida.
+%  - El reloj externo entra SOLO al FF0 (bit menos significativo).
+%  - La salida Q de cada FF actúa como reloj del siguiente.
+%  - Los cambios se propagan en cascada (de ahí "asíncrono" / ripple).
+%  - Secuencia: 0000 → 0001 → ... → 1111 → 0000 (módulo 16)
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Separación entre FF: el "2.8cm" de right=2.8cm
+%   - Largo de stubs: los valores ±0.7
+%   - Escala global: scale= en \begin{circuitikz}
+%  Pines del shape «flipflop JK»:
+%    pin 1 = J (arriba-izq),  pin 2 = CLK (centro-izq, triángulo),
+%    pin 3 = K (abajo-izq),   pin 6 = Q (arriba-der),  pin 4 = Qbar (abajo-der)
+% ============================================================
+\begin{circuitikz}[scale=0.82, transform shape]
+
+  % --- Flip-flops ---
+  \node[flipflop JK] (ff0) at (0,0)           {};
+  \node[flipflop JK, right=2.8cm of ff0] (ff1) {};
+  \node[flipflop JK, right=2.8cm of ff1] (ff2) {};
+  \node[flipflop JK, right=2.8cm of ff2] (ff3) {};
+
+  % --- FF0: J=K=1, reloj externo ---
+  \draw (ff0.pin 1) -- ++(-0.7,0) node[left]{\small 1};
+  \draw (ff0.pin 3) -- ++(-0.7,0) node[left]{\small 1};
+  \draw (ff0.pin 2) -- ++(-0.7,0) node[left]{\small CLK};
+
+  % --- FF1: J=K=1 ---
+  \draw (ff1.pin 1) -- ++(-0.7,0) node[left]{\small 1};
+  \draw (ff1.pin 3) -- ++(-0.7,0) node[left]{\small 1};
+
+  % --- FF2: J=K=1 ---
+  \draw (ff2.pin 1) -- ++(-0.7,0) node[left]{\small 1};
+  \draw (ff2.pin 3) -- ++(-0.7,0) node[left]{\small 1};
+
+  % --- FF3: J=K=1 ---
+  \draw (ff3.pin 1) -- ++(-0.7,0) node[left]{\small 1};
+  \draw (ff3.pin 3) -- ++(-0.7,0) node[left]{\small 1};
+
+  % --- Conexiones Q→CLK en cascada ---
+  % Q0 → CLK de FF1
+  \draw (ff0.pin 6) -- ++(0.5,0) node[above]{\scriptsize $Q_0$}
+        -- ++(0.35,0) |- (ff1.pin 2);
+
+  % Q1 → CLK de FF2
+  \draw (ff1.pin 6) -- ++(0.5,0) node[above]{\scriptsize $Q_1$}
+        -- ++(0.35,0) |- (ff2.pin 2);
+
+  % Q2 → CLK de FF3
+  \draw (ff2.pin 6) -- ++(0.5,0) node[above]{\scriptsize $Q_2$}
+        -- ++(0.35,0) |- (ff3.pin 2);
+
+  % Q3: salida final
+  \draw (ff3.pin 6) -- ++(0.8,0) node[right]{\small $Q_3$};
+
+\end{circuitikz}

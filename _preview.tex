@@ -1,0 +1,89 @@
+% Harness de previsualización SOLO para desarrollo de los diagramas tikz.
+% No forma parte del apunte. Compilar con:
+%   pdflatex -interaction=nonstopmode _preview.tex
+% Muestra cada diagrama de tikz/ en su propia página.
+% Mismos paquetes/librerías que main.tex (bloque de gráficos) para que se vea igual.
+\documentclass[a4paper,11pt]{article}
+\usepackage{lmodern}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{pgf,tikz}
+\usepackage[siunitx]{circuitikz}
+\usetikzlibrary{arrows,arrows.meta,shapes.symbols,shapes.arrows,calc,
+                intersections,through,backgrounds,patterns,
+                automata,positioning}
+\usepackage{tikz-timing}
+\usetikztiminglibrary{either}
+\usepackage{xstring}
+\usepackage[margin=1.2cm]{geometry}
+
+% Muestra un diagrama. Argumento: "capX/nombre" (e.g. cap1/latch-SR).
+% Si existe tikz/capX/ref/nombre.png (captura del original de Floyd),
+% lo pone AL LADO de la versión TikZ para comparar.
+% Si no existe ref, muestra solo el TikZ.
+\newcommand{\showtikz}[1]{%
+  % Extraer capítulo y nombre base
+  \StrCount{#1}{/}[\slashcount]%
+  \ifnum\slashcount>0
+    \StrBefore{#1}{/}[\tikzchap]%
+    \StrBehind{#1}{/}[\tikzbase]%
+    \edef\refpath{tikz/\tikzchap/ref/\tikzbase.png}%
+  \else
+    \def\tikzchap{}%
+    \def\tikzbase{#1}%
+    \edef\refpath{tikz/ref/#1.png}%
+  \fi
+  \begin{center}
+  {\sffamily\bfseries\large\texttt{#1.tikz}}\par\vspace{6mm}
+  \IfFileExists{\refpath}{%
+    \begin{minipage}[t]{0.47\textwidth}\centering
+      {\footnotesize\itshape Original (Floyd)}\par\vspace{3mm}
+      \includegraphics[width=\linewidth,keepaspectratio]{\refpath}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.47\textwidth}\centering
+      {\footnotesize\itshape Versión TikZ}\par\vspace{3mm}
+      \resizebox{\linewidth}{!}{\input{tikz/#1.tikz}}
+    \end{minipage}%
+  }{%
+    \IfFileExists{tikz/#1.tikz}{\input{tikz/#1.tikz}}{\textit{(pendiente)}}%
+  }%
+  \end{center}\newpage}
+
+\begin{document}
+% Orden de aparición en el apunte (capítulos 1, 2 y 6).
+% Capítulo 1 — Lógica Secuencial
+\showtikz{cap1/latch-SR}
+\showtikz{cap1/latch-SR-timing}
+\showtikz{cap1/latch-SR-simbolo}
+\showtikz{cap1/debounce-latch}
+\showtikz{cap1/bounce-signal}
+\showtikz{cap1/debounce-timing}
+\showtikz{cap1/latch-SR-EN}
+\showtikz{cap1/latch-SR-EN-timing}
+\showtikz{cap1/latch-D}
+\showtikz{cap1/latch-D-timing}
+\showtikz{cap1/ff-simbolos}
+\showtikz{cap1/flipflop-JK}
+\showtikz{cap1/flipflop-SR-timing}
+\showtikz{cap1/flipflop-D-timing}
+\showtikz{cap1/flipflop-T-timing}
+\showtikz{cap1/ff-parametros-tiempo}
+\showtikz{cap1/registro-SISO}
+\showtikz{cap1/contador-asincrono-4bit}
+\showtikz{cap1/contador-asincrono-timing}
+\showtikz{cap1/contador-sincrono-4bit}
+\showtikz{cap1/contadores-cascada}
+\showtikz{cap1/fsm-diagrama}
+% Capítulo 2 — Memorias
+\showtikz{cap2/celda-SRAM}
+\showtikz{cap2/celda-DRAM}
+% Capítulo 6 — C Embebido
+\showtikz{cap6/display-7seg}
+\showtikz{cap6/mux-displays}
+\end{document}

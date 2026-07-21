@@ -1,0 +1,34 @@
+{
+  "actions": [
+    {
+      "text": "$(repo-pull) Pull",
+      "command": "git pull",
+      "tooltip": "Pull changes from the remote repository",
+      "color": "#b0eb93"
+    },
+    {
+      "text": "$(repo-push) Push",
+      "command": "git add .; git commit; git push",
+      "tooltip": "Add, commit, and push changes to the remote repository",
+      "color": "#ffc384"
+    },
+    {
+      "text": "$(file-pdf) Compilar LaTeX",
+      "command": "powershell -ExecutionPolicy Bypass -File compilar.ps1",
+      "tooltip": "Compilar main.tex a PDF (dos pasadas con pdflatex)",
+      "color": "#93c5eb"
+    },
+    {
+      "text": "$(book) Abrir PDF",
+      "command": "Invoke-Item main.pdf",
+      "tooltip": "Abrir main.pdf con el visor predeterminado",
+      "color": "#c9a0eb"
+    },
+    {
+      "text": "$(circuit-board) Preview TikZ",
+      "command": "powershell -ExecutionPolicy Bypass -File preview-tikz.ps1",
+      "tooltip": "Compilar solo los diagramas de tikz/ (rapido) y abrir _preview.pdf",
+      "color": "#ebd293"
+    }
+  ]
+}

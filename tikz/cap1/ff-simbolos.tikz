@@ -1,0 +1,29 @@
+\begin{circuitikz}[scale=0.85, transform shape]
+
+  %--- FF-D flanco positivo ---
+  \node[flipflop D] (ffd) at (0,0) {FF-D};
+  \draw (ffd.pin 1) -- ++(-0.6,0) node[left]{\small D};
+  \draw (ffd.pin 3) -- ++(-0.6,0) node[left]{\small CLK};
+  \draw (ffd.pin 6) -- ++(0.6,0) node[right]{\small $Q$};
+  \draw (ffd.pin 4) -- ++(0.6,0) node[right]{\small $\overline{Q}$};
+  \node[below=0.15 of ffd, font=\small] {Flanco $\uparrow$};
+
+  %--- FF-D flanco negativo (burbuja en CLK) ---
+  \node[flipflop D] (ffdn) at (4.5,0) {};
+  % Como xscale=-1 espeja el nodo, etiquetamos a mano
+  \draw (ffdn.pin 1) -- ++(-0.6,0) node[right]{\small D};
+  \draw (ffdn.pin 3) -- ++(-0.6,0) node[right]{\small CLK};
+  \draw (ffdn.pin 6) -- ++(0.6,0) node[left]{\small $Q$};
+  \draw (ffdn.pin 4) -- ++(0.6,0) node[left]{\small $\overline{Q}$};
+  \node[below=0.15 of ffdn, font=\small] {Flanco $\downarrow$};
+
+  %--- FF-JK flanco positivo ---
+  \node[flipflop JK] (ffjk) at (9.5,0) {FF-JK};
+  \draw (ffjk.pin 1) -- ++(-0.6,0) node[left]{\small J};
+  \draw (ffjk.pin 2) -- ++(-0.6,0) node[left]{\small CLK};
+  \draw (ffjk.pin 3) -- ++(-0.6,0) node[left]{\small K};
+  \draw (ffjk.pin 6) -- ++(0.6,0) node[right]{\small $Q$};
+  \draw (ffjk.pin 4) -- ++(0.6,0) node[right]{\small $\overline{Q}$};
+  \node[below=0.15 of ffjk, font=\small] {Flanco $\uparrow$};
+
+\end{circuitikz}

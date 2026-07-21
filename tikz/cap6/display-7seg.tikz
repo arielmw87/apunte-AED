@@ -1,0 +1,42 @@
+% ============================================================
+%  Disposición de los segmentos a–g de un display de 7 segmentos
+%  (más el punto decimal dp). Cada barra es un LED.
+%  Distribución estándar en forma de "8":
+%        a
+%      -----
+%   f |     | b
+%      --g--
+%   e |     | c
+%      -----
+%        d        . dp
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Grosor de los segmentos:  line width del estilo "seg"
+%   - Ancho / alto del dígito:  las coordenadas (mismo patrón: ancho 2, alto 4)
+%   - Tamaño general:           scale= en \begin{tikzpicture}
+% ============================================================
+\begin{tikzpicture}[scale=1, seg/.style={line width=3.6pt, line cap=round}]
+
+  % --- Los 7 segmentos (separación de 0.25 en las esquinas) ---
+  \draw[seg] (0.25,4) -- (1.75,4);     % a  (superior)
+  \draw[seg] (2,3.75) -- (2,2.25);     % b  (superior derecha)
+  \draw[seg] (2,1.75) -- (2,0.25);     % c  (inferior derecha)
+  \draw[seg] (0.25,0) -- (1.75,0);     % d  (inferior)
+  \draw[seg] (0,1.75) -- (0,0.25);     % e  (inferior izquierda)
+  \draw[seg] (0,3.75) -- (0,2.25);     % f  (superior izquierda)
+  \draw[seg] (0.25,2) -- (1.75,2);     % g  (central)
+
+  % --- Punto decimal ---
+  \fill (2.4,0.12) circle (2.6pt);     % dp
+
+  % --- Etiquetas de cada segmento ---
+  \node at (1,4.45)    {\small a};
+  \node at (2.5,3)     {\small b};
+  \node at (2.5,1)     {\small c};
+  \node at (1,-0.45)   {\small d};
+  \node at (-0.5,1)    {\small e};
+  \node at (-0.5,3)    {\small f};
+  \node at (1.32,2.4)  {\small g};
+  \node at (2.62,0.5)  {\small dp};
+
+\end{tikzpicture}

@@ -1,0 +1,61 @@
+\begin{tikzpicture}[
+  >=Stealth,
+  sig/.style={thick},
+  dim/.style={<->,>=Stealth,teal!70!black,thick},
+  anno/.style={font=\small\sffamily,teal!80!black},
+  lbl/.style={font=\footnotesize\sffamily},
+]
+  % --- Parámetros de tiempo (unidades arbitrarias) ---
+  \def\Tsetup{1.5}   % duración t_setup
+  \def\Tclkedge{4}   % posición del flanco de CLK
+  \def\Thold{1.0}    % duración t_hold
+  \def\Tpd{1.8}      % retardo de propagación (CLK→Q válido)
+  \def\Tend{8}
+
+  % --- CLK ---
+  \draw[sig] (0,2) -- (\Tclkedge-0.1,2)
+             -- (\Tclkedge,3) -- (\Tend,3);   % flanco de subida en \Tclkedge
+  \node[lbl,left] at (0,2.5) {CLK};
+
+  % --- D (estable alrededor del flanco) ---
+  % D=H antes y después del flanco
+  \draw[sig] (0,0.8) -- (1.0,0.8)                  % inicio con dato previo (L)
+             -- (1.0,0) -- (\Tclkedge-\Tsetup,0)   % transición de D
+             -- (\Tclkedge-\Tsetup,0.8)             % D estable = H desde t_setup antes
+             -- (\Tclkedge+\Thold+0.5,0.8)          % D estable hasta después de t_hold
+             -- (\Tclkedge+\Thold+0.5,0)            % D puede cambiar
+             -- (\Tend,0);
+  \node[lbl,left] at (0,0.4) {D};
+
+  % zona estable de D (relleno)
+  \fill[teal!12] (\Tclkedge-\Tsetup,0) rectangle (\Tclkedge+\Thold+0.5,0.8);
+
+  % --- Q ---
+  \draw[sig] (0,-1.2) -- (\Tclkedge+\Tpd,-1.2)  % Q mantiene valor anterior
+             -- (\Tclkedge+\Tpd,-0.4)             % Q cambia al nuevo valor
+             -- (\Tend,-0.4);
+  \node[lbl,left] at (0,-0.8) {Q};
+  % zona de propagación (Q no válido)
+  \fill[orange!15] (\Tclkedge,-1.2) rectangle (\Tclkedge+\Tpd,-0.4);
+  \draw[orange!60,dashed] (\Tclkedge,-1.3) -- (\Tclkedge+\Tpd,-1.3);
+
+  % --- Línea del flanco de CLK ---
+  \draw[gray,dashed,thin] (\Tclkedge,-1.5) -- (\Tclkedge,3.5);
+
+  % --- Cotas ---
+  % t_setup
+  \draw[dim] (\Tclkedge-\Tsetup,1.5) -- (\Tclkedge,1.5)
+    node[midway,above,anno]{$t_{setup}$};
+
+  % t_hold
+  \draw[dim] (\Tclkedge,1.5) -- (\Tclkedge+\Thold+0.5,1.5)
+    node[midway,above,anno]{$t_{hold}$};
+
+  % t_pd
+  \draw[dim] (\Tclkedge,-1.8) -- (\Tclkedge+\Tpd,-1.8)
+    node[midway,below,anno]{$t_{pd}$};
+
+  % flanco de subida
+  \draw[->,gray] (\Tclkedge+0.3,2.4) node[right,lbl]{flanco activo} -- (\Tclkedge+0.05,2.8);
+
+\end{tikzpicture}

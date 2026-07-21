@@ -1,0 +1,27 @@
+\begin{tikztimingtable}[
+  timing/slope=0,
+  timing/coldist=2pt,
+  timing/rowdist=3.8ex,
+  timing/name/.style={font=\small\sffamily, right},
+  xscale=0.9
+]
+  EN  & 4H 4L 4H \\
+  $S$ & 2L 2H 8L \\
+  $R$ & 5L 5H 2L \\
+  $Q$ & 2L 6H 4L \\
+  \extracode
+    \begin{pgfonlayer}{background}
+      \draw[lightgray, dashed] (2, 0.4) -- (2,-5.2);
+      \draw[lightgray, dashed] (4, 0.4) -- (4,-5.2);
+      \draw[lightgray, dashed] (5, 0.4) -- (5,-5.2);
+      \draw[lightgray, dashed] (8, 0.4) -- (8,-5.2);
+      \draw[lightgray, dashed] (10,0.4) -- (10,-5.2);
+    \end{pgfonlayer}
+    \node[font=\footnotesize\sffamily,above] at (1,  0.4) {Hold};
+    \node[font=\footnotesize\sffamily,above] at (3,  0.4) {SET};
+    \node[font=\footnotesize\sffamily,above] at (6.5,0.4) {EN=0 (bloqueado)};
+    \node[font=\footnotesize\sffamily,above] at (9,  0.4) {RESET};
+    \node[font=\footnotesize\sffamily,above] at (11, 0.4) {Hold};
+    \node[font=\footnotesize\itshape, anchor=west] at (0,-6.3)
+      {R se activa en $t{=}5$ pero es ignorado hasta que EN vuelve a 1 (en $t{=}8$).};
+\end{tikztimingtable}
