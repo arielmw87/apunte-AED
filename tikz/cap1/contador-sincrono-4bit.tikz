@@ -3,7 +3,7 @@
 %  - TODOS los FF comparten el MISMO reloj (CLK)  -> "síncrono"
 %    (bus de reloj inferior común a los cuatro).
 %  - Cada FF bascula sólo cuando todos los bits menos significativos
-%    valen 1 (lógica de acarreo con puertas AND):
+%    valen 1 (lógica de acarreo con compuertas AND):
 %       J0 = K0 = 1
 %       J1 = K1 = Q0
 %       J2 = K2 = Q0·Q1            (AND_a)
@@ -53,7 +53,7 @@
   % FF0 siempre bascula: J0=K0=1
   \draw (j0) -- ++(-2,0.0) node[left]{\scriptsize 1};
 
-  % Puertas AND de acarreo
+  % Compuertas AND de acarreo
   \node[ieeestd and port, scale=0.5] (Aa) at (7.51,1.5) {};
   \node[ieeestd and port, scale=0.5] (Ab) at (12.55,1.5) {};
 

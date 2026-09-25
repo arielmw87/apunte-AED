@@ -28,7 +28,7 @@ Cuando el archivo existe, aparece automáticamente en el PDF con el banner de re
 - [X] ✎ `registro-SISO.tikz` — 4 flip-flops D en cascada, registro de desplazamiento (fig. 9.3 Floyd)
 - [X] ✎ `contador-asincrono-4bit.tikz` — 4 FF-JK en toggle con CLK en cascada, contador ripple (fig. 8.1 Floyd)
 - [ ] ✎ `contador-asincrono-timing.tikz` — Diagrama de tiempos contador asíncrono 3 bits: CLK/Q0/Q1/Q2 + conteo
-- [ ] ✎ `contador-sincrono-4bit.tikz` — 4 FF-JK + puertas AND de habilitación, contador síncrono (fig. 8.18 Floyd)
+- [ ] ✎ `contador-sincrono-4bit.tikz` — 4 FF-JK + compuertas AND de habilitación, contador síncrono (fig. 8.18 Floyd)
 - [ ] ✎ `contadores-cascada.tikz` — 2 bloques de contador 4 bits en cascada → contador 8 bits (fig. 8.34 Floyd)
 - [ ] ✎ `fsm-diagrama.tikz` — Diagrama de estados FSM de Moore: 4 estados S0–S3, automata library
 

@@ -19,19 +19,19 @@ Los dispositivos biestables se dividen en dos categorías:
 
 Es el tipo más simple de dispositivo biestable. Tiene dos entradas (S y R) y dos salidas complementarias (Q y $\overline{Q}$).
 
-Puede implementarse con dos puertas NOR (entradas activas a nivel alto) o con dos puertas NAND (entradas activas a nivel bajo).
+Puede implementarse con dos compuertas NOR (entradas activas a nivel alto) o con dos compuertas NAND (entradas activas a nivel bajo).
 
 \begin{figure}[H]
 \centering
 \input{tikz/cap1/latch-SR.tikz}
-\caption{Latch SR: implementación con puertas NOR (izquierda, entradas activas alto)
-  y puertas NAND (derecha, entradas activas bajo).
+\caption{Latch SR: implementación con compuertas NOR (izquierda, entradas activas alto)
+  y compuertas NAND (derecha, entradas activas bajo).
   Los cruces de cables sin punto indican que los conductores no se conectan.}
 \end{figure}
 
 \tikzCircuito{cap1/latch-SR-simbolo}{Símbolo lógico del latch SR: representación en bloque con entradas S, R y salidas Q, $\overline{Q}$ (figura 7.4 Floyd)}
 
-\textbf{Tabla de verdad --- Latch SR (puertas NOR, entradas activas alto):}
+\textbf{Tabla de verdad --- Latch SR (compuertas NOR, entradas activas alto):}
 
 \begin{table}[H]
 \centering
@@ -53,7 +53,7 @@ La condición no válida ocurre cuando ambas entradas se activan simultáneament
 \begin{figure}[H]
 \centering
 \input{tikz/cap1/latch-SR-timing.tikz}
-\caption{Diagrama de tiempos del latch SR (puertas NOR, entradas activas alto).
+\caption{Diagrama de tiempos del latch SR (compuertas NOR, entradas activas alto).
   La franja \textit{Hold} indica que el estado se retiene sin cambios.}
 \end{figure}
 
@@ -109,7 +109,7 @@ Agrega una entrada de habilitación (EN). El latch solo puede cambiar de estado 
 
 \tikzCircuito{cap1/latch-SR-EN}{Diagrama y símbolo del latch SR con habilitación (EN) (figura 7.8 Floyd)}
 
-\textbf{Tabla de verdad --- Latch SR con habilitación (puertas NOR, entradas activas alto):}
+\textbf{Tabla de verdad --- Latch SR con habilitación (compuertas NOR, entradas activas alto):}
 
 \begin{table}[H]
 \centering
@@ -333,7 +333,7 @@ Los bits entran en serie pero se leen simultáneamente de todas las salidas Q de
 \begin{notabox}
 \textbf{CI típicos:}
 \begin{itemize}
-    \item \textbf{74HC595} --- registro SIPO de 8 bits con latch de salida separado y salida en colector abierto para cascada. Es el más utilizado en proyectos con microcontroladores para expandir salidas digitales.
+    \item \textbf{74HC595} --- registro SIPO de 8 bits con latch de salida separado y una salida serie adicional ($Q_{H'}$) que permite conectar varios en cascada. Es el más utilizado en proyectos con microcontroladores para expandir salidas digitales.
     \item \textbf{74HC164} --- registro SIPO de 8 bits sin latch de salida (las salidas cambian mientras se desplazan los datos).
 \end{itemize}
 \end{notabox}
@@ -442,7 +442,7 @@ Se pueden conectar varios contadores en serie para obtener módulos más grandes
 
 \subsection{Decodificación de estados}
 
-Para detectar un estado específico del contador se puede usar una puerta AND que active su salida solo cuando las salidas del contador forman la combinación deseada. Se debe tener cuidado con los \textit{glitches} en contadores asíncronos.
+Para detectar un estado específico del contador se puede usar una compuerta AND que active su salida solo cuando las salidas del contador forman la combinación deseada. Se debe tener cuidado con los \textit{glitches} en contadores asíncronos.
 
 \section{Máquinas de estado}
 
@@ -510,4 +510,241 @@ S1 & 1 & S2 & 0 \\
     \item Asignar una codificación binaria a cada estado.
     \item Derivar las ecuaciones de estado siguiente y de salida (usando mapas de Karnaugh si es necesario).
     \item Implementar el circuito con flip-flops y lógica combinacional.
+\end{enumerate}
+
+\section{Actividades}
+
+Las siguientes actividades parten de situaciones concretas: primero se describe un problema real y recién después se pide la solución técnica. En todos los casos conviene responder en este orden: entender qué tiene que \textit{recordar} el circuito, elegir el dispositivo adecuado (latch, flip-flop, registro o contador) y recién entonces dibujar.
+
+\subsection{Latches}
+
+\subsubsection*{Actividad 1 --- La puerta que nadie vio abrirse}
+
+En un depósito hay una puerta de emergencia con un sensor magnético que entrega \textbf{1} mientras la puerta está abierta y \textbf{0} cuando está cerrada. El encargado sospecha que alguien la abre de noche, pero a la mañana siempre la encuentra cerrada: el sensor ya volvió a 0 y no queda ningún rastro del evento. Se necesita un circuito que ``recuerde'' que la puerta estuvo abierta, y que solo pueda borrarse con un pulsador de reconocimiento al que accede únicamente el encargado.
+
+\begin{enumerate}[label=\alph*)]
+    \item Explicar por qué conectar un LED directamente al sensor no resuelve el problema. ¿Qué tipo de lógica hace falta?
+    \item Diseñar el circuito con un latch SR de compuertas NOR. Indicar qué señal se conecta a $S$ y cuál a $R$, y qué significa $Q = 1$.
+    \item Completar la evolución de $Q$ para esta secuencia de eventos: puerta cerrada al iniciar el turno $\rightarrow$ la puerta se abre $\rightarrow$ la puerta se cierra $\rightarrow$ el encargado presiona el pulsador de reconocimiento.
+    \item ¿Qué ocurre si el encargado mantiene presionado el pulsador de reconocimiento \textit{mientras} la puerta está abierta? Relacionar la respuesta con la condición no válida $S = R = 1$ y proponer una solución.
+\end{enumerate}
+
+\subsubsection*{Actividad 2 --- Parada de emergencia que no se rearma sola}
+
+Una máquina cortadora de papel tiene un botón hongo de emergencia. Al golpearlo, el motor debe detenerse y \textbf{quedar enclavado}: aunque el botón vuelva a su posición de reposo (los hongos se destraban girándolos), la máquina no puede volver a arrancar sola. Solo el operario habilitado, con una llave de reset, puede rearmarla.
+
+\begin{enumerate}[label=\alph*)]
+    \item Si se define $Q = 1$ como ``máquina habilitada'', indicar qué entrada del latch recibe el botón de emergencia y cuál la llave de reset.
+    \item Explicar por qué el enclavamiento es un requisito de seguridad y no una comodidad. ¿Qué pasaría, en términos del circuito, si se usara una lógica sin memoria?
+    \item Las normas de seguridad exigen que ante una falla la máquina quede detenida. Analizar la implementación con compuertas NAND y entradas activas a nivel bajo (con resistencias de pull-up): ¿qué sucede si se \textbf{corta} el cable que va al botón de emergencia? Comparar con la implementación NOR, entradas activas a nivel alto.
+    \item Se agrega un ``modo mantenimiento'': una llave que impide que el circuito pueda rearmarse, incluso si alguien acciona el reset. Indicar qué entrada del latch cumple esa función y escribir la tabla de verdad completa del circuito resultante.
+\end{enumerate}
+
+\subsection{Flip-flops}
+
+\subsubsection*{Actividad 3 --- Una sola frecuencia, varios consumidores}
+
+Un equipo tiene un único oscilador de \textbf{1\,kHz}. Una parte del circuito necesita 500\,Hz y otra 250\,Hz. Agregar dos osciladores más encarece el diseño y, además, señales de distinto origen no quedan sincronizadas entre sí.
+
+\begin{enumerate}[label=\alph*)]
+    \item Diseñar el circuito con flip-flops T (con $T$ fijo en 1). Indicar cuántas etapas hacen falta y de qué salida se toma cada frecuencia.
+    \item Dibujar el diagrama de tiempos de CLK, $Q_0$ y $Q_1$ para 8 pulsos de reloj, considerando disparo por flanco de subida.
+    \item Escribir la expresión general de la frecuencia a la salida de la etapa $N$.
+    \item El mismo equipo necesita también una señal de \textbf{1\,Hz} para un reloj de segundos. ¿Se puede obtener con esta misma cadena de flip-flops T? Justificar con números.
+\end{enumerate}
+
+\subsubsection*{Actividad 4 --- El sensor que cambia cuando no debe}
+
+En una cinta transportadora, un sensor óptico entrega 1 mientras una pieza tapa el haz. El control de la máquina toma decisiones una vez por ciclo, marcado por un pulso de reloj de proceso. El problema: el sensor cambia en cualquier momento (incluso en medio de un cálculo), y el sistema a veces toma dos decisiones distintas sobre la misma pieza.
+
+\begin{enumerate}[label=\alph*)]
+    \item Explicar por qué un latch D con habilitación no resuelve del todo el problema mientras EN está activo. Usar el término \textit{transparente}.
+    \item Con un flip-flop D disparado por flanco de subida, completar la salida $Q$ para la siguiente secuencia (cada columna es un instante; el flanco de reloj ocurre en las columnas marcadas con $\uparrow$):
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lcccccccc}
+\toprule
+Instante & 1 & 2$\uparrow$ & 3 & 4$\uparrow$ & 5 & 6$\uparrow$ & 7 & 8$\uparrow$ \\
+\midrule
+$D$ & 0 & 0 & 1 & 1 & 0 & 1 & 1 & 0 \\
+$Q$ & 0 & ? & ? & ? & ? & ? & ? & ? \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+    \item El flip-flop elegido especifica $t_{setup} = 20$\,ns. Si el sensor cambia de estado 5\,ns antes del flanco activo, ¿qué se puede afirmar sobre el valor que quedará en $Q$?
+    \item \textit{Para pensar:} si el sensor es totalmente asíncrono respecto del reloj, la situación del punto anterior es inevitable cada tanto. ¿Qué ventaja tendría conectar un segundo flip-flop D en cascada, con el mismo reloj, antes de usar la señal?
+\end{enumerate}
+
+\subsection{Registros de desplazamiento}
+
+\subsubsection*{Actividad 5 --- Ocho LEDs y solo tres pines libres}
+
+Un cartel luminoso lleva 8 LEDs que deben encenderse en patrones arbitrarios. El microcontrolador del proyecto ya tiene casi todos los pines ocupados: quedan libres solamente \textbf{3}.
+
+\begin{enumerate}[label=\alph*)]
+    \item Indicar qué modo de registro de desplazamiento resuelve el problema y qué circuito integrado de los vistos conviene usar.
+    \item Determinar cuántos pulsos de reloj se necesitan para cargar un patrón completo de 8 bits.
+    \item Para el patrón \texttt{10110001} (donde el bit de la izquierda debe quedar en la salida más lejana de la entrada serie), escribir el orden exacto en que hay que presentar los bits en la línea de datos.
+    \item Explicar qué problema visual aparecería si se usara un 74HC164 en lugar de un 74HC595, y qué función del 595 lo evita.
+    \item El cartel crece a 16 LEDs. Indicar cuántos pines del microcontrolador se necesitan ahora y cuántos pulsos de reloj por actualización.
+\end{enumerate}
+
+\subsubsection*{Actividad 6 --- Ocho llaves y los mismos tres pines}
+
+El mismo equipo de la actividad anterior tiene un panel con 8 llaves DIP de configuración que hay que leer al encender. Otra vez, no sobran pines.
+
+\begin{enumerate}[label=\alph*)]
+    \item Indicar qué modo de registro corresponde y qué integrado usar.
+    \item Describir la secuencia completa de operación, separando la etapa de carga paralela de la etapa de desplazamiento.
+    \item Determinar cuántos pulsos de reloj hacen falta para leer las 8 llaves y qué bit llega primero al microcontrolador.
+    \item Si un operario mueve una llave \textit{mientras} se está desplazando la información, ¿qué valor lee el microcontrolador: el viejo o el nuevo? Justificar a partir del momento en que se tomó la carga paralela.
+    \item Sumando las 8 salidas de la actividad 5 y estas 8 entradas: ¿cuántos pines del microcontrolador se usan en total? Comparar con la conexión directa de los 16 dispositivos.
+\end{enumerate}
+
+\subsubsection*{Actividad 7 --- El cartel de la gomería}
+
+Un cartel tiene 4 lámparas en fila que deben encenderse de a una, en secuencia circular, para simular movimiento. Más adelante el dueño pide otro efecto: que las lámparas se vayan ``llenando'' de a una hasta quedar todas encendidas y después se vayan apagando de a una, sin agregar más flip-flops.
+
+\begin{enumerate}[label=\alph*)]
+    \item Escribir la secuencia completa de estados de un contador en anillo de 4 etapas e indicar cuántos estados distintos recorre.
+    \item Explicar por qué este circuito necesita obligatoriamente inicializarse con las entradas Preset y Clear. ¿Qué pasa si al encender los cuatro flip-flops quedan en 0?
+    \item Escribir la secuencia completa de estados de un contador Johnson de 4 etapas y verificar que produce el segundo efecto pedido.
+    \item Comparar las tres alternativas para generar 8 estados de salida distintos: contador en anillo, contador Johnson y contador binario con decodificador. Indicar cuántos flip-flops y cuánta lógica adicional requiere cada una.
+\end{enumerate}
+
+\subsection{Contadores}
+
+\subsubsection*{Actividad 8 --- Semáforo peatonal de seis fases}
+
+Un cruce escolar tiene un semáforo cuyo ciclo se compone de 6 fases que se repiten indefinidamente (verde vehicular, amarillo, rojo, cruce peatonal, peatonal intermitente, rojo total). Cada fase se mantiene un tiempo fijo, marcado por un pulso de reloj.
+
+\begin{enumerate}[label=\alph*)]
+    \item Determinar cuántos flip-flops se necesitan y cuál sería el módulo natural de ese contador.
+    \item Indicar qué estado hay que detectar para truncar la secuencia y con qué compuerta se implementa esa detección.
+    \item Escribir la secuencia de estados resultante y verificar que el módulo sea 6.
+    \item Con reset asíncrono, el estado de truncamiento aparece durante un instante muy breve antes de borrarse. Explicar qué problema puede causar eso en la salida del semáforo y cómo lo evita un reset síncrono.
+\end{enumerate}
+
+\subsubsection*{Actividad 9 --- El contador de segundos de un reloj}
+
+Se quiere construir la parte de segundos de un reloj digital: dos dígitos que cuenten de 00 a 59 y vuelvan a 00, a partir de una señal de 1\,Hz.
+
+\begin{enumerate}[label=\alph*)]
+    \item Indicar el módulo que debe tener el contador de unidades y el de decenas.
+    \item Explicar cómo se conecta la señal de fin de cuenta (\textit{terminal count}) del contador de unidades para que las decenas avancen en el momento correcto.
+    \item Verificar que el módulo total del conjunto sea 60 y explicar de dónde sale ese número.
+    \item ¿Cada cuánto tiempo produce un pulso la salida de fin de cuenta del conjunto completo? ¿Para qué se usaría esa señal en el reloj?
+    \item Retomando la actividad 3: si la única señal disponible es el oscilador de 1\,kHz, indicar qué cadena de contadores hay que agregar para obtener el 1\,Hz que necesita este circuito.
+\end{enumerate}
+
+\subsubsection*{Actividad 10 --- El ascensor que vuelve a planta baja}
+
+Un ascensor de un edificio de 8 pisos (0 a 7) tiene un sensor que entrega un pulso cada vez que pasa frente a un piso, y una señal de dirección que indica si está subiendo o bajando. Un display debe mostrar el piso actual.
+
+\begin{enumerate}[label=\alph*)]
+    \item Determinar cuántos flip-flops se necesitan para representar los 8 pisos.
+    \item Indicar qué tipo de contador resuelve el problema y qué función cumple la señal de dirección.
+    \item Durante las pruebas se detecta una falla: si el ascensor llega al piso 7 y recibe un pulso más, el display muestra planta baja. Explicar por qué ocurre y proponer una solución basada en la decodificación del estado 7 junto con la señal de dirección.
+    \item El piso 5 tiene un cartel que debe encenderse solo cuando el ascensor está en ese piso. Indicar qué compuerta y qué conexiones detectan el estado correspondiente.
+\end{enumerate}
+
+\subsection{Guía de resolución}
+
+\begin{notabox}
+Esta subsección es material de apoyo para la corrección. Las respuestas están sintetizadas: se espera que el alumno desarrolle además los diagramas correspondientes.
+\end{notabox}
+
+\subsubsection*{Actividad 1}
+
+\begin{enumerate}[label=\textbf{\alph*)}]
+    \item El LED es lógica combinacional pura: se enciende solo mientras el sensor entrega 1 y se apaga en cuanto la puerta vuelve a cerrarse. El evento ``la puerta estuvo abierta'' exige recordar algo que ya pasó, es decir, lógica secuencial con un elemento de memoria.
+    \item El sensor va a $S$ (la apertura pone el latch en SET) y el pulsador de reconocimiento a $R$. $Q = 1$ significa ``hubo una apertura no reconocida''. El LED se conecta a $Q$.
+    \item $Q$ arranca en 0 (estado borrado). Al abrirse la puerta, $S = 1$ y $Q$ pasa a 1. Al cerrarse, $S$ vuelve a 0 y $R$ sigue en 0: es la condición de retención, por lo que $Q$ \textbf{permanece en 1}. Al presionar el pulsador de reconocimiento, $R = 1$ y $Q$ vuelve a 0.
+    \item Se da $S = R = 1$, la condición no válida: ambas salidas quedan forzadas al mismo nivel y, si las entradas se desactivan casi simultáneamente, el estado final es impredecible. Soluciones posibles: agregar lógica que inhiba el reconocimiento mientras el sensor esté activo (por ejemplo $R' = R \cdot \overline{S}$), o reemplazar el latch SR por un latch D con habilitación, que no tiene condición prohibida.
+\end{enumerate}
+
+\subsubsection*{Actividad 2}
+
+\begin{enumerate}[label=\textbf{\alph*)}]
+    \item Con $Q = 1$ = máquina habilitada: el botón de emergencia va a $R$ (fuerza $Q = 0$) y la llave de reset a $S$ (rearma). El motor se comanda desde $Q$.
+    \item Sin memoria, la máquina volvería a arrancar sola apenas se destrabe el botón, con el operario todavía trabajando sobre ella. El enclavamiento garantiza que el rearme sea una decisión humana deliberada y no una consecuencia automática de destrabar el hongo.
+    \item Con entradas activas a nivel bajo y pull-up, el cable en reposo está en 1 (inactivo) y el botón lo lleva a 0 (activo). Si ese cable se corta, la entrada queda en 1 por el pull-up: el circuito nunca detecta la emergencia. La conclusión es la opuesta de lo que suele suponerse: para que una falla de cableado provoque la \textbf{parada} y no la inhiba, la emergencia debe activarse al abrir el circuito (cable cortado $\rightarrow$ la entrada cae a su nivel activo). Este es el criterio de \textit{contacto normalmente cerrado} que usan las normas de seguridad de máquinas.
+    \item El modo mantenimiento corresponde a la entrada de habilitación EN: con EN inactivo, el latch ignora tanto $S$ como $R$ y retiene su estado (con $Q = 0$, máquina detenida). La tabla es la del latch SR con habilitación: con EN$\,=1$, comportamiento normal SET/RESET/retención; con EN$\,=0$, $Q = Q_0$ para cualquier valor de $S$ y $R$.
+\end{enumerate}
+
+\subsubsection*{Actividad 3}
+
+\begin{enumerate}[label=\textbf{\alph*)}]
+    \item Dos flip-flops T en cascada, cada uno con $T = 1$, tomando la salida $Q$ de cada etapa como reloj de la siguiente. $Q_0$ entrega 500\,Hz y $Q_1$ entrega 250\,Hz.
+    \item $Q_0$ cambia en cada flanco de subida de CLK (período doble que CLK); $Q_1$ cambia en cada flanco de subida de $Q_0$ (período cuádruple respecto de CLK). Es el mismo diagrama del contador asíncrono de 3 bits, limitado a dos etapas.
+    \item $f_N = f_{CLK} / 2^N$, siendo $N$ el número de etapas atravesadas.
+    \item No. Haría falta dividir por 1000, y 1000 no es potencia de 2 ($2^9 = 512$, $2^{10} = 1024$). Una cadena de flip-flops T solo divide por potencias de 2, así que se necesitan contadores con módulo truncado (ver actividad 9).
+\end{enumerate}
+
+\subsubsection*{Actividad 4}
+
+\begin{enumerate}[label=\textbf{\alph*)}]
+    \item Mientras EN está activo, el latch D es transparente: $Q$ sigue a $D$ en tiempo real, de modo que cualquier cambio del sensor durante ese intervalo se propaga al control. El latch acota \textit{cuándo} puede pasar la señal, pero no la reduce a un único instante.
+    \item $Q$ toma el valor de $D$ únicamente en los flancos: instante 2 $\rightarrow$ $Q = 0$; instante 4 $\rightarrow$ $Q = 1$; instante 6 $\rightarrow$ $Q = 1$; instante 8 $\rightarrow$ $Q = 0$. Entre flancos $Q$ se mantiene, de modo que el cambio de $D$ en el instante 3 y el del instante 5 no tienen efecto inmediato.
+    \item Se viola el tiempo de establecimiento ($5 < 20$\,ns), así que no hay garantía: $Q$ puede quedar en el valor nuevo, en el viejo o en un nivel indeterminado durante un lapso. El fabricante solo garantiza el resultado si se respetan $t_{setup}$ y $t_{hold}$.
+    \item El primer flip-flop absorbe la violación de $t_{setup}$; para el flanco siguiente, su salida ya se estabilizó en 0 o en 1, de modo que el segundo flip-flop recibe una entrada estable y entrega al sistema un valor limpio. Se paga un ciclo de reloj de retardo. Es la estructura llamada \textit{sincronizador de dos etapas}, de uso estándar al ingresar cualquier señal asíncrona a un sistema síncrono.
+\end{enumerate}
+
+\subsubsection*{Actividad 5}
+
+\begin{enumerate}[label=\textbf{\alph*)}]
+    \item Registro SIPO (entrada serie, salida paralelo), con un \textbf{74HC595}. Los tres pines son: datos serie, reloj de desplazamiento y reloj de latch de salida.
+    \item 8 pulsos de reloj, uno por bit.
+    \item El primer bit enviado es el que más se desplaza, así que termina en la salida más lejana. Para que el bit de la izquierda quede allí, hay que enviar primero el MSB: 1 -- 0 -- 1 -- 1 -- 0 -- 0 -- 0 -- 1.
+    \item El 74HC164 no tiene latch de salida: sus salidas cambian a medida que los datos se desplazan, por lo que durante la carga se ve un ``barrido'' de encendidos intermedios que no corresponden al patrón final. El 595 mantiene las salidas congeladas y las actualiza todas juntas al pulso de latch.
+    \item Siguen siendo \textbf{3 pines}: se conectan dos 595 en cascada (la salida serie del primero alimenta la entrada serie del segundo, compartiendo reloj y latch). Ahora hacen falta 16 pulsos de reloj por actualización.
+\end{enumerate}
+
+\subsubsection*{Actividad 6}
+
+\begin{enumerate}[label=\textbf{\alph*)}]
+    \item Registro PISO (entrada paralelo, salida serie), con un \textbf{74HC165}.
+    \item Primero se activa la carga paralela: el registro toma simultáneamente el estado de las 8 llaves. Luego se desactiva la carga y se aplican pulsos de reloj para desplazar los bits, uno por pulso, hacia el microcontrolador.
+    \item 8 pulsos. Llega primero el bit de la etapa más cercana a la salida serie, es decir, el último del registro.
+    \item Lee el valor \textbf{viejo}: la carga paralela funciona como una fotografía tomada en un instante, y el desplazamiento posterior trabaja sobre esa copia. El cambio recién aparecerá en la lectura siguiente. Esta propiedad es deseable: garantiza que los 8 bits leídos correspondan todos al mismo instante.
+    \item Se pueden compartir el reloj y usar líneas de datos separadas: con 5 pines ($2 \times$ datos, reloj compartido, latch del 595, carga del 165) se manejan los 16 dispositivos, frente a los 16 pines que exigiría la conexión directa. Incluso sin compartir nada, 6 pines contra 16.
+\end{enumerate}
+
+\subsubsection*{Actividad 7}
+
+\begin{enumerate}[label=\textbf{\alph*)}]
+    \item 1000 $\rightarrow$ 0100 $\rightarrow$ 0010 $\rightarrow$ 0001 $\rightarrow$ 1000 \ldots: 4 estados distintos, uno por etapa.
+    \item Porque el estado 0000 también es estable dentro del anillo: si al encender todos los flip-flops quedan en 0, ese 0 circula indefinidamente y ninguna lámpara se enciende nunca. Con Preset/Clear se fuerza el estado inicial 1000 al energizar.
+    \item 0000 $\rightarrow$ 1000 $\rightarrow$ 1100 $\rightarrow$ 1110 $\rightarrow$ 1111 $\rightarrow$ 0111 $\rightarrow$ 0011 $\rightarrow$ 0001 $\rightarrow$ 0000 \ldots: 8 estados ($2N$ con $N = 4$), que es exactamente el efecto de llenado y vaciado pedido.
+    \item Anillo: 8 etapas, 8 flip-flops, sin decodificación. Johnson: 4 flip-flops, sin decodificación (o con compuertas muy simples si se quiere una salida por estado). Binario: 3 flip-flops, pero exige un decodificador de 3 a 8. El Johnson es el mejor compromiso cuando se busca poca lógica adicional.
+\end{enumerate}
+
+\subsubsection*{Actividad 8}
+
+\begin{enumerate}[label=\textbf{\alph*)}]
+    \item 3 flip-flops, porque con 2 solo se llega a 4 estados. El módulo natural de 3 flip-flops es $2^3 = 8$.
+    \item Hay que detectar el estado $110_2$ (6) y usarlo para resetear. Como basta con que $Q_2$ y $Q_1$ estén en 1 (no existe otro estado de la secuencia con esa combinación), alcanza con una compuerta AND de dos entradas conectada a $Q_2$ y $Q_1$.
+    \item 000 $\rightarrow$ 001 $\rightarrow$ 010 $\rightarrow$ 011 $\rightarrow$ 100 $\rightarrow$ 101 $\rightarrow$ 000 \ldots: 6 estados, módulo 6.
+    \item Con reset asíncrono el contador entra realmente en el estado 6 y recién ahí se borra: durante ese lapso muy breve la decodificación de fases puede activar una salida equivocada (un destello de la fase 7 en el semáforo, o un pulso espurio en un relé). El reset síncrono fuerza la vuelta a 000 en el mismo flanco de reloj, por lo que el estado 6 nunca llega a existir en las salidas.
+\end{enumerate}
+
+\subsubsection*{Actividad 9}
+
+\begin{enumerate}[label=\textbf{\alph*)}]
+    \item Unidades: módulo 10 (0 a 9, contador de décadas). Decenas: módulo 6 (0 a 5).
+    \item La salida de fin de cuenta de las unidades se activa en la transición de 9 a 0 y habilita el avance de las decenas en ese mismo momento. En cascada síncrona, esa señal se conecta a la entrada de habilitación de conteo del segundo contador, compartiendo ambos el mismo reloj.
+    \item $10 \times 6 = 60$. El módulo total de contadores en cascada es el producto de los módulos individuales, porque las decenas avanzan una vez por cada ciclo completo de las unidades.
+    \item Un pulso cada 60 segundos, es decir, una vez por minuto. Esa señal es la que alimenta el contador de minutos del reloj.
+    \item Hay que dividir por 1000, que se descompone como $10 \times 10 \times 10$: tres contadores de décadas en cascada. La salida de fin de cuenta del tercero entrega 1\,Hz.
+\end{enumerate}
+
+\subsubsection*{Actividad 10}
+
+\begin{enumerate}[label=\textbf{\alph*)}]
+    \item 3 flip-flops ($2^3 = 8$ estados, uno por piso).
+    \item Un contador síncrono ascendente/descendente. La señal de dirección selecciona, mediante la lógica de habilitación de cada etapa, si el contador avanza hacia el estado siguiente o hacia el anterior. El pulso del sensor de piso funciona como reloj.
+    \item Porque el contador es cíclico: al llegar a $111_2$ (7) y recibir otro pulso, desborda y vuelve a $000_2$ (0). La solución es inhibir el conteo cuando se cumplan simultáneamente ``estado = 7'' y ``dirección = subiendo'': una compuerta AND de $Q_2$, $Q_1$ y $Q_0$ combinada con la señal de dirección, cuyo resultado bloquea el reloj o la habilitación de conteo. Conviene hacer lo simétrico para el estado 0 bajando.
+    \item El piso 5 es $101_2$, de modo que hay que detectar $Q_2 = 1$, $Q_1 = 0$, $Q_0 = 1$: una compuerta AND de tres entradas conectada a $Q_2$, $\overline{Q_1}$ y $Q_0$ (es decir, $Q_1$ pasa por un inversor, o se toma directamente la salida $\overline{Q_1}$ del flip-flop).
 \end{enumerate}
