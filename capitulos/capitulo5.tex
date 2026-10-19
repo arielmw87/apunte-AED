@@ -300,6 +300,122 @@ while (i <= 10) {
 }
 \end{lstlisting}
 
+\section{Funciones}
+
+Una \textbf{función} es un bloque de código con nombre que realiza una tarea concreta. Se escribe una sola vez y después se la \textbf{llama} (se la usa) desde cualquier parte del programa, todas las veces que haga falta. Ya venimos usando funciones sin darnos cuenta: \texttt{main} es una función, y \texttt{printf} y \texttt{scanf} también.
+
+Las funciones sirven para:
+\begin{itemize}
+  \item \textbf{No repetir código:} si una tarea se hace en varios lugares, se escribe una vez dentro de una función.
+  \item \textbf{Dividir un problema grande en partes chicas}, cada una con un nombre que dice qué hace.
+  \item \textbf{Hacer el programa más fácil de leer}: \texttt{mostrar(numero)} se entiende mucho mejor que las líneas que hay adentro.
+\end{itemize}
+
+\subsection{Partes de una función}
+
+\begin{lstlisting}[style=estilo-c]
+int sumar(int a, int b) {   // retorno, nombre, parametros
+    int resultado = a + b;  // cuerpo: lo que hace
+    return resultado;       // valor que devuelve
+}
+\end{lstlisting}
+
+\begin{itemize}
+  \item \textbf{Tipo de retorno} (\texttt{int}): el tipo del valor que la función devuelve.
+  \item \textbf{Nombre} (\texttt{sumar}): se usa para llamarla. Sigue las mismas reglas que los nombres de variables.
+  \item \textbf{Parámetros} (\texttt{int a, int b}): los datos que la función recibe para trabajar. Cada uno lleva su tipo.
+  \item \textbf{Cuerpo}: las instrucciones, entre llaves.
+  \item \textbf{\texttt{return}}: termina la función y devuelve el resultado a quien la llamó.
+\end{itemize}
+
+Para \textbf{llamarla}, se escribe su nombre con los valores entre paréntesis; el valor devuelto se puede guardar en una variable o usar directamente:
+
+\begin{lstlisting}[style=estilo-c]
+int total = sumar(3, 4);        // total vale 7
+printf("%d\n", sumar(10, 5));   // muestra 15
+\end{lstlisting}
+
+\subsection{Funciones que no devuelven nada: \texttt{void}}
+
+Si una función hace algo pero no tiene que devolver un resultado, su tipo de retorno es \texttt{void} (``vacío''). Si además no recibe parámetros, entre los paréntesis también se pone \texttt{void}:
+
+\begin{lstlisting}[style=estilo-c]
+void separador(void) {          // no recibe nada, no devuelve nada
+    printf("----------\n");
+}
+
+void mostrar_doble(int x) {     // recibe un dato, no devuelve nada
+    printf("El doble es %d\n", 2 * x);
+}
+\end{lstlisting}
+
+\subsection{Ejemplo completo}
+
+\begin{lstlisting}[style=estilo-c]
+#include <stdio.h>
+
+// Devuelve el mayor de dos numeros
+int mayor(int a, int b) {
+    if (a > b) {
+        return a;
+    } else {
+        return b;
+    }
+}
+
+int main(void) {
+    int x, y;
+    printf("Ingrese dos numeros: ");
+    scanf("%d %d", &x, &y);
+    printf("El mayor es %d\n", mayor(x, y));
+    return 0;
+}
+\end{lstlisting}
+
+\begin{notabox}
+\textbf{Dos detalles importantes:}
+\begin{itemize}
+  \item La función tiene que estar escrita \textbf{antes} de que se la use (por eso \texttt{mayor} está arriba de \texttt{main}). Si se la quiere escribir después, hay que poner antes su \textbf{prototipo}: la primera línea terminada en punto y coma, por ejemplo \texttt{int mayor(int a, int b);}.
+  \item Los parámetros y las variables declaradas dentro de una función son \textbf{locales}: solo existen dentro de esa función. La función recibe una \textbf{copia} de los valores; si los modifica, la variable original no cambia.
+\end{itemize}
+\end{notabox}
+
+\section{Constantes y macros: \texttt{\#define}}
+
+Las líneas que empiezan con \texttt{\#} (como \texttt{\#include}) no son instrucciones de C: son órdenes para el \textbf{preprocesador}, un paso que se ejecuta \emph{antes} de compilar. La directiva \texttt{\#define} le dice al preprocesador que \textbf{reemplace un nombre por un texto} en todo el programa.
+
+\subsection{Constantes}
+
+\begin{lstlisting}[style=estilo-c]
+#define LIMITE   10
+#define PI       3.1416
+
+for (int i = 0; i < LIMITE; i++) { ... }   // queda: i < 10
+\end{lstlisting}
+
+Así, los ``números mágicos'' del programa tienen un nombre que explica qué son, y si hay que cambiarlos se cambian en un solo lugar. Por convención, los nombres definidos con \texttt{\#define} se escriben en \textbf{MAYÚSCULAS}.
+
+\begin{advertenciabox}
+Un \texttt{\#define} \textbf{no lleva} signo \texttt{=} \textbf{ni} punto y coma al final: el preprocesador copiaría también esos caracteres en cada lugar donde se use el nombre.
+\end{advertenciabox}
+
+\subsection{Macros con parámetros}
+
+Un \texttt{\#define} también puede recibir parámetros. Se llama \textbf{macro} y se usa parecido a una función, pero en realidad es un \emph{reemplazo de texto}: el preprocesador pega el texto de la macro en cada lugar donde se usa, reemplazando los parámetros.
+
+\begin{lstlisting}[style=estilo-c]
+#define CUADRADO(x)   ((x) * (x))
+
+int a = CUADRADO(5);       // ((5) * (5))         -> 25
+int b = CUADRADO(2 + 1);   // ((2 + 1) * (2 + 1)) -> 9
+\end{lstlisting}
+
+\begin{importantebox}
+\textbf{Siempre entre paréntesis.} Como la macro es un reemplazo de texto, hay que poner entre paréntesis cada parámetro y la expresión completa. Si se hubiera escrito \texttt{\#define CUADRADO(x) x * x}, entonces \texttt{CUADRADO(2 + 1)} se reemplaza por \texttt{2 + 1 * 2 + 1}, que da \textbf{5} y no 9.
+\end{importantebox}
+
+Las macros son muy usadas en la programación de microcontroladores: en el próximo bloque vamos a definir macros para poner en 1, poner en 0 y leer bits de los registros.
+
 \section{Equivalencia entre pseudocódigo y C}
 
 \begin{table}[H]

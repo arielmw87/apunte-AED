@@ -187,6 +187,72 @@ if (!(PIND & (1 << PD2))) {
 }
 \end{lstlisting}
 
+\subsection{Macros para manejar bits}
+
+Las expresiones anteriores se repiten todo el tiempo y es fácil equivocarse con un
+\texttt{\~{}} o un paréntesis. Por eso conviene definirlas una sola vez como
+\textbf{macros} (ver Bloque 5), que reciben el \textbf{registro} y el \textbf{número de bit}:
+
+\begin{lstlisting}[style=estilo-c]
+// pone el bit en 1 / lo pone en 0 / lo invierte
+#define SET_BIT(reg, bit)     ((reg) |=  (1 << (bit)))
+#define CLR_BIT(reg, bit)     ((reg) &= ~(1 << (bit)))
+#define TOGGLE_BIT(reg, bit)  ((reg) ^=  (1 << (bit)))
+\end{lstlisting}
+
+Se usan así:
+
+\begin{lstlisting}[style=estilo-c]
+SET_BIT(DDRD, PD5);      // PD5 como salida
+SET_BIT(PORTD, PD5);     // enciende el LED en PD5
+CLR_BIT(PORTD, PD5);     // apaga el LED
+TOGGLE_BIT(PORTB, PB5);  // invierte el LED de la placa
+\end{lstlisting}
+
+El preprocesador reemplaza, por ejemplo, \texttt{SET\_BIT(PORTD, PD5)} por
+\texttt{((PORTD) |= (1 <{}< (PD5)))}: es exactamente el mismo código de antes, pero mucho
+más fácil de leer y de escribir.
+
+\subsubsection{Leer entradas: \texttt{bit\_is\_set} y \texttt{bit\_is\_clear}}
+
+Para leer bits, la biblioteca \texttt{avr-libc} ya trae macros listas. Como vienen
+incluidas en \texttt{<avr/io.h>}, no hace falta definirlas:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{>{\ttfamily}l>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{\sffamily Macro} & \textbf{Qué hace} \\
+\midrule
+bit\_is\_set(reg, bit)   & Verdadero (distinto de 0) si el bit está en \textbf{1} \\
+bit\_is\_clear(reg, bit) & Verdadero si el bit está en \textbf{0} \\
+loop\_until\_bit\_is\_set(reg, bit)   & Espera (bloqueando) hasta que el bit se ponga en 1 \\
+loop\_until\_bit\_is\_clear(reg, bit) & Espera (bloqueando) hasta que el bit se ponga en 0 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Para leer un pin de entrada se usa siempre el registro \texttt{PINx}:
+
+\begin{lstlisting}[style=estilo-c]
+if (bit_is_clear(PIND, PD2)) {
+    // PD2 en 0: con pull-up, el pulsador esta presionado
+}
+
+if (bit_is_set(PIND, PD2)) {
+    // PD2 en 1: el pulsador esta suelto
+}
+
+loop_until_bit_is_clear(PIND, PD2);  // espera a que se presione
+\end{lstlisting}
+
+\begin{notabox}
+\texttt{bit\_is\_clear(PIND, PD2)} es lo mismo que \texttt{!(PIND \& (1 <{}< PD2))}, pero se
+lee casi como una frase: ``si el bit PD2 de PIND está en cero''. Las macros
+\texttt{loop\_until\_\ldots} son \textbf{bloqueantes} (el programa no hace nada más
+mientras espera), así que solo conviene usarlas en programas simples.
+\end{notabox}
+
 %──────────────────────────────────────────────────────────────────────────────
 \section{Configuración de puertos (TP1)}
 
@@ -254,6 +320,31 @@ int main(void) {
         } else {
             // pulsador suelto -> apagar LED
             PORTD &= ~(1 << PD5);
+        }
+    }
+
+    return 0;
+}
+\end{lstlisting}
+
+El mismo programa, escrito con las macros de la sección anterior:
+
+\begin{lstlisting}[style=estilo-c]
+#include <avr/io.h>
+
+#define SET_BIT(reg, bit)  ((reg) |=  (1 << (bit)))
+#define CLR_BIT(reg, bit)  ((reg) &= ~(1 << (bit)))
+
+int main(void) {
+    SET_BIT(DDRD, PD5);    // LED como salida
+    CLR_BIT(DDRD, PD2);    // pulsador como entrada
+    SET_BIT(PORTD, PD2);   // pull-up en el pulsador
+
+    while (1) {
+        if (bit_is_clear(PIND, PD2)) {   // pulsador presionado
+            SET_BIT(PORTD, PD5);         // encender LED
+        } else {
+            CLR_BIT(PORTD, PD5);         // apagar LED
         }
     }
 
@@ -430,7 +521,9 @@ que desplazarlo con \texttt{<{}<} o \texttt{>{}>}).
 \end{notabox}
 
 En el código se almacena la tabla en un arreglo, se indexa con el dígito a mostrar y
-se usa una función que lleva el patrón a los pines:
+se usa una \textbf{función} (ver Bloque 5), \texttt{mostrar()}, que lleva el patrón a los
+pines. Así, las máscaras se escriben una sola vez y el resto del programa solo llama a
+\texttt{mostrar(digitos[n])}:
 
 \begin{lstlisting}[style=estilo-c]
 #include <avr/io.h>
