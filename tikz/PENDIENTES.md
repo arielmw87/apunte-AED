@@ -68,6 +68,7 @@ Define `timing/aed` para todos los diagramas de tiempos, los nodos de diagramas 
 - [ ] ✎ 🆕 `secuencia.tikz` — Secuencia (ejemplo: área del rectángulo)
 - [ ] ✎ 🆕 `si-sino.tikz` — Decisión si-sino (ejemplo: positivo / negativo)
 - [ ] ✎ 🆕 `mientras.tikz` — Bucle mientras con flecha de retorno
+- [ ] ✎ 🆕 `repetir-hasta.tikz` — Bucle repetir–hasta que (rombo después del bloque, No repite) (agregado 2026-10-19)
 
 ## Capítulo 6 — C Embebido (ATmega328)
 

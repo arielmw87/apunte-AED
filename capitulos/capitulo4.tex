@@ -105,13 +105,26 @@ Fin Mientras
 
 \subsubsection{Repetir hasta (do-while --- condición al final)}
 
-El bloque se ejecuta \textbf{al menos una vez} y la condición se evalúa al final. Si la condición sigue siendo verdadera, vuelve a ejecutarse.
+La condición se evalúa \textbf{después} de ejecutar el bloque, por lo que el bloque se ejecuta \textbf{al menos una vez}. En PSeInt, el bucle se repite \emph{mientras la condición sea falsa} y termina \emph{cuando la condición se vuelve verdadera}: se repite ``hasta que'' se cumpla.
+
+\tikzCircuito{cap4/repetir-hasta}{Estructura de repetición \emph{repetir--hasta que}: primero se ejecuta el bloque y después se evalúa la condición.}
 
 \begin{lstlisting}[style=estilo-pseudocode]
 Repetir
     [bloque de pasos]
-Hasta que condición sea verdadera
+Hasta Que condición
 \end{lstlisting}
+
+\textbf{Ejemplo:} pedir un número hasta que sea positivo.
+\begin{lstlisting}[style=estilo-pseudocode]
+Repetir
+    Leer numero
+Hasta Que numero > 0
+\end{lstlisting}
+
+\begin{notabox}
+\textbf{Mientras vs.\ repetir--hasta:} comparando los dos diagramas se ve la diferencia. En el \emph{mientras} el rombo está \textbf{antes} del bloque: si la condición es falsa de entrada, el bloque no se ejecuta nunca. En el \emph{repetir--hasta} el rombo está \textbf{después}: el bloque siempre se ejecuta al menos una vez. Además, el \emph{mientras} sigue repitiendo con \textbf{Sí}, y el \emph{repetir--hasta} sigue repitiendo con \textbf{No}.
+\end{notabox}
 
 \section{Variables}
 

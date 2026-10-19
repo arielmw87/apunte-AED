@@ -270,6 +270,10 @@ do {
 } while (valor <= 0);
 \end{lstlisting}
 
+\begin{advertenciabox}
+\textbf{Ojo al traducir desde PSeInt:} el \texttt{do-while} de C repite \emph{mientras} la condición es \textbf{verdadera}, pero el \texttt{Repetir ... Hasta Que} de PSeInt repite \emph{hasta que} la condición es verdadera (o sea, mientras es \textbf{falsa}). Por eso, al pasar de uno a otro hay que \textbf{negar la condición}. El ejemplo anterior en PSeInt sería \texttt{Repetir ... Hasta Que valor > 0}, y en C queda \texttt{while (valor <= 0)}.
+\end{advertenciabox}
+
 \subsection{Repetición: \texttt{for}}
 
 Forma compacta de escribir un bucle cuando se conoce de antemano la cantidad de iteraciones.
@@ -300,6 +304,7 @@ while (i <= 10) {
 
 \begin{table}[H]
 \centering
+\small
 \begin{tabular}{ll}
 \toprule
 Pseudocódigo (PSeInt) & C \\
@@ -311,7 +316,7 @@ Pseudocódigo (PSeInt) & C \\
 \texttt{Si condición Entonces ... Fin Si} & \texttt{if (condición) \{ ... \}} \\
 \texttt{Si ... Sino ... Fin Si} & \texttt{if (...) \{ ... \} else \{ ... \}} \\
 \texttt{Mientras condición Hacer ... Fin Mientras} & \texttt{while (condición) \{ ... \}} \\
-\texttt{Repetir ... Hasta Que condición} & \texttt{do \{ ... \} while (condición);} \\
+\texttt{Repetir ... Hasta Que condición} & \texttt{do \{ ... \} while (!(condición));} \\
 \texttt{MOD} & \texttt{\%} \\
 \texttt{Y} & \texttt{\&\&} \\
 \texttt{O} & \texttt{||} \\

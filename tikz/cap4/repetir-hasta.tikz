@@ -1,0 +1,36 @@
+% ============================================================
+%  Estructura de REPETICIÓN: "repetir ... hasta que" (condición al final)
+%  - El bloque se ejecuta PRIMERO y la condición se evalúa DESPUÉS:
+%    el bloque se ejecuta al menos una vez.
+%  - Semántica de PSeInt (Repetir ... Hasta Que):
+%      No (la condición todavía no se cumple) -> vuelve al bloque
+%      Sí (la condición se cumple)            -> sale del bucle
+%  - Misma estética y medidas que mientras.tikz, para compararlos.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Distancia vertical:                       node distance en [flujo, ...]
+%   - Qué tan afuera pasa la flecha de retorno: el -18mm del lazo
+% ============================================================
+\begin{tikzpicture}[flujo, node distance=6mm]
+
+  \node[terminal]                   (ini) {Inicio};
+  \coordinate[below=5mm of ini]     (ret);          % donde entra el retorno
+  \node[proceso, below=5mm of ret]  (blq) {bloque de pasos};
+  \node[decision, below=of blq]     (dec) {¿condición\\verdadera?};
+  \node[terminal, below=of dec]     (fin) {Fin};
+
+  % flujo principal: primero el bloque, después la pregunta
+  \draw[flecha] (ini) -- (blq);
+  \draw[flecha] (blq) -- (dec);
+  \draw[flecha] (dec) -- node[rotulo, right] {Sí} (fin);
+
+  % salida por No: vuelve ARRIBA del bloque
+  \draw[flecha] (dec.west) -- node[rotulo, above] {No} ++(-12mm,0)
+                -- ([xshift=-18mm]blq.west |- dec.west) |- (ret);
+  \fill[black!75] (ret) circle (1.6pt);
+
+  % rótulo del lazo
+  \node[rotulo, text=teal!50!black, rotate=90, anchor=south]
+    at ([xshift=-18mm]blq.west |- blq.south) {repetir};
+
+\end{tikzpicture}
