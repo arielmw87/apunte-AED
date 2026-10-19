@@ -60,6 +60,7 @@ Define `timing/aed` para todos los diagramas de tiempos, los nodos de diagramas 
 
 - [ ] ✎ 🆕 `von-neumann.tikz` — CPU — bus único — memoria única (cuello de botella resaltado)
 - [ ] ✎ 🆕 `harvard.tikz` — Memoria de programa / CPU / memoria de datos con buses separados
+- [ ] ✎ 🆕 `compilado-interpretado.tikz` — Flujo compilador vs. intérprete (agregado 2026-10-19)
 
 ## Capítulo 4 — Algoritmos
 

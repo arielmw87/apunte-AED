@@ -1,0 +1,65 @@
+% ============================================================
+%  Lenguaje compilado vs. interpretado
+%  - COMPILADO (arriba): el compilador traduce TODO el programa UNA vez,
+%    antes de ejecutarlo. Lo que se ejecuta es el código máquina generado;
+%    el compilador ya no participa.
+%  - INTERPRETADO (abajo): el intérprete es un programa que corre en la
+%    CPU y, CADA VEZ que se ejecuta el programa, lee una instrucción del
+%    código fuente, la analiza, la ejecuta y pasa a la siguiente.
+%  Las llaves de abajo marcan CUÁNDO ocurre la traducción.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Separación horizontal entre bloques: node distance (x) en el tikzpicture
+%   - Separación entre las dos filas:      el y=-3.4 de la fila interpretada
+%   - Ancho de los bloques:                minimum width de "paso"
+% ============================================================
+\begin{tikzpicture}[
+    node distance=0mm and 9mm,
+    paso/.style={bloque, minimum width=27mm, minimum height=13mm},
+    fuente/.style={paso, fill=white},
+    trad/.style={paso, fill=orange!15, font=\sffamily\small\bfseries},
+    maq/.style={paso, fill=teal!15},
+    cpu/.style={paso, fill=teal!35, minimum width=18mm},
+    tit/.style={font=\sffamily\bfseries, anchor=west},
+    llave/.style={decorate, decoration={brace, amplitude=5pt, mirror}, thick, teal!60!black},
+    nl/.style={font=\sffamily\scriptsize, text=teal!60!black, align=center},
+    >=Stealth
+  ]
+
+  % ---------- Fila 1: COMPILADO ----------
+  \node[tit] at (-0.4,1.2) {Lenguaje compilado (C, C++)};
+  \node[fuente, anchor=west] (f1) at (0,0)
+       {Código fuente\\{\scriptsize\texttt{programa.c}}};
+  \node[trad,  right=of f1] (c1) {Compilador\\{\scriptsize\mdseries traduce todo}};
+  \node[maq,   right=of c1] (m1) {Código máquina\\{\scriptsize\texttt{programa.hex}}};
+  \node[cpu,   right=of m1] (p1) {CPU};
+  \draw[senal] (f1) -- (c1);
+  \draw[senal] (c1) -- (m1);
+  \draw[senal] (m1) -- (p1);
+
+  \draw[llave] (f1.south west) ++(0,-0.15) -- ($(m1.south west)+(-0.2,-0.15)$)
+       node[midway, below=6pt, nl]{traducción: \textbf{una sola vez}, antes de ejecutar};
+  \draw[llave] (m1.south west) ++(0,-0.15) -- ($(p1.south east)+(0,-0.15)$)
+       node[midway, below=6pt, nl]{ejecución directa:\\\textbf{rápida}};
+
+  % ---------- Fila 2: INTERPRETADO ----------
+  \begin{scope}[yshift=-3.6cm]
+    \node[tit] at (-0.4,1.5) {Lenguaje interpretado (Python, PSeInt)};
+    \node[fuente, anchor=west] (f2) at (0,0)
+         {Código fuente\\{\scriptsize\texttt{programa.py}}};
+    \node[trad, right=of f2, minimum width={27mm*2+9mm}] (i2)
+         {Intérprete\\{\scriptsize\mdseries lee una línea $\rightarrow$ la traduce $\rightarrow$ la ejecuta $\rightarrow$ siguiente\ldots}};
+    \node[cpu, right=of i2] (p2) {CPU};
+    \draw[senal] (f2) -- (i2);
+    \draw[senal] (i2) -- (p2);
+    % lazo: vuelve a la línea siguiente
+    \draw[senal, rounded corners=4pt, orange!70!black]
+         ($(i2.north east)+(-0.6,0)$) -- ++(0,0.35) -| ($(i2.north west)+(0.6,0)$);
+    \node[font=\sffamily\scriptsize, text=orange!70!black, fill=white, inner sep=2pt]
+         at ($(i2.north)+(0,0.35)$) {repite línea por línea};
+
+    \draw[llave] (f2.south west) ++(0,-0.15) -- ($(p2.south east)+(0,-0.15)$)
+         node[midway, below=6pt, nl]{traducción \textbf{durante} la ejecución, cada vez que se corre el programa\\
+         (y cada vez que se repite un bucle): \textbf{más lenta}};
+  \end{scope}
+\end{tikzpicture}

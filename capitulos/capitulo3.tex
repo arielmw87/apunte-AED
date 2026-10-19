@@ -265,9 +265,47 @@ Un programa llamado \textbf{ensamblador} traduce el código escrito en lenguaje 
 
 Son los más cercanos al lenguaje humano y los más fáciles de escribir y mantener. No están atados a una arquitectura específica, lo que permite reutilizar el código en distintos sistemas. Algunos ejemplos: C, C++, Python, Java, Basic.
 
-Para ejecutarse, deben ser traducidos a código máquina mediante un \textbf{compilador} (que traduce todo el programa de una vez) o un \textbf{intérprete} (que traduce y ejecuta instrucción por instrucción).
+La CPU no entiende estos lenguajes: solo ejecuta código máquina. Por lo tanto, el programa escrito por el programador (el \textbf{código fuente}) siempre tiene que ser traducido. Según \textbf{cuándo} se hace esa traducción, los lenguajes se dividen en dos grandes grupos: \textbf{compilados} e \textbf{interpretados}.
 
-En sistemas embebidos, el lenguaje más utilizado es \textbf{C}, por su combinación de legibilidad, eficiencia y acceso a bajo nivel de hardware.
+\textbf{Lenguajes compilados.} Un programa llamado \textbf{compilador} lee \emph{todo} el código fuente y lo traduce a código máquina \emph{una sola vez}, antes de ejecutarlo. El resultado es un archivo ejecutable (en una PC, un \texttt{.exe}; en un microcontrolador, el \texttt{.hex} que se graba en la memoria Flash). A partir de ahí, la CPU ejecuta directamente ese código máquina y el compilador ya no participa. Ejemplos: C, C++, Rust.
+
+\textbf{Lenguajes interpretados.} No se genera un ejecutable. Un programa llamado \textbf{intérprete}, que está corriendo en la CPU, lee el código fuente \emph{mientras} lo ejecuta: toma una instrucción, la analiza, la ejecuta, pasa a la siguiente, y así hasta el final. Cada vez que se corre el programa, la traducción se vuelve a hacer. Ejemplos: Python, JavaScript, y también PSeInt, que usamos en el Bloque 4.
+
+\begin{notabox}
+\textbf{Una analogía:} compilar es como encargar la traducción completa de un libro: lleva tiempo, pero después cualquiera lo lee de corrido en su idioma. Interpretar es como tener un intérprete simultáneo al lado que va traduciendo frase por frase: se puede empezar enseguida, pero cada vez que se quiera ``leer'' de nuevo hace falta el intérprete, y todo va más lento.
+\end{notabox}
+
+\tikzCircuito{cap3/compilado-interpretado}{Lenguaje compilado: la traducción se hace una vez y la CPU ejecuta el código máquina resultante. Lenguaje interpretado: el intérprete traduce y ejecuta línea por línea cada vez que se corre el programa.}
+
+\textbf{¿Por qué un programa interpretado es más lento?} Porque el trabajo de traducir se repite en cada ejecución. Pensemos en un bucle que se repite un millón de veces: en un lenguaje compilado, las instrucciones del bucle se tradujeron una sola vez y la CPU solo las ejecuta; en uno interpretado, el intérprete tiene que leer y analizar esas mismas instrucciones un millón de veces. Además, el intérprete es un programa más que compite por el tiempo de CPU y ocupa memoria. Como resultado, un programa interpretado suele ser \textbf{decenas de veces más lento} que el mismo programa compilado.
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.4cm}
+    >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
+\toprule
+ & \textbf{Compilado} & \textbf{Interpretado} \\
+\midrule
+¿Cuándo se traduce? & Una vez, antes de ejecutar & Durante cada ejecución, línea por línea \\
+¿Qué se ejecuta? & El código máquina generado & El intérprete, que lee el código fuente \\
+Velocidad & Alta & Baja (decenas de veces más lento) \\
+Memoria necesaria & Solo el programa & El programa \emph{y} el intérprete \\
+Detección de errores & Antes de ejecutar (el compilador avisa) & Recién cuando se llega a la línea con error \\
+Probar un cambio & Hay que volver a compilar & Se ejecuta directamente \\
+Portabilidad & Hay que compilar para cada arquitectura & Corre donde exista el intérprete \\
+Ejemplos & C, C++, Rust & Python, JavaScript, PSeInt \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{importantebox}
+\textbf{¿Por qué C en un microcontrolador?} El ATmega328 tiene solo 32 KB de Flash y 2 KB de RAM, y trabaja a 16 MHz. Ahí no entra un intérprete de Python (necesita cientos de KB), y aunque entrara, el programa sería demasiado lento para controlar hardware en tiempo real. Por eso en sistemas embebidos el lenguaje más utilizado es \textbf{C}: es compilado, genera código máquina compacto y rápido, y permite acceder directamente a los registros del hardware, sin dejar de ser legible.
+\end{importantebox}
+
+\begin{notabox}
+En la práctica existen también caminos intermedios. Por ejemplo, Java y Python traducen primero el código fuente a un código intermedio (\emph{bytecode}) que luego interpreta una ``máquina virtual''. Pero la idea central es la misma: cuanto más trabajo de traducción se hace antes de ejecutar, más rápido corre el programa.
+\end{notabox}
 
 \section{El ATmega328 en este curso}
 

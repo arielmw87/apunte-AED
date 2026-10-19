@@ -1,7 +1,8 @@
 % ============================================================
 %  Tabla visual de los símbolos del diagrama de flujo
-%  Cada fila: el símbolo dibujado | su nombre | para qué se usa.
-%  Coincide con la tabla "Símbolos básicos" de capitulo4.tex.
+%  Cada fila: el símbolo dibujado | su nombre (y la forma, en gris) |
+%  para qué se usa. Es LA tabla de símbolos del capítulo (reemplaza a la
+%  tabla de texto que había antes en capitulo4.tex).
 %  Los símbolos usan los mismos estilos (tikz/estilos.tex) que los
 %  diagramas de flujo del capítulo, así se ven idénticos.
 % ============================================================
@@ -11,50 +12,50 @@
 %   - Ancho del texto de "Uso": text width del estilo "uso"
 % ============================================================
 \begin{tikzpicture}[flujo,
-    nom/.style={font=\sffamily\small\bfseries, anchor=west},
-    uso/.style={font=\sffamily\small, anchor=west, text width=63mm, align=left},
+    nom/.style={font=\sffamily\small\bfseries, anchor=west, align=left},
+    uso/.style={font=\sffamily\small, anchor=west, text width=57mm, align=left},
     cab/.style={font=\sffamily\small\bfseries, anchor=west, text=teal!50!black},
   ]
   \def\fila{1.25}
   \def\xsim{0}
   \def\xnom{2.0}
-  \def\xuso{5.5}
+  \def\xuso{6.1}
 
   % --- Encabezado ---
   \node[cab, anchor=center] at (\xsim,0.9) {Símbolo};
-  \node[cab] at (\xnom,0.9) {Nombre};
+  \node[cab] at (\xnom,0.9) {Nombre / forma};
   \node[cab] at (\xuso,0.9) {Uso};
   \draw[line width=0.8pt] (-1.7,1.3) -- (11.8,1.3);
   \draw[line width=0.5pt] (-1.7,0.5) -- (11.8,0.5);
 
   % --- 1) Terminal ---
   \node[terminal, minimum width=20mm] at (\xsim,-0*\fila) {Inicio};
-  \node[nom] at (\xnom,-0*\fila) {Terminal};
+  \node[nom] at (\xnom,-0*\fila) {Terminal\\[-1pt]{\mdseries\footnotesize\color{gray!80!black} óvalo / rect. redondeado}};
   \node[uso] at (\xuso,-0*\fila) {Inicio y fin del algoritmo};
 
   % --- 2) Proceso ---
   \node[proceso, minimum width=24mm] at (\xsim,-1*\fila) {x $\leftarrow$ a + b};
-  \node[nom] at (\xnom,-1*\fila) {Proceso};
+  \node[nom] at (\xnom,-1*\fila) {Proceso\\[-1pt]{\mdseries\footnotesize\color{gray!80!black} rectángulo}};
   \node[uso] at (\xuso,-1*\fila) {Operación, cálculo o asignación de valor};
 
   % --- 3) Decisión ---
   \node[decision, font=\sffamily\footnotesize] at (\xsim,-2*\fila) {¿x > 0?};
-  \node[nom] at (\xnom,-2*\fila) {Decisión};
+  \node[nom] at (\xnom,-2*\fila) {Decisión\\[-1pt]{\mdseries\footnotesize\color{gray!80!black} rombo}};
   \node[uso] at (\xuso,-2*\fila) {Condición o pregunta con dos salidas (Sí / No)};
 
   % --- 4) Entrada / Salida ---
   \node[entrada, minimum width=22mm] at (\xsim,-3*\fila) {Leer x};
-  \node[nom] at (\xnom,-3*\fila) {Entrada/Salida};
+  \node[nom] at (\xnom,-3*\fila) {Entrada/Salida\\[-1pt]{\mdseries\footnotesize\color{gray!80!black} paralelogramo}};
   \node[uso] at (\xuso,-3*\fila) {Leer datos del usuario o mostrar resultados};
 
   % --- 5) Conector ---
   \node[conector] at (\xsim,-4*\fila) {A};
-  \node[nom] at (\xnom,-4*\fila) {Conector};
+  \node[nom] at (\xnom,-4*\fila) {Conector\\[-1pt]{\mdseries\footnotesize\color{gray!80!black} círculo pequeño}};
   \node[uso] at (\xuso,-4*\fila) {Unir partes del diagrama que no caben en una página};
 
   % --- 6) Flecha ---
   \draw[flecha] (\xsim-0.8,-5*\fila) -- (\xsim+0.8,-5*\fila);
-  \node[nom] at (\xnom,-5*\fila) {Flecha};
+  \node[nom] at (\xnom,-5*\fila) {Flecha\\[-1pt]{\mdseries\footnotesize\color{gray!80!black} línea con flecha}};
   \node[uso] at (\xuso,-5*\fila) {Indica el orden (flujo) de ejecución entre pasos};
 
   % --- Cierre de la tabla ---
