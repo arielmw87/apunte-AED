@@ -1,0 +1,88 @@
+% ============================================================
+%  Dos 74HC595 en cascada controlados por un ATmega328P
+%  - Sólo 3 pines del micro manejan 16 salidas:
+%      PB0 (D8)  -> DS   (pin 14)  dato serie
+%      PB1 (D9)  -> SHCP (pin 11)  reloj de desplazamiento
+%      PB2 (D10) -> STCP (pin 12)  reloj del latch de salida
+%  - SHCP y STCP son COMUNES a los dos chips (punto = derivación).
+%  - Cascada: Q7' (pin 9) del U1 entra por DS (pin 14) del U2.
+%  - MR (pin 10, activo en bajo) fijo a +5 V: nunca se borra.
+%  - OE (pin 13, activo en bajo) fijo a GND: salidas siempre habilitadas.
+%  - Pinout 74HC595: Q0=15, Q1..Q7=1..7, GND=8, Q7'=9, MR=10,
+%    SHCP=11, STCP=12, OE=13, DS=14, VCC=16.
+%  - VCC (16) y GND (8) de cada chip no se dibujan.
+%  NOTA: el cruce de SHCP con STCP sin punto NO es una conexión.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Posición del segundo chip:   \xdos
+%   - Alto/ancho de los chips:     \alto / \ancho
+%   - Altura de las líneas comunes por debajo: \ysh y \yst
+%   - Pines de cada lado:          las listas de los \foreach
+% ============================================================
+\begin{tikzpicture}[
+    font=\sffamily\small,
+    chip/.style={draw, line width=0.8pt, fill=teal!8},
+    pin/.style={font=\sffamily\tiny, text=black!60},
+    lbl/.style={font=\sffamily\scriptsize, inner sep=2pt},
+    cable/.style={line width=0.7pt},
+  ]
+  \def\ancho{2.2}  \def\alto{5}
+  \def\xuno{5}     \def\xdos{10.8}
+  \def\ysh{-6.5}   \def\yst{-7.0}
+
+  % ---------- 1) Microcontrolador ----------
+  \draw[chip] (-0.4,0) rectangle (2.4,-5);
+  \node[font=\sffamily\small\bfseries] at (1.0,-4.55) {ATmega328P};
+  \foreach \y/\p in {-0.75/{PB0 (D8)}, -2.25/{PB1 (D9)}, -3.75/{PB2 (D10)}}
+    \node[lbl, anchor=east] at (2.4,\y) {\p};
+
+  % ---------- 2) Los dos 74HC595 ----------
+  \foreach \x/\u in {\xuno/U1, \xdos/U2}{
+    \draw[chip] (\x,0) rectangle ++(\ancho,-\alto);
+    \node[font=\sffamily\scriptsize\bfseries, rotate=90] at (\x+\ancho/2+0.15,-2.6) {74HC595};
+    \node[font=\sffamily\small\bfseries, anchor=south east] at (\x+\ancho,0) {\u};
+    % entradas (izquierda)
+    \foreach \y/\n/\num in {-0.75/DS/14, -2.25/SHCP/11, -3.75/STCP/12}{
+      \draw[cable] (\x,\y) -- ++(-0.3,0);
+      \node[lbl, anchor=west] at (\x,\y) {\n};
+      \node[pin, anchor=south east] at (\x,\y) {\num};}
+    % salidas Q0..Q7 (derecha)
+    \foreach \k/\num in {0/15,1/1,2/2,3/3,4/4,5/5,6/6,7/7}{
+      \draw[cable] (\x+\ancho,-1.0-0.42*\k) -- ++(0.45,0);
+      \node[lbl, anchor=east, font=\sffamily\tiny] at (\x+\ancho,-1.0-0.42*\k) {Q\k};
+      \node[pin, anchor=south west, inner sep=1pt] at (\x+\ancho,-1.0-0.42*\k) {\num};}
+    % Q7' (salida serie para la cascada)
+    \draw[cable] (\x+\ancho,-4.6) -- ++(0.3,0);
+    \node[lbl, anchor=east, font=\sffamily\tiny] at (\x+\ancho,-4.6) {Q7'};
+    \node[pin, anchor=south west, inner sep=1pt] at (\x+\ancho,-4.6) {9};
+    % llave de las 8 salidas
+    \draw[decorate, decoration={brace, amplitude=4pt}, line width=0.6pt]
+      (\x+\ancho+0.55,-0.95) -- (\x+\ancho+0.55,-4.0);
+    \node[lbl, anchor=west, align=left] at (\x+\ancho+0.7,-2.47) {8\\salidas};
+    % MR (arriba) a +5 V
+    \draw[cable] (\x+0.6,0) -- ++(0,0.4) node[above, lbl]{+5\,V};
+    \node[lbl, anchor=north, font=\sffamily\tiny] at (\x+0.6,0) {$\overline{\text{MR}}$};
+    \node[pin, anchor=south east, inner sep=1pt] at (\x+0.6,0) {10};
+    % OE (abajo) a GND
+    \draw[cable] (\x+0.6,-\alto) -- ++(0,-0.35) node[ground]{};
+    \node[lbl, anchor=south, font=\sffamily\tiny] at (\x+0.6,-\alto) {$\overline{\text{OE}}$};
+    \node[pin, anchor=north east, inner sep=1pt] at (\x+0.6,-\alto) {13};
+  }
+
+  % ---------- 3) Micro -> U1 (directo) ----------
+  \draw[cable] (2.4,-0.75) -- (\xuno-0.3,-0.75);
+  \draw[cable] (2.4,-2.25) -- (\xuno-0.3,-2.25);
+  \draw[cable] (2.4,-3.75) -- (\xuno-0.3,-3.75);
+
+  % ---------- 4) SHCP y STCP comunes (por debajo de U1) ----------
+  \draw[cable] (3.3,-2.25) node[circ]{} |- (\xdos-0.8,\ysh) |- (\xdos-0.3,-2.25);
+  \draw[cable] (3.9,-3.75) node[circ]{} |- (\xdos-0.55,\yst) |- (\xdos-0.3,-3.75);
+  \node[lbl, anchor=south west] at (5.6,\ysh) {SHCP común};
+  \node[lbl, anchor=south west] at (5.6,\yst) {STCP común};
+
+  % ---------- 5) Cascada: Q7' de U1 -> DS de U2 ----------
+  \draw[cable, draw=orange!80!black, line width=1pt]
+    (\xuno+\ancho+0.3,-4.6) -| (\xdos-1.05,-0.75) -- (\xdos-0.3,-0.75);
+  \node[lbl, text=orange!70!black, anchor=south, rotate=90] at (\xdos-1.05,-2.6) {cascada};
+
+\end{tikzpicture}

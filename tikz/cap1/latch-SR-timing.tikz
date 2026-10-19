@@ -1,26 +1,19 @@
-\begin{tikztimingtable}[
-  timing/slope=0,
-  timing/coldist=2pt,
-  timing/rowdist=3.8ex,
-  timing/name/.style={font=\small\sffamily, right},
-  xscale=0.9
-]
+% ============================================================
+%  Latch SR (entradas activas en ALTO): diagrama de tiempos
+%  - S=1 pone Q=1 (SET); R=1 pone Q=0 (RESET); S=R=0 mantiene (Hold).
+%  - Q arranca desconocido (X) hasta la primera orden.
+%  Coordenadas: ver tikz/estilos.tex (1 carácter = 1 unidad en x).
+% ============================================================
+\begin{tikztimingtable}[timing/aed]
   $S$            & 2L 2H 8L \\
   $R$            & 8L 2H 2L \\
   $Q$            & 2X 6H 4L \\
   $\overline{Q}$ & 2X 6L 4H \\
   \extracode
-    % líneas de referencia en las transiciones
     \begin{pgfonlayer}{background}
-      \draw[lightgray, dashed] (2,0.4) -- (2,-5.2);
-      \draw[lightgray, dashed] (4,0.4) -- (4,-5.2);
-      \draw[lightgray, dashed] (8,0.4) -- (8,-5.2);
-      \draw[lightgray, dashed] (10,0.4) -- (10,-5.2);
+      \vertlines{2,4,8,10}
     \end{pgfonlayer}
-    % etiquetas de fase (encima de la primera señal)
-    \node[font=\footnotesize\sffamily,above] at (1, 0.4)  {Hold};
-    \node[font=\footnotesize\sffamily,above] at (3, 0.4)  {SET};
-    \node[font=\footnotesize\sffamily,above] at (6, 0.4)  {Hold};
-    \node[font=\footnotesize\sffamily,above] at (9, 0.4)  {RESET};
-    \node[font=\footnotesize\sffamily,above] at (11,0.4)  {Hold};
+    % operación en cada intervalo (arriba de la primera señal)
+    \foreach \x/\op in {1/Hold, 3/SET, 6/Hold, 9/RESET, 11/Hold}
+      \node[fase] at (\x,1.5) {\op};
 \end{tikztimingtable}

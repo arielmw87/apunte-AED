@@ -1,0 +1,56 @@
+% ============================================================
+%  Arquitectura Harvard
+%  - DOS memorias separadas: una de programa (instrucciones) y una de
+%    datos.
+%  - DOS juegos de buses independientes: la CPU puede buscar la próxima
+%    instrucción y acceder a un dato AL MISMO TIEMPO.
+%  - Los buses pueden tener distinto ancho (ej. ATmega328P: instrucciones
+%    de 16 bits, datos de 8 bits).
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Separación entre bloques: las x = ±5.2 de (mprog)/(mdat)
+%   - Alto de los bloques:      minimum height (igual que von-neumann.tikz)
+%   - Altura de cada bus:       las y = 0.5 / -0.5 de los \draw
+%   - Anchos de bus (16 / 8):   los \pic {anchobus=...}
+% ============================================================
+\begin{tikzpicture}[>=Stealth, font=\sffamily\small]
+
+  % --- 1) Bloques ---
+  \node[bloque, minimum height=30mm, minimum width=24mm] (cpu) at (0,0)
+    {\textbf{CPU}};
+  \node[bloque, minimum height=30mm, minimum width=24mm, align=center]
+    (mprog) at (-5.2,0) {\textbf{Memoria}\\\textbf{de programa}\\[2pt]
+                         \scriptsize (instrucciones)};
+  \node[bloque, minimum height=30mm, minimum width=24mm, align=center]
+    (mdat)  at ( 5.2,0) {\textbf{Memoria}\\\textbf{de datos}\\[2pt]
+                         \scriptsize (variables)};
+
+  % --- 2) Bus de programa (izquierda) ---
+  \draw[bus, <-] (mprog.east |- 0,0.5) -- (cpu.west |- 0,0.5)
+    node[midway, above, font=\sffamily\scriptsize, text=black] {direcciones};
+  \draw[bus, ->] (mprog.east |- 0,-0.5) -- (cpu.west |- 0,-0.5)
+    node[pos=0.36, above, font=\sffamily\scriptsize, text=black] {instrucciones};
+  \pic at (-1.85,-0.5) {anchobus=16};
+  \draw[decorate, decoration={brace, amplitude=5pt, mirror}]
+    (-3.9,-1.0) -- (-1.3,-1.0)
+    node[midway, below=5pt, font=\sffamily\footnotesize\bfseries,
+         text=teal!50!black] {bus de programa};
+
+  % --- 3) Bus de datos (derecha) ---
+  \draw[bus, ->] (cpu.east |- 0,0.5) -- (mdat.west |- 0,0.5)
+    node[midway, above, font=\sffamily\scriptsize, text=black] {direcciones};
+  \draw[busflecha] (cpu.east |- 0,-0.5) -- (mdat.west |- 0,-0.5)
+    node[pos=0.4, above, font=\sffamily\scriptsize, text=black] {datos};
+  \pic at (3.2,-0.5) {anchobus=8};
+  \draw[decorate, decoration={brace, amplitude=5pt, mirror}]
+    (1.3,-1.0) -- (3.9,-1.0)
+    node[midway, below=5pt, font=\sffamily\footnotesize\bfseries,
+         text=teal!50!black] {bus de datos};
+
+  % --- 4) Nota: ejemplo real ---
+  \node[font=\sffamily\footnotesize\itshape, align=center, anchor=north]
+    at (0,-2.0)
+    {Ej.\ ATmega328P: Flash de programa (instrucciones de 16 bits)
+     \,/\, SRAM de datos (8 bits)};
+
+\end{tikzpicture}

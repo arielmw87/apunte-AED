@@ -1,0 +1,38 @@
+% ============================================================
+%  Diagrama de tiempos: operación de LECTURA en una memoria
+%  Los números en círculo son los pasos del texto:
+%   1) dirección en el bus   2) CS en bajo   3) OE en bajo
+%   4) la CPU lee el dato del bus (mientras el dato es válido).
+%  WE permanece en alto (no se escribe).
+%  Tiempo de acceso: desde que la dirección es válida hasta que el dato
+%  aparece válido en el bus. Antes de eso el bus está indefinido (U).
+%  Z = alta impedancia (la memoria suelta el bus).
+%  Coordenadas: ver tikz/estilos.tex (1 carácter = 1 unidad en x).
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Instantes de cada paso: los números de las filas y la lista \x/\n.
+%   - Tiempo de acceso: el "5Z 2U" de Datos (dato válido en t=7) y la
+%     cota de (2,..) a (7,..).
+% ============================================================
+\begin{tikztimingtable}[timing/aed,
+    paso/.style={circle, fill=teal!60!black, text=white, inner sep=0.8pt,
+                 font=\sffamily\scriptsize\bfseries, minimum size=3.6mm}]
+  Dirección                 & 2U 10D{Dirección válida} 2U \\
+  $\overline{\text{CS}}$    & 3H 8L 3H \\
+  $\overline{\text{OE}}$    & 4H 7L 3H \\
+  $\overline{\text{WE}}$    & 14H \\
+  Datos                     & 5Z 2U 4D{Dato válido} 3Z \\
+  \extracode
+    \begin{pgfonlayer}{background}
+      \vertlines{2,3,4,7,11}
+    \end{pgfonlayer}
+    % pasos del texto
+    \foreach \x/\n in {2/1, 3/2, 4/3, 9/4}
+      \node[paso] at (\x,1.9) {\n};
+    % cota del tiempo de acceso
+    \draw[<->, >=Stealth, teal!60!black, line width=0.7pt]
+      (2,{-4*\rowdist-0.6}) -- (7,{-4*\rowdist-0.6})
+      node[midway, below, font=\sffamily\scriptsize]{tiempo de acceso};
+    \node[nota] at (0,{-4*\rowdist-2.6})
+      {$\overline{\text{WE}}$ queda en alto: la lectura no modifica el contenido de la memoria.};
+\end{tikztimingtable}

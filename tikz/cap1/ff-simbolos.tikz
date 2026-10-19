@@ -1,29 +1,46 @@
-\begin{circuitikz}[scale=0.85, transform shape]
+% ============================================================
+%  Símbolos de flip-flops disparados por flanco
+%  - FF-D flanco ↑ : cuña (triángulo) en la entrada de reloj.
+%  - FF-D flanco ↓ : cuña + BURBUJA (círculo de negación) en el reloj.
+%  - FF-JK flanco ↑: J, CLK, K.
+%  Los FF de circuitikz se definen con "flipflop def" (manual §4.23):
+%    tN = texto del pin N, cN=1 dibuja la cuña de reloj,
+%    nN=1 dibuja la burbuja de negación en el pin N.
+%  Pines: 1,2,3 a la izquierda (arriba→abajo); 6,5,4 a la derecha.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Separación entre símbolos: la x de cada \node (0, 5.4, 10.8)
+%   - Largo de los cables de entrada/salida: el 0.6 de los ++(...)
+%   - Tamaño general: scale= en \begin{circuitikz}
+% ============================================================
+\begin{circuitikz}[scale=0.85, transform shape,
+  flipflop Dn/.style={flipflop,
+    flipflop def={t1=D, t6=Q, c3=1, n3=1, t4={\ctikztextnot{Q}}}},
+]
 
-  %--- FF-D flanco positivo ---
-  \node[flipflop D] (ffd) at (0,0) {FF-D};
+  % --- FF-D flanco positivo ---
+  \node[flipflop D] (ffd) at (0,0) {};
   \draw (ffd.pin 1) -- ++(-0.6,0) node[left]{\small D};
   \draw (ffd.pin 3) -- ++(-0.6,0) node[left]{\small CLK};
   \draw (ffd.pin 6) -- ++(0.6,0) node[right]{\small $Q$};
   \draw (ffd.pin 4) -- ++(0.6,0) node[right]{\small $\overline{Q}$};
-  \node[below=0.15 of ffd, font=\small] {Flanco $\uparrow$};
+  \node[below=0.35 of ffd.south, font=\small] {Flanco $\uparrow$};
 
-  %--- FF-D flanco negativo (burbuja en CLK) ---
-  \node[flipflop D] (ffdn) at (4.5,0) {};
-  % Como xscale=-1 espeja el nodo, etiquetamos a mano
-  \draw (ffdn.pin 1) -- ++(-0.6,0) node[right]{\small D};
-  \draw (ffdn.pin 3) -- ++(-0.6,0) node[right]{\small CLK};
-  \draw (ffdn.pin 6) -- ++(0.6,0) node[left]{\small $Q$};
-  \draw (ffdn.pin 4) -- ++(0.6,0) node[left]{\small $\overline{Q}$};
-  \node[below=0.15 of ffdn, font=\small] {Flanco $\downarrow$};
+  % --- FF-D flanco negativo (burbuja en CLK) ---
+  \node[flipflop Dn] (ffdn) at (5.4,0) {};
+  \draw (ffdn.pin 1) -- ++(-0.6,0) node[left]{\small D};
+  \draw (ffdn.pin 3) -- ++(-0.6,0) node[left]{\small CLK};
+  \draw (ffdn.pin 6) -- ++(0.6,0) node[right]{\small $Q$};
+  \draw (ffdn.pin 4) -- ++(0.6,0) node[right]{\small $\overline{Q}$};
+  \node[below=0.35 of ffdn.south, font=\small] {Flanco $\downarrow$};
 
-  %--- FF-JK flanco positivo ---
-  \node[flipflop JK] (ffjk) at (9.5,0) {FF-JK};
+  % --- FF-JK flanco positivo ---
+  \node[flipflop JK] (ffjk) at (10.8,0) {};
   \draw (ffjk.pin 1) -- ++(-0.6,0) node[left]{\small J};
   \draw (ffjk.pin 2) -- ++(-0.6,0) node[left]{\small CLK};
   \draw (ffjk.pin 3) -- ++(-0.6,0) node[left]{\small K};
   \draw (ffjk.pin 6) -- ++(0.6,0) node[right]{\small $Q$};
   \draw (ffjk.pin 4) -- ++(0.6,0) node[right]{\small $\overline{Q}$};
-  \node[below=0.15 of ffjk, font=\small] {Flanco $\uparrow$};
+  \node[below=0.35 of ffjk.south, font=\small] {Flanco $\uparrow$};
 
 \end{circuitikz}

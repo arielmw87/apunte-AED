@@ -1,0 +1,70 @@
+% ============================================================
+%  Celda SRAM básica construida con un LATCH D (idea de Floyd fig. 10.8)
+%  - El bit se guarda en un latch D con habilitación (el mismo del Cap. 1).
+%  - ESCRITURA: EN = Selección · Escribir. Si la fila está seleccionada y
+%    se ordena escribir, el latch copia "Entrada de datos" (Q = D).
+%    En cualquier otro caso EN = 0 y el latch RETIENE el bit.
+%  - LECTURA: un buffer tri-estado conecta Q con "Salida de datos" sólo si
+%    Selección · Leer = 1. Si no, la salida queda en alta impedancia (Z) y
+%    no molesta a las demás celdas conectadas a la misma línea.
+%  (La fig. 10.8 del Floyd, tal como está dibujada, pierde el dato cuando
+%   la celda no está seleccionada; por eso se usa el latch D completo.)
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Altura de la línea "Selección de fila":  \ySel
+%   - Altura de la línea "Leer":               \yLeer
+%   - Distancia latch -> buffer de salida:      el 1.3 de (buf)
+%   - Tamaño general:                           scale= en \begin{circuitikz}
+%   NOTA: los cruces de cable SIN punto no conectan; el punto (\circ) sí.
+% ============================================================
+\begin{circuitikz}[scale=0.9, transform shape,
+    latch EN/.style={flipflop, flipflop def={t1=D, t3=EN, t6=Q}},
+    lbl/.style={font=\sffamily\small},
+    nota/.style={font=\sffamily\scriptsize, text=teal!60!black},
+  ]
+  \ctikzset{logic ports=ieee, logic ports/scale=0.7}
+
+  \def\ySel{3.1}
+  \def\yLeer{3.8}
+
+  % ---------- 1) Latch D: guarda el bit ----------
+  \node[latch EN] (L) at (0,0) {};
+  \node[nota, above=2pt] at (L.north) {latch D (guarda el bit)};
+
+  % ---------- 2) Escritura: EN = Selección · Escribir ----------
+  \node[and port, anchor=out] (aw) at ($(L.pin 3)+(-0.7,0)$) {};
+  \draw (aw.out) -- (L.pin 3);
+  % Escribir entra por la izquierda
+  \draw (aw.in 2) -- (aw.in 2 -| -5.2,0) node[left, lbl]{Escribir};
+  % Entrada de datos -> D
+  \draw (L.pin 1) -- (L.pin 1 -| -5.2,0) node[left, lbl, align=right]{Entrada\\de datos};
+
+  % ---------- 3) Lectura: buffer tri-estado, habilitado por Selección · Leer ----------
+  \node[buffer port, anchor=in] (buf) at ($(L.pin 6)+(1.3,0)$) {};
+  \draw (L.pin 6) -- (buf.in);
+  \draw (buf.out) -- ++(1.2,0) node[right, lbl, align=left]{Salida\\de datos};
+  % punto de habilitación sobre el borde superior del triángulo
+  \coordinate (bufen) at ($(buf.north west)!0.5!(buf.east)$);
+  % AND girada (salida hacia abajo): in 2 queda a la izquierda, in 1 a la derecha
+  \node[and port, rotate=-90, anchor=out] (ar) at ($(bufen)+(0,0.35)$) {};
+  \draw (ar.out) -- (bufen);
+
+  % ---------- 4) Líneas de control comunes (horizontales, arriba) ----------
+  % Selección de fila (= WL de la celda 6T)
+  \draw[thick] (-5.2,\ySel) node[left, lbl, align=right]{Selección\\de fila} -- (4.8,\ySel);
+  \draw (aw.in 1) -- ++(-0.5,0) coordinate (t1) -- (t1 |- 0,\ySel) node[circ]{};
+  \draw (ar.in 2) -- (ar.in 2 |- 0,\ySel) node[circ]{};
+  % Leer (cruza la línea de selección SIN conectarse)
+  \draw (ar.in 1) -- (ar.in 1 |- 0,\yLeer) node[circ]{};
+  \draw (-5.2,\yLeer) node[left, lbl]{Leer} -- (4.8,\yLeer);
+
+  % ---------- 5) Rótulos de función ----------
+  \node[nota, anchor=north] at ($(aw.south)+(0,-0.05)$) {habilita escritura};
+  \node[nota, anchor=west] at ($(ar.east)+(0.1,0.3)$) {habilita lectura};
+  \node[nota, anchor=north] at ($(buf.south)+(0,-0.05)$) {buffer tri-estado};
+
+  % marco de la celda
+  \draw[densely dashed, gray, rounded corners=3pt]
+       (-4.2,-1.8) rectangle (4.2,\yLeer+0.45);
+  \node[nota, anchor=south east, text=gray] at (4.2,-1.8) {celda de 1 bit};
+\end{circuitikz}

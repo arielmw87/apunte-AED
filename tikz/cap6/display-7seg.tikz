@@ -9,6 +9,8 @@
 %   e |     | c
 %      -----
 %        d        . dp
+%  A la derecha: circuito equivalente de CÁTODO COMÚN (8 LEDs con los
+%  cátodos unidos al terminal COM, que va a GND).
 % ============================================================
 %  CÓMO AJUSTAR:
 %   - Grosor de los segmentos:  line width del estilo "seg"
@@ -38,5 +40,20 @@
   \node at (-0.5,3)    {\small f};
   \node at (1.32,2.4)  {\small g};
   \node at (2.62,0.5)  {\small dp};
+  \node[font=\sffamily\footnotesize\itshape] at (1,-1.2) {Disposición de los segmentos};
+
+  % --- Circuito equivalente: 8 LEDs con los cátodos unidos (cátodo común) ---
+  %   Cada ánodo es una entrada (a..g, dp); un 1 en la entrada enciende el
+  %   segmento. Los cátodos van todos al terminal común (COM) -> GND.
+  %   (Las resistencias limitadoras en serie no se dibujan.)
+  \begin{scope}[shift={(4.2,0)}]
+    \foreach \s [count=\k from 0] in {a,b,c,d,e,f,g,dp}{
+      \draw (\k,3.7) node[above, font=\small]{\s}
+            to[leDo, o-*] (\k,0.6);
+    }
+    \draw (0,0.6) -- (7.6,0.6) node[right, font=\small]{COM};
+    \draw (3.5,0.6) -- (3.5,0.1) node[ground]{};
+    \node[font=\sffamily\footnotesize\itshape] at (3.5,-1.2) {Cátodo común: COM a GND};
+  \end{scope}
 
 \end{tikzpicture}

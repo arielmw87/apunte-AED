@@ -8,7 +8,8 @@ microcontrolador, el lenguaje es el mismo pero el contexto cambia completamente:
 
 \begin{table}[H]
 \centering
-\begin{tabular}{lll}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.3cm}
+    >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
 \toprule
  & \textbf{C en PC} & \textbf{C en microcontrolador} \\
 \midrule
@@ -18,7 +19,7 @@ Memoria & Abundante (GB) & Escasa (KB) \\
 Punto de entrada & \texttt{main()} retorna cuando termina & \texttt{main()} nunca debe retornar --- bucle infinito \\
 Bibliotecas estándar & \texttt{<stdio.h>}, \texttt{<math.h>}, etc. & Reemplazadas por bibliotecas del fabricante \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 En lugar de \texttt{\#include <stdio.h>} usaremos las bibliotecas de AVR:
@@ -80,7 +81,7 @@ registros de 8 bits:
 
 Donde \texttt{x} es \texttt{B}, \texttt{C} o \texttt{D} según el puerto.
 
-\imagenPendiente{mapa de pines del Arduino Nano con la correspondencia entre pin físico y puerto/bit del ATmega (PD0..PD7, PB0..PB5, PC0..PC5)}
+\tikzCircuito{cap6/nano-pinout}{Mapa de pines del Arduino Nano y su correspondencia con los puertos del ATmega328P (PB, PC, PD)}
 
 \subsection{Correspondencia Arduino Nano --- ATmega328}
 
@@ -123,7 +124,7 @@ modificar bits individuales sin afectar los demás. Para eso usamos los
 
 \begin{table}[H]
 \centering
-\begin{tabular}{ccl}
+\begin{tabularx}{\textwidth}{cl>{\raggedright\arraybackslash}X}
 \toprule
 \textbf{Operador} & \textbf{Nombre} & \textbf{Operación} \\
 \midrule
@@ -134,7 +135,7 @@ modificar bits individuales sin afectar los demás. Para eso usamos los
 \texttt{<<}  & Desplazamiento a la izquierda    & Desplaza los bits hacia la izquierda N posiciones \\
 \texttt{>>}  & Desplazamiento a la derecha      & Desplaza los bits hacia la derecha N posiciones \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \subsection{Desplazamiento de bits}
@@ -490,7 +491,7 @@ desbordamiento.
 
 El valor de \texttt{OCR0A} se calcula con la fórmula:
 
-$$OCR0A = \frac{F_{CPU}}{prescaler \times f_{interrupción}} - 1$$
+$$\text{OCR0A} = \frac{F_{\text{CPU}}}{\text{prescaler} \times f_{\text{interrupción}}} - 1$$
 
 Para obtener una interrupción cada \textbf{1 ms} (1000 Hz) con el ATmega a 16 MHz y
 preescalador 64:

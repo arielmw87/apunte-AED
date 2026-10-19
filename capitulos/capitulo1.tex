@@ -29,7 +29,7 @@ Puede implementarse con dos compuertas NOR (entradas activas a nivel alto) o con
   Los cruces de cables sin punto indican que los conductores no se conectan.}
 \end{figure}
 
-\tikzCircuito{cap1/latch-SR-simbolo}{Símbolo lógico del latch SR: representación en bloque con entradas S, R y salidas Q, $\overline{Q}$ (figura 7.4 Floyd)}
+\tikzFigura{cap1/latch-SR-simbolo}{Símbolo lógico del latch SR: representación en bloque con entradas S, R y salidas Q, $\overline{Q}$ (figura 7.4 Floyd)}
 
 \textbf{Tabla de verdad --- Latch SR (compuertas NOR, entradas activas alto):}
 
@@ -49,7 +49,6 @@ $S$ & $R$ & $Q$ & $\overline{Q}$ & Condición \\
 
 La condición no válida ocurre cuando ambas entradas se activan simultáneamente: fuerza a ambas salidas al mismo nivel, violando la condición de complementariedad. Si luego se desactivan al mismo tiempo, el estado final es impredecible.
 
-\bannerRevision
 \begin{figure}[H]
 \centering
 \input{tikz/cap1/latch-SR-timing.tikz}
@@ -65,7 +64,7 @@ Cuando se presiona un pulsador o se acciona un interruptor mecánico, uno espera
 
 Este fenómeno se llama \textbf{rebote de contactos} (\textit{contact bounce} o \textit{switch bounce}). La duración del rebote depende del tipo de pulsador y de su estado mecánico, pero típicamente está entre \textbf{1\,ms y 20\,ms}.
 
-\tikzCircuito{cap1/bounce-signal}{Señal ideal (flanco limpio) vs.\ señal real con rebote (múltiples pulsos breves en la zona de transición)}
+\tikzFigura{cap1/bounce-signal}{Señal ideal (flanco limpio) vs.\ señal real con rebote (múltiples pulsos breves en la zona de transición)}
 
 \subsubsection*{¿Qué ve el circuito digital durante el rebote?}
 
@@ -99,15 +98,15 @@ Un latch SR puede eliminar el rebote mecánico usando un interruptor SPDT (\text
 
 Al cambiar la posición del interruptor, el primer contacto activa el latch de forma definitiva. Cualquier rebote posterior aplica la misma entrada (S o R) que ya fue procesada, por lo que \textbf{el estado del latch no vuelve a cambiar}. La salida Q presenta una transición limpia y única.
 
-\tikzCircuito{cap1/debounce-latch}{Circuito eliminador de rebote de pulsadores con latch SR (figura 7.6 Floyd)}
+\tikzFigura{cap1/debounce-latch}{Circuito eliminador de rebote de pulsadores con latch SR (figura 7.6 Floyd)}
 
-\tikzCircuito{cap1/debounce-timing}{Diagrama de tiempos del circuito antirrebote: señal con rebote en la entrada vs.\ salida Q limpia del latch (figura 7.7 Floyd)}
+\tikzFigura{cap1/debounce-timing}{Diagrama de tiempos del circuito antirrebote: señal con rebote en la entrada vs.\ salida Q limpia del latch (figura 7.7 Floyd)}
 
 \subsection{Latch SR con habilitación}
 
 Agrega una entrada de habilitación (EN). El latch solo puede cambiar de estado cuando EN está activo. Permite controlar exactamente en qué momento el latch responde a sus entradas.
 
-\tikzCircuito{cap1/latch-SR-EN}{Diagrama y símbolo del latch SR con habilitación (EN) (figura 7.8 Floyd)}
+\tikzFigura{cap1/latch-SR-EN}{Diagrama y símbolo del latch SR con habilitación (EN) (figura 7.8 Floyd)}
 
 \textbf{Tabla de verdad --- Latch SR con habilitación (compuertas NOR, entradas activas alto):}
 
@@ -126,7 +125,6 @@ X & X & 0 & $Q_0$ & No cambia (EN inactivo, S y R ignoradas) \\
 \end{tabular}
 \end{table}
 
-\bannerRevision
 \begin{figure}[H]
 \centering
 \input{tikz/cap1/latch-SR-EN-timing.tikz}
@@ -139,7 +137,7 @@ X & X & 0 & $Q_0$ & No cambia (EN inactivo, S y R ignoradas) \\
 
 Tiene una única entrada de datos (D) además de la habilitación (EN). Elimina la condición no válida del latch SR: cuando EN está activo, la salida Q sigue al valor de D. Cuando EN se desactiva, el latch retiene el último valor de D.
 
-\tikzCircuito{cap1/latch-D}{Diagrama y símbolo del latch D con habilitación (figura 7.10 Floyd)}
+\tikzFigura{cap1/latch-D}{Diagrama y símbolo del latch D con habilitación (figura 7.10 Floyd)}
 
 \begin{table}[H]
 \centering
@@ -154,7 +152,6 @@ X & 0 & $Q_0$ & No cambia \\
 \end{tabular}
 \end{table}
 
-\bannerRevision
 \begin{figure}[H]
 \centering
 \input{tikz/cap1/latch-D-timing.tikz}
@@ -169,7 +166,6 @@ La diferencia fundamental entre un latch y un flip-flop es el mecanismo de dispa
 
 En los símbolos lógicos, el flanco activo se indica con un \textbf{triángulo} en la entrada de reloj (indicador de entrada dinámica). Si hay un círculo adicional, el disparo es por flanco negativo (bajada); sin círculo, por flanco positivo (subida).
 
-\bannerRevision
 \begin{figure}[H]
 \centering
 \input{tikz/cap1/ff-simbolos.tikz}
@@ -195,7 +191,6 @@ S & R & Q siguiente & Condición \\
 \end{tabular}
 \end{table}
 
-\bannerRevision
 \begin{figure}[H]
 \centering
 \input{tikz/cap1/flipflop-SR-timing.tikz}
@@ -220,7 +215,6 @@ D & Q siguiente \\
 \end{tabular}
 \end{table}
 
-\bannerRevision
 \begin{figure}[H]
 \centering
 \input{tikz/cap1/flipflop-D-timing.tikz}
@@ -246,7 +240,7 @@ J & K & Q siguiente & Condición \\
 \end{tabular}
 \end{table}
 
-\tikzCircuito{cap1/flipflop-JK}{Símbolo del flip-flop JK disparado por flanco (figura 7.22 Floyd)}
+\tikzFigura{cap1/flipflop-JK}{Símbolo del flip-flop JK disparado por flanco (figura 7.22 Floyd)}
 
 \subsection{Flip-flop T (Toggle)}
 
@@ -264,7 +258,6 @@ T & Q siguiente \\
 \end{tabular}
 \end{table}
 
-\bannerRevision
 \begin{figure}[H]
 \centering
 \input{tikz/cap1/flipflop-T-timing.tikz}
@@ -298,7 +291,6 @@ Algunas características importantes de los flip-flops al trabajar con señales 
 
 \textbf{Frecuencia máxima ($f_{max}$):} frecuencia de reloj máxima a la que el flip-flop puede operar correctamente.
 
-\bannerRevision
 \begin{figure}[H]
 \centering
 \input{tikz/cap1/ff-parametros-tiempo.tikz}
@@ -314,13 +306,13 @@ Un registro de desplazamiento es un circuito formado por flip-flops en cascada q
 
 Los datos pueden entrar y salir del registro de distintas formas:
 
-\imagenPendiente{los 7 modos básicos de movimiento de datos en un registro (figura 9.2 Floyd)}
+\tikzFigura{cap1/registro-modos}{Los 7 modos básicos de movimiento de datos en un registro de 4 bits (figura 9.2 Floyd)}
 
 \subsection{Entrada serie / Salida serie (SISO)}
 
 Los bits entran uno a uno por un extremo y salen uno a uno por el otro. En cada pulso de reloj, todos los bits se desplazan una posición. Se necesitan N pulsos para cargar N bits y otros N para extraerlos.
 
-\tikzCircuito{cap1/registro-SISO}{Registro de desplazamiento SISO de 4 bits: flip-flops D en cascada (figura 9.3 Floyd)}
+\tikzFigura{cap1/registro-SISO}{Registro de desplazamiento SISO de 4 bits: flip-flops D en cascada (figura 9.3 Floyd)}
 
 \begin{notabox}
 \textbf{CI típico:} \textbf{74HC164} --- registro SIPO de 8 bits (serie in / paralelo out). También puede usarse como SISO tomando solo la salida del último flip-flop.
@@ -338,7 +330,7 @@ Los bits entran en serie pero se leen simultáneamente de todas las salidas Q de
 \end{itemize}
 \end{notabox}
 
-\imagenPendiente{diagrama de pines y conexión del 74HC595 en cascada con microcontrolador}
+\tikzFigura{cap1/hc595-cascada}{Conexión de dos 74HC595 en cascada a un ATmega328P: 3 pines del micro controlan 16 salidas}
 
 \subsection{Entrada paralelo / Salida serie (PISO)}
 
@@ -390,11 +382,10 @@ $$\text{Módulo} = 2^N \quad \text{(para un contador binario de N flip-flops)}$$
 
 El reloj se aplica solo al primer flip-flop. Cada flip-flop siguiente se dispara con la salida del anterior. Los cambios de estado se propagan de etapa en etapa, por eso también se los llama \textbf{contadores con propagación} (\textit{ripple counters}).
 
-\tikzCircuito{cap1/contador-asincrono-4bit}{Contador asíncrono (ripple) de 4 bits con flip-flops JK en modo toggle. La salida Q de cada FF actúa como reloj del siguiente (figura 8.1 Floyd).}
+\tikzFigura{cap1/contador-asincrono-4bit}{Contador asíncrono (ripple) de 4 bits con flip-flops JK en modo toggle. La salida Q de cada FF actúa como reloj del siguiente (figura 8.1 Floyd).}
 
 \textbf{Diagrama de tiempos de un contador asíncrono de 3 bits:}
 
-\bannerRevision
 \begin{figure}[H]
 \centering
 \input{tikz/cap1/contador-asincrono-timing.tikz}
@@ -413,7 +404,7 @@ La secuencia de salidas Q2 Q1 Q0 va de 000 a 111 (0 a 7), y luego vuelve a 000. 
 
 El reloj se conecta \textbf{simultáneamente} a todos los flip-flops. Los cambios de estado ocurren al mismo tiempo en todas las etapas, eliminando el problema de acumulación de retardos.
 
-\tikzCircuito{cap1/contador-sincrono-4bit}{Contador síncrono de 4 bits con flip-flops JK (figura 8.16 Floyd)}
+\tikzFigura{cap1/contador-sincrono-4bit}{Contador síncrono de 4 bits con flip-flops JK (figura 8.16 Floyd)}
 
 La lógica de habilitación de cada etapa se diseña para que el flip-flop cambie de estado solo cuando todos los bits de menor peso estén en 1 (condición de acarreo).
 
@@ -438,7 +429,7 @@ Un contador de N flip-flops tiene módulo $2^N$ por defecto. Para obtener un mó
 
 Se pueden conectar varios contadores en serie para obtener módulos más grandes. La señal de fin de cuenta (\textit{terminal count}, TC) del primer contador habilita el reloj del segundo.
 
-\tikzCircuito{cap1/contadores-cascada}{Dos contadores de 4 bits en cascada formando un contador de 8 bits (figura 8.38 Floyd)}
+\tikzFigura{cap1/contadores-cascada}{Dos contadores de 4 bits en cascada formando un contador de 8 bits (figura 8.38 Floyd)}
 
 \subsection{Decodificación de estados}
 
@@ -465,7 +456,6 @@ El comportamiento de una máquina de estados se representa gráficamente con un 
     \item Las salidas se indican dentro del nodo (Moore) o sobre la flecha (Mealy).
 \end{itemize}
 
-\bannerRevision
 \begin{figure}[H]
 \centering
 \input{tikz/cap1/fsm-diagrama.tikz}

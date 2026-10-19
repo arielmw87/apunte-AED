@@ -1,0 +1,30 @@
+% ============================================================
+%  Estructura de SECUENCIA: los pasos se ejecutan uno tras otro.
+%  Ejemplo del texto: área de un rectángulo.
+%    Inicio -> Leer base -> Leer altura -> área <- base × altura
+%           -> Mostrar área -> Fin
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Separación vertical entre pasos: node distance en [flujo, ...]
+%   - Texto de cada paso: el contenido de cada \node
+% ============================================================
+\begin{tikzpicture}[flujo, node distance=5mm]
+
+  \node[terminal]               (ini) {Inicio};
+  \node[entrada, below=of ini]  (p1)  {Leer base};
+  \node[entrada, below=of p1]   (p2)  {Leer altura};
+  \node[proceso, below=of p2]   (p3)  {área $\leftarrow$ base $\times$ altura};
+  \node[entrada, below=of p3]   (p4)  {Mostrar área};
+  \node[terminal, below=of p4]  (fin) {Fin};
+
+  \draw[flecha] (ini) -- (p1);
+  \draw[flecha] (p1)  -- (p2);
+  \draw[flecha] (p2)  -- (p3);
+  \draw[flecha] (p3)  -- (p4);
+  \draw[flecha] (p4)  -- (fin);
+
+  % rótulos de paso a la derecha (sin tocar el diagrama)
+  \foreach \n/\t in {p1/Paso 1, p2/Paso 2, p3/Paso 3, p4/Paso 4}
+    \node[rotulo, text=teal!50!black, anchor=west] at ([xshift=4mm]p4.east |- \n) {\t};
+
+\end{tikzpicture}

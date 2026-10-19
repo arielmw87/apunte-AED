@@ -1,50 +1,79 @@
 % ============================================================
 %  Celda básica de memoria SRAM (estática)
-%  - El elemento de almacenamiento es un LATCH: dos inversores
-%    acoplados en cruz (la salida de cada uno alimenta la entrada del
-%    otro). Guarda el bit de forma estable mientras haya alimentación.
-%  - Dos transistores de acceso (NMOS) conectan los nodos internos A y B
-%    con las líneas de bit BL y BLbar.
-%  - Línea de palabra (WL): va a las compuertas de los dos transistores;
-%    al activarla se conecta la celda con las líneas de bit para leer/escribir.
+%  - LATCH: dos inversores acoplados en cruz. La salida de cada uno
+%    alimenta la entrada del otro, así el bit queda "trabado":
+%       nodo Q  (izquierda) --inv. superior-->  nodo Q̄ (derecha)
+%       nodo Q̄ (derecha)   --inv. inferior-->  nodo Q  (izquierda)
+%  - Dos transistores NMOS de ACCESO conectan Q con la línea de bit BL
+%    y Q̄ con BL̄ (siempre llevan valores opuestos).
+%  - Línea de palabra WL (= selección de fila): va a las compuertas de
+%    los dos transistores. WL=1 conecta la celda a BL/BL̄ para leer o
+%    escribir; WL=0 la aísla y el latch conserva el dato.
+%  (En silicio cada inversor son 2 transistores -> celda "6T".)
 % ============================================================
 %  CÓMO AJUSTAR:
-%   - Tamaño general:               scale= en \begin{circuitikz}
-%   - Separación de las líneas BL:  el x = ±3.4 de las líneas de bit
-%   - Altura de la línea WL:        el y = -2
-%   - Posición de los transistores: la x = ±2 de (m1)/(m2)
+%   - Posición de BL / nodo Q:              \xBL y \xQ (BL̄ queda simétrica)
+%   - El nodo Q̄ queda a la salida del inversor superior (automático)
+%   - Altura de los inversores:             \yInv (arriba +, abajo -)
+%   - Altura de la línea de palabra WL:     \yWL
+%   - Tamaño general:                       scale= en \begin{circuitikz}
 %   NOTA: los cruces de cable SIN punto no conectan; el punto (\circ) sí.
 % ============================================================
-\begin{circuitikz}[scale=0.9, transform shape]
+\begin{circuitikz}[scale=0.95, transform shape,
+                   lbl/.style={font=\sffamily\small},
+                   nota/.style={font=\sffamily\scriptsize, text=teal!60!black}]
+
+  \def\xBL{0}      % línea de bit BL
+  \def\xQ{3.2}     % nodo Q
+  \def\yInv{1.0}   % separación vertical de los inversores
+  \def\yWL{2.6}    % línea de palabra
+  \def\yBot{-2.0}  % extremo inferior de las líneas de bit
 
   % ---------- 1) Latch: dos inversores acoplados en cruz ----------
-  \node[not port] (i1) at (0, 1.1) {};            % inversor superior (apunta ->)
-  \node[not port, xscale=-1] (i2) at (0,-1.1) {}; % inversor inferior (apunta <-)
+  \node[not port, anchor=in] (i1) at (\xQ, \yInv) {};   % Q  -> Q̄
+  \coordinate (Qn) at (i1.out |- 0,0);                  % x del nodo Q̄
+  \node[not port, rotate=180, anchor=in] (i2) at (i1.out |- 0,-\yInv) {}; % Q̄ -> Q
 
-  \draw (i1.in)  -- (i2.out);   % nodo A (vertical izquierdo)
-  \draw (i1.out) -- (i2.in);    % nodo B (vertical derecho)
+  % verticales de los nodos Q y Q̄ (cierran el lazo)
+  \draw (i1.in)  -- (\xQ,0) -- (i2.out);
+  \draw (i1.out) -- (Qn)    -- (i2.in);
 
-  \node[left=1pt]  at (i1.in)  {\scriptsize A};
-  \node[right=1pt] at (i1.out) {\scriptsize B};
+  % marco punteado del latch
+  \draw[densely dashed, teal!60!black, rounded corners=2pt]
+       ($(i1.in)+(-0.45,0.75)$) rectangle ($(i2.in)+(0.45,-0.75)$);
+  \node[nota, anchor=north] at ($(\xQ,-\yInv)!0.5!(i2.in)+(0,-0.8)$) {latch (guarda el bit)};
 
-  % ---------- 2) Transistores de acceso (rotate=90 -> canal horizontal) ----------
-  \node[nmos, rotate=90] (m1) at (-2,0) {};   % conecta BL    con el nodo A
-  \node[nmos, rotate=90] (m2) at ( 2,0) {};   % conecta nodo B con BLbar
+  % ---------- 2) Transistores de acceso (canal horizontal, compuerta arriba) ----------
+  \path (Qn) ++(\xQ-\xBL,0) coordinate (BLn0);         % BL̄ simétrica a BL
+  \node[nmos, rotate=-90] (m1) at ($(\xBL,0)!0.5!(\xQ,0)$) {};
+  \node[nmos, rotate=-90] (m2) at ($(Qn)!0.5!(BLn0)$)    {};
 
-  % M1: source -> nodo A ;  drain -> línea BL
-  \draw (m1.S) -- (-0.5,0);   \node[circ] at (-0.5,0){};
-  \draw (m1.D) -- (-3.4,0);
-  % M2: drain -> nodo B ;  source -> línea BLbar
-  \draw (m2.D) -- (0.5,0);    \node[circ] at (0.5,0){};
-  \draw (m2.S) -- (3.4,0);
+  % M1: BL <-> Q
+  \draw (\xBL,0) -- (m1.S);
+  \draw (m1.D) -- (\xQ,0) node[circ]{};
+  % M2: Q̄ <-> BL̄
+  \draw (Qn) node[circ]{} -- (m2.D);
+  \draw (m2.S) -- (BLn0);
 
-  % ---------- 3) Líneas de bit (verticales, hacia arriba) ----------
-  \draw (-3.4,0) -- (-3.4,1.9) node[above]{\small BL};
-  \draw ( 3.4,0) -- ( 3.4,1.9) node[above]{\small $\overline{\text{BL}}$};
+  % ---------- 3) Líneas de bit (verticales) ----------
+  \draw (\xBL,\yBot) -- (\xBL,\yWL+0.9) node[above, lbl]{BL};
+  \draw (BLn0 |- 0,\yBot) -- (BLn0 |- 0,\yWL+0.9) node[above, lbl]{$\overline{\text{BL}}$};
+  \node[circ] at (\xBL,0) {};
+  \node[circ] at (BLn0)   {};
 
-  % ---------- 4) Línea de palabra (WL) -> las dos compuertas ----------
-  \draw (m1.G) -- (-2,-2);   \node[circ] at (-2,-2){};
-  \draw (m2.G) -- ( 2,-2);   \node[circ] at ( 2,-2){};
-  \draw (-3.4,-2) node[left]{\small WL} -- (3.4,-2);
+  % ---------- 4) Línea de palabra WL -> compuertas ----------
+  \draw (m1.G) -- (m1.G |- 0,\yWL) node[circ]{};
+  \draw (m2.G) -- (m2.G |- 0,\yWL) node[circ]{};
+  \draw (\xBL-0.9,\yWL) node[left, lbl, align=right]
+        {WL\\[-2pt]{\scriptsize\color{teal!60!black}(selección de fila)}}
+        -- (BLn0 |- 0,\yWL) -- ++(0.9,0);
+
+  % ---------- 5) Rótulos ----------
+  \node[lbl, above left=1pt]  at (\xQ,0) {$Q$};
+  \node[lbl, above right=1pt] at (Qn)    {$\overline{Q}$};
+  \node[nota, below=4pt] at (m1.S |- 0,-0.35) {acceso};
+  \node[nota, below=4pt] at (m2.D |- 0,-0.35) {acceso};
+  \node[nota, anchor=north, align=center] at (\xBL,\yBot-0.05) {línea\\de bit};
+  \node[nota, anchor=north, align=center] at (BLn0 |- 0,\yBot-0.05) {línea de bit\\complementada};
 
 \end{circuitikz}

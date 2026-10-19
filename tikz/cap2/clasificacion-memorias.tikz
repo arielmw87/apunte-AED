@@ -1,0 +1,56 @@
+% ============================================================
+%  Árbol de clasificación de las memorias semiconductoras
+%  - RAM (volátil):     SRAM (latch) y DRAM (capacitor + refresco).
+%  - ROM (no volátil):  máscara, PROM, EPROM, EEPROM y Flash.
+%  - Debajo de cada hoja, una característica clave en letra chica.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Posición horizontal de cada caja: las x de los \node
+%   - Altura de cada nivel:              \def\yA, \yB, \yC
+%   - Altura de las "horquillas":        la y de los \draw ... |- ...
+% ============================================================
+\begin{tikzpicture}[
+    raiz/.style={bloque, fill=teal!25, font=\sffamily\small\bfseries,
+                 minimum width=26mm, minimum height=9mm},
+    rama/.style={bloque, fill=teal!12, minimum width=24mm, minimum height=11mm},
+    hoja/.style={bloque, fill=white, minimum width=17mm, minimum height=9mm,
+                 font=\sffamily\footnotesize},
+    det/.style={font=\sffamily\scriptsize, text=black!65, align=center, anchor=north},
+    lin/.style={line width=0.7pt},
+  ]
+  \def\yA{0}      % raíz
+  \def\yB{-1.9}   % RAM / ROM
+  \def\yC{-3.9}   % hojas
+
+  % ---------- Nodos ----------
+  \node[raiz] (mem) at (-0.9,\yA) {Memorias};
+  \node[rama] (ram) at (-4.95,\yB) {RAM\\[-2pt]{\scriptsize(volátil)}};
+  \node[rama] (rom) at (3.0,\yB)   {ROM\\[-2pt]{\scriptsize(no volátil)}};
+
+  \node[hoja] (sram)  at (-6.0,\yC) {SRAM};
+  \node[hoja] (dram)  at (-3.9,\yC) {DRAM};
+  \node[hoja] (mask)  at (-1.0,\yC) {ROM de\\[-2pt]máscara};
+  \node[hoja] (prom)  at ( 1.0,\yC) {PROM};
+  \node[hoja] (eprom) at ( 3.0,\yC) {EPROM};
+  \node[hoja] (eepr)  at ( 5.0,\yC) {EEPROM};
+  \node[hoja] (flash) at ( 7.0,\yC) {Flash};
+
+  % ---------- Características ----------
+  \node[det] at (sram.south)  {latch\\rápida};
+  \node[det] at (dram.south)  {capacitor\\refresco};
+  \node[det] at (mask.south)  {grabada en\\fábrica};
+  \node[det] at (prom.south)  {se graba\\una vez};
+  \node[det] at (eprom.south) {borrado\\con UV};
+  \node[det] at (eepr.south)  {borrado\\byte a byte};
+  \node[det] at (flash.south) {borrado\\por bloques};
+
+  % ---------- Conexiones (horquillas) ----------
+  \draw[lin] (mem.south) -- ++(0,-0.45) coordinate (f0);
+  \draw[lin] (ram.north) |- (f0) -| (rom.north);
+  \draw[lin] (ram.south) -- ++(0,-0.5) coordinate (f1);
+  \draw[lin] (sram.north) |- (f1) -| (dram.north);
+  \draw[lin] (rom.south) -- ++(0,-0.5) coordinate (f2);
+  \draw[lin] (mask.north) |- (f2) -| (flash.north);
+  \foreach \h in {prom, eprom, eepr}
+    \draw[lin] (\h.north) -- (\h.north |- f2);
+\end{tikzpicture}

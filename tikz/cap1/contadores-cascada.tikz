@@ -43,9 +43,9 @@
 
   % --- 4) Salidas de datos (4 bits cada una) hacia abajo ---
   \draw[->,thick] (A.south) -- ++(0,-0.9)
-        node[below, align=center]{\scriptsize $Q_0$–$Q_3$\\(4 bits)};
+        node[below, align=center]{\scriptsize $Q_0$--$Q_3$\\(4 bits)};
   \draw[->,thick] (B.south) -- ++(0,-0.9)
-        node[below, align=center]{\scriptsize $Q_4$–$Q_7$\\(4 bits)};
+        node[below, align=center]{\scriptsize $Q_4$--$Q_7$\\(4 bits)};
 
   % --- 5) TC del bloque B disponible para una etapa siguiente (opcional) ---
   \coordinate (Btc) at ($(B.north east)+(0,-0.5)$);

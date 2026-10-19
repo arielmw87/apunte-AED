@@ -3,51 +3,61 @@
 %  IDEA CLAVE:
 %   1) Las 7 líneas de segmento (a–g) son COMPARTIDAS por los 4 displays
 %      (bus superior, dibujado como una sola línea con la marca /7).
+%      Salen del PORTD (PD0..PD6), igual que en el código del Cap. 6.
 %   2) Cada display se enciende de a uno mediante su transistor de
-%      selección de dígito (D0..D3), que conecta el cátodo común a masa.
-%   El micro rota D0->D1->D2->D3 muy rápido (>50 Hz) y el ojo los ve a todos.
+%      selección de dígito, que conecta el cátodo común a masa.
+%      Las compuertas salen de PB0..PB3 (SEL0..SEL3 en el código).
+%   El micro rota DIG0->DIG1->DIG2->DIG3 muy rápido (>50 Hz) y el ojo
+%   los ve a todos encendidos.
 % ============================================================
 %  CÓMO AJUSTAR:
-%   - Cantidad/separación de displays: el \foreach y el paso 2.2 en la x
-%   - Altura del bus de segmentos:     el y=1.7
-%   - Altura del riel de masa:         el y=-2.9
+%   - Cantidad/separación de displays: el \foreach y \paso
+%   - Altura del bus de segmentos:     \ybus
+%   - Altura del riel de masa:         \ymasa
 %   - Tamaño general:                  scale= en \begin{tikzpicture}
 % ============================================================
 \begin{tikzpicture}[
     scale=0.9, transform shape,
-    disp/.style={draw, thick, minimum width=1.15cm, minimum height=1.25cm,
-                 font=\Large\bfseries},
+    disp/.style={draw, thick, fill=gray!8, minimum width=1.15cm,
+                 minimum height=1.25cm, font=\Large\bfseries},
+    sel/.style={font=\sffamily\scriptsize, inner sep=1pt},
     >=Stealth
   ]
+  \def\paso{2.8}
+  \def\ybus{1.7}
+  \def\ymasa{-3.0}
 
-  % --- 1) Los 4 displays en fila (x = 0, 2.2, 4.4, 6.6) ---
-  \foreach \i in {0,1,2,3}
-    \node[disp] (d\i) at (2.2*\i,0) {8.};
+  % --- 1) Los 4 displays en fila ---
+  \foreach \i in {0,1,2,3}{
+    \node[disp] (d\i) at (\paso*\i,0) {8.};
+    \node[sel, anchor=south west] at (d\i.north east) {DIG\i};
+  }
 
   % --- 2) Bus de segmentos compartido (arriba) ---
-  \draw[thick] (-2.2,1.7) -- (7.4,1.7);
-  \node[left, align=center] at (-2.2,1.7) {\small segmentos\\\small a--g\\\small (del micro)};
-  % marca de "7 líneas" sobre el bus
-  \draw (-1.5,1.55) -- (-1.2,1.9);
-  \node at (-1.25,2.05) {\scriptsize 7};
-  % bajada del bus a cada display
-  \foreach \i in {0,1,2,3}
-    \draw (d\i.north) -- (d\i.north |- 0,1.7);
+  \draw[thick] (-1.6,\ybus) -- (3*\paso+0.6,\ybus);
+  \node[left, align=center, font=\sffamily\small] at (-1.6,\ybus)
+    {segmentos a--g\\{\scriptsize (PD0--PD6)}};
+  \draw (-1.0,\ybus-0.15) -- (-0.75,\ybus+0.2);
+  \node[sel] at (-0.7,\ybus+0.35) {7};
+  \foreach \i in {0,1,2,3}{
+    \draw (d\i.north) -- (d\i.north |- 0,\ybus);
+    \node[circ] at (d\i.north |- 0,\ybus) {};
+  }
 
   % --- 3) Transistor de selección de dígito bajo cada display ---
   \foreach \i in {0,1,2,3}{
-    \node[nmos] (t\i) at (2.2*\i,-1.9) {};
+    \node[nmos, anchor=D] (t\i) at (d\i.south |- 0,-1.15) {};
     \draw (t\i.D) -- (d\i.south);                 % cátodo común -> drenador
-    \draw (t\i.S) -- (2.2*\i,-2.9);               % source -> riel de masa
-    \draw (t\i.G) -- ++(-0.5,0) node[left]{\scriptsize D\i};  % compuerta -> selección
+    \draw (t\i.S) -- (t\i.S |- 0,\ymasa);         % source -> riel de masa
+    \draw (t\i.G) -- ++(-0.35,0) node[sel, left] {PB\i};
   }
 
   % --- 4) Riel de masa común ---
-  \draw (-0.6,-2.9) -- (7,-2.9);
-  \node[ground] at (7,-2.9) {};
+  \draw (t0.S |- 0,\ymasa) -- (3*\paso+0.6,\ymasa);
+  \node[ground] at (3*\paso+0.6,\ymasa) {};
 
   % --- 5) Nota de la selección de dígito ---
-  \node[align=left, font=\scriptsize] at (2.6,-3.6)
-    {D0--D3: selección de dígito (del micro) --- se activa uno a la vez};
+  \node[align=center, font=\sffamily\scriptsize] at (1.4*\paso,\ymasa-0.95)
+    {PB0--PB3: selección de dígito (desde el micro) --- se activa uno a la vez};
 
 \end{tikzpicture}

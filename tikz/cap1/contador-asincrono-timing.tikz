@@ -1,22 +1,24 @@
-\begin{tikztimingtable}[
-  timing/slope=0,
-  timing/coldist=2pt,
-  timing/rowdist=3.8ex,
-  timing/name/.style={font=\small\sffamily, right},
-  xscale=0.62
-]
-  CLK & 8{LH}L \\
-  Q0  & L 4{2H2L} L \\
-  Q1  & L L 4{4H4L} L L \\
-  Q2  & 9L 8H L \\
+% ============================================================
+%  Contador asíncrono de 3 bits: diagrama de tiempos
+%  - Los FF basculan en el flanco DESCENDENTE de su reloj:
+%      Q0 cambia en cada flanco ↓ de CLK   (t = 2, 4, 6, ... 16)
+%      Q1 cambia en cada flanco ↓ de Q0    (t = 4, 8, 12, 16)
+%      Q2 cambia en cada flanco ↓ de Q1    (t = 8, 16)
+%  - Se dibuja ideal (sin retardo de propagación).
+%  Coordenadas: ver tikz/estilos.tex (1 carácter = 1 unidad en x).
+% ============================================================
+\begin{tikztimingtable}[timing/aed, timing/xunit=5mm]
+  CLK   & 8{LH}L \\
+  $Q_0$ & 2L 3{2H2L} 2H L \\
+  $Q_1$ & 4L 4H 4L 4H L \\
+  $Q_2$ & 8L 8H L \\
   \extracode
     \begin{pgfonlayer}{background}
-      % líneas verticales en los flancos de bajada del CLK (cuando Q0 cambia)
-      \foreach \t in {2,4,6,8,10,12,14,16}
-        \draw[lightgray,dashed,thin] (\t,0.5) -- (\t,-5.5);
+      % flancos descendentes del CLK
+      \vertlines{2,4,...,16}
     \end{pgfonlayer}
-    % conteo binario debajo del diagrama
-    \foreach \t/\cnt in {1/0,3/1,5/2,7/3,9/4,11/5,13/6,15/7,17/0}
-      \node[font=\tiny\sffamily] at (\t,-6.2) {\cnt};
-    \node[font=\footnotesize\sffamily,anchor=east] at (0,-6.2) {Cuenta:};
+    % conteo en decimal (Q2 Q1 Q0) debajo del diagrama
+    \foreach \x/\n in {1/0,3/1,5/2,7/3,9/4,11/5,13/6,15/7,16.5/0}
+      \node[font=\sffamily\small] at (\x,{-3*\rowdist-1.0}) {\n};
+    \node[font=\sffamily\small, anchor=east] at (-0.8,{-3*\rowdist-1.0}) {Cuenta};
 \end{tikztimingtable}

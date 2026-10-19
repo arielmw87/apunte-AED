@@ -1,0 +1,61 @@
+% ============================================================
+%  Esquema de una memoria 1K × 8 con sus buses
+%  - Bus de DIRECCIONES (A0–A9, 10 líneas): entra al decodificador,
+%    que selecciona UNA fila (palabra) de la matriz -> 2^10 = 1024 posiciones.
+%  - Bus de DATOS (D0–D7, 8 líneas): bidireccional (escritura entra,
+%    lectura sale).
+%  - Señales de CONTROL (activas en bajo, burbuja en el borde):
+%    CS = selección de chip, OE = habilitar salida, WE = habilitar escritura.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Tamaño del chip:        el rectangle (0,0)--(6.4,4) del contorno
+%   - Largo de los buses:     el -2.6 (direcciones) y el 9 (datos)
+%   - Posición de los control: la lista \x en el \foreach de control
+% ============================================================
+\begin{tikzpicture}[
+    >=Stealth,
+    interno/.style={draw, line width=0.6pt, fill=white, align=center,
+                    font=\sffamily\scriptsize},
+    celda/.style={draw=black!50, line width=0.3pt},
+    lbl/.style={font=\sffamily\small},
+  ]
+  % ---------- 1) Contorno del chip ----------
+  \draw[line width=1pt, fill=teal!8] (0,0) rectangle (6.4,4);
+  \node[font=\sffamily\small\bfseries, anchor=north] at (3.2,3.9) {Memoria 1K $\times$ 8};
+
+  % ---------- 2) Decodificador de direcciones ----------
+  \node[interno, minimum width=1.2cm, minimum height=2.4cm] (dec) at (1.1,1.7)
+       {\rotatebox{90}{Decodificador}};
+
+  % ---------- 3) Matriz de celdas (esquemática) ----------
+  \begin{scope}[shift={(2.5,0.5)}]
+    \foreach \r in {0,...,7}
+      \foreach \k in {0,...,7}
+        \draw[celda, fill=white] (\k*0.3,\r*0.3) rectangle (\k*0.3+0.3,\r*0.3+0.3);
+    % fila seleccionada
+    \draw[fill=teal!45, draw=teal!60!black] (0,1.5) rectangle (2.4,1.8);
+    \node[font=\sffamily\scriptsize, anchor=south] at (1.2,2.4) {matriz de celdas};
+  \end{scope}
+  % línea de selección de fila (decodificador -> fila)
+  \draw[->, teal!60!black, line width=0.7pt] (dec.east |- 0,2.15) -- (2.5,2.15);
+
+  % ---------- 4) Bus de direcciones (entra) ----------
+  \draw[bus, -{Stealth[length=7pt,width=9pt]}] (-2.6,1.7) -- (dec.west);
+  \pic at (-0.9,1.7) {anchobus=10};
+  \node[lbl, anchor=east] at (-2.6,1.7) {A0--A9};
+  \node[below, align=center, font=\sffamily\scriptsize] at (-1.6,1.45) {bus de\\direcciones};
+
+  % ---------- 5) Bus de datos (bidireccional) ----------
+  \draw[busflecha] (4.9,1.7) -- (9,1.7);
+  \pic at (7.3,1.7) {anchobus=8};
+  \node[lbl, anchor=west] at (9,1.7) {D0--D7};
+  \node[below, align=center, font=\sffamily\scriptsize] at (7.6,1.45) {bus de\\datos};
+
+  % ---------- 6) Señales de control (activas en bajo) ----------
+  \foreach \x/\s in {1.6/CS, 3.2/OE, 4.8/WE}{
+    \draw[senal] (\x,-1.1) -- (\x,-0.12);
+    \draw[line width=0.6pt, fill=white] (\x,-0.06) circle (0.06);
+    \node[lbl, below] at (\x,-1.1) {$\overline{\text{\s}}$};
+  }
+  \node[font=\sffamily\scriptsize, anchor=west] at (5.4,-0.75) {señales de control};
+\end{tikzpicture}

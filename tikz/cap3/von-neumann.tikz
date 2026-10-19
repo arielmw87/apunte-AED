@@ -1,0 +1,47 @@
+% ============================================================
+%  Arquitectura Von Neumann
+%  - UNA sola memoria guarda instrucciones Y datos.
+%  - UN solo juego de buses (direcciones, datos, control) une la CPU
+%    con esa memoria: instrucciones y datos viajan por el mismo camino.
+%  - La zona punteada roja marca el "cuello de botella": la CPU no
+%    puede buscar una instrucción y acceder a un dato al mismo tiempo.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Separación CPU--memoria:  la x de (mem)  (acá 6.4)
+%   - Alto de los bloques:      minimum height de (cpu)/(mem)
+%   - Altura de cada bus:       las y = 0.8 / 0 / -0.8 de los \draw
+%   - Misma estética/escala que tikz/cap3/harvard.tikz: si cambiás algo
+%     acá, cambialo también allá.
+% ============================================================
+\begin{tikzpicture}[>=Stealth, font=\sffamily\small]
+
+  % --- 1) Bloques ---
+  \node[bloque, minimum height=30mm, minimum width=24mm] (cpu) at (0,0)
+    {\textbf{CPU}};
+  \node[bloque, minimum height=30mm, minimum width=28mm] (mem) at (6.4,0) {};
+  \node[font=\sffamily\small\bfseries, anchor=north] at (mem.north) {Memoria};
+  % la memoria única contiene instrucciones y datos
+  \node[draw, fill=white, minimum width=22mm, minimum height=7mm,
+        font=\sffamily\scriptsize] at ($(mem.center)+(0,0.05)$) {Instrucciones};
+  \node[draw, fill=white, minimum width=22mm, minimum height=7mm,
+        font=\sffamily\scriptsize] at ($(mem.center)+(0,-0.85)$) {Datos};
+
+  % --- 2) Zona de cuello de botella (fondo) ---
+  \fill[red!6, draw=red!60!black, densely dashed, rounded corners=4pt]
+    (1.55,-1.25) rectangle (4.85,1.25);
+
+  % --- 3) Un único juego de buses ---
+  \draw[bus, ->] (cpu.east |- 0,0.8)  -- (mem.west |- 0,0.8)
+    node[midway, above, font=\sffamily\scriptsize, text=black] {direcciones};
+  \draw[busflecha] (cpu.east |- 0,0)  -- (mem.west |- 0,0)
+    node[midway, above, font=\sffamily\scriptsize, text=black] {datos e instrucciones};
+  \draw[bus, ->] (cpu.east |- 0,-0.8) -- (mem.west |- 0,-0.8)
+    node[midway, above, font=\sffamily\scriptsize, text=black] {control};
+
+  % --- 4) Rótulo del cuello de botella ---
+  \node[font=\sffamily\footnotesize\itshape, text=red!60!black, align=center,
+        anchor=north] at (3.2,-1.6)
+    {bus único: \textbf{cuello de botella}\\
+     (instrucciones y datos se turnan para usarlo)};
+
+\end{tikzpicture}

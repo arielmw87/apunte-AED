@@ -42,7 +42,7 @@ tipo nombre = valor_inicial;
 
 \begin{table}[H]
 \centering
-\begin{tabular}{llp{5cm}l}
+\begin{tabularx}{\textwidth}{ll>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
 \toprule
 Tipo & Tamaño típico & Rango aproximado & Uso \\
 \midrule
@@ -53,7 +53,7 @@ Tipo & Tamaño típico & Rango aproximado & Uso \\
 \texttt{char} & 1 byte & $-128$ a $127$ & Un carácter ASCII o un entero de 8 bits \\
 \texttt{unsigned char} & 1 byte & 0 a 255 & Byte sin signo --- muy usado en embebidos \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \begin{notabox}

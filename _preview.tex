@@ -20,6 +20,7 @@
                 automata,positioning}
 \usepackage{tikz-timing}
 \usetikztiminglibrary{either}
+\input{tikz/estilos}   % estilos compartidos de los diagramas TikZ
 \usepackage{xstring}
 \usepackage[margin=1.2cm]{geometry}
 
@@ -56,7 +57,7 @@
   \end{center}\newpage}
 
 \begin{document}
-% Orden de aparición en el apunte (capítulos 1, 2 y 6).
+% Orden de aparición en el apunte.
 % Capítulo 1 — Lógica Secuencial
 \showtikz{cap1/latch-SR}
 \showtikz{cap1/latch-SR-timing}
@@ -74,16 +75,35 @@
 \showtikz{cap1/flipflop-D-timing}
 \showtikz{cap1/flipflop-T-timing}
 \showtikz{cap1/ff-parametros-tiempo}
+\showtikz{cap1/registro-modos}
 \showtikz{cap1/registro-SISO}
+\showtikz{cap1/hc595-cascada}
 \showtikz{cap1/contador-asincrono-4bit}
 \showtikz{cap1/contador-asincrono-timing}
 \showtikz{cap1/contador-sincrono-4bit}
 \showtikz{cap1/contadores-cascada}
 \showtikz{cap1/fsm-diagrama}
 % Capítulo 2 — Memorias
+\showtikz{cap2/matriz-organizaciones}
+\showtikz{cap2/memoria-buses}
+\showtikz{cap2/escritura-timing}
+\showtikz{cap2/lectura-timing}
+\showtikz{cap2/clasificacion-memorias}
+\showtikz{cap2/celda-SRAM-latch}
 \showtikz{cap2/celda-SRAM}
 \showtikz{cap2/celda-DRAM}
+\showtikz{cap2/expansion-palabra}
+\showtikz{cap2/expansion-capacidad}
+% Capítulo 3 — Sistemas Microprogramables
+\showtikz{cap3/von-neumann}
+\showtikz{cap3/harvard}
+% Capítulo 4 — Algoritmos
+\showtikz{cap4/simbolos-flujo}
+\showtikz{cap4/secuencia}
+\showtikz{cap4/si-sino}
+\showtikz{cap4/mientras}
 % Capítulo 6 — C Embebido
+\showtikz{cap6/nano-pinout}
 \showtikz{cap6/display-7seg}
 \showtikz{cap6/mux-displays}
 \end{document}

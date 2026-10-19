@@ -1,0 +1,38 @@
+% ============================================================
+%  Estructura de REPETICIÓN: "mientras" (condición al inicio)
+%  - La condición se evalúa ANTES del bloque.
+%  - Sí: se ejecuta el bloque y la flecha de retorno vuelve al rombo.
+%  - No: se sale del bucle. Si la condición es falsa desde el
+%    principio, el bloque no se ejecuta nunca.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Distancia vertical:                    node distance en [flujo, ...]
+%   - Qué tan afuera pasa la flecha de retorno: el -18mm del lazo
+%   - Qué tan afuera pasa la salida "No":      el 18mm de la salida
+% ============================================================
+\begin{tikzpicture}[flujo, node distance=6mm]
+
+  \node[terminal]                (ini)  {Inicio};
+  \coordinate[below=5mm of ini]  (ret);           % donde entra el retorno
+  \node[decision, below=5mm of ret] (dec)  {¿condición\\verdadera?};
+  \node[proceso, below=of dec]   (blq)  {bloque de pasos};
+  \node[terminal, below=12mm of blq] (fin) {Fin};
+
+  % flujo principal
+  \draw[flecha] (ini) -- (dec);
+  \draw[flecha] (dec) -- node[rotulo, right] {Sí} (blq);
+
+  % flecha de retorno: del bloque vuelve ARRIBA del rombo
+  \draw[flecha] (blq.south) -- ++(0,-4mm) -| ([xshift=-18mm]blq.west)
+                |- (ret);
+  \fill[black!75] (ret) circle (1.6pt);
+
+  % salida por No: va hacia la derecha y baja hasta Fin
+  \draw[flecha] (dec.east) -- node[rotulo, above] {No} ++(18mm,0)
+                |- (fin.east);
+
+  % rótulo del lazo
+  \node[rotulo, text=teal!50!black, rotate=90, anchor=south]
+    at ([xshift=-18mm]blq.west |- dec.south) {repetir};
+
+\end{tikzpicture}

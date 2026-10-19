@@ -13,7 +13,7 @@
 %  Pines del shape «flipflop D»: pin 1 = D (arriba-izq), pin 3 = CLK (abajo-izq),
 %                                pin 6 = Q (arriba-der), pin 4 = Qbar (abajo-der).
 % ============================================================
-\begin{circuitikz}[scale=0.9, transform shape]
+\begin{circuitikz}[scale=0.8, transform shape]
 
   % --- 1) Los cuatro flip-flops D, alineados de izquierda a derecha ---
   \node[flipflop D] (ff0) at (0,0) {};

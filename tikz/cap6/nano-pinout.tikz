@@ -1,0 +1,80 @@
+% ============================================================
+%  Mapa de pines del Arduino Nano (vista superior, USB arriba)
+%  - Dentro de la placa: el nombre Arduino de cada pin (D13, A0, ...).
+%  - Fuera de la placa: el puerto/bit del ATmega328P, con un color
+%    por puerto:  PORTB = azul,  PORTC = naranja,  PORTD = violeta.
+%  - A6 y A7 son SÓLO entradas analógicas (no pertenecen a ningún puerto).
+%  - El LED integrado ("L") está conectado a D13 = PB5.
+%  Coincide con la tabla "Correspondencia Arduino Nano --- ATmega328"
+%  del Capítulo 6.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Separación entre pines:   \paso
+%   - Ancho de la placa:        \ancho
+%   - Listas de pines:          los dos \foreach (de arriba hacia abajo)
+%   - Colores de cada puerto:   estilos pB, pC, pD, pwr, adc
+% ============================================================
+\begin{tikzpicture}[
+    font=\sffamily\small,
+    tag/.style={draw, rounded corners=1.5pt, font=\sffamily\scriptsize\bfseries,
+                minimum width=11mm, minimum height=3.6mm, inner sep=1pt},
+    pB/.style={tag, fill=blue!15,   draw=blue!60!black},
+    pC/.style={tag, fill=orange!20, draw=orange!70!black},
+    pD/.style={tag, fill=violet!15, draw=violet!70!black},
+    pwr/.style={tag, fill=red!8,    draw=red!50!black, font=\sffamily\scriptsize},
+    adc/.style={tag, fill=gray!12,  draw=gray!60, font=\sffamily\scriptsize},
+    pinlbl/.style={font=\sffamily\scriptsize},
+  ]
+  \def\paso{0.5}
+  \def\ancho{3.2}
+  \def\yo{-0.7}    % corrimiento de los pines hacia abajo (lugar para el USB)
+  \pgfmathsetmacro{\alto}{16*\paso-\yo}
+
+  % ---------- Placa, USB y microcontrolador ----------
+  \draw[line width=0.9pt, fill=gray!10, rounded corners=2pt]
+    (0,0) rectangle (\ancho,-\alto);
+  \draw[line width=0.8pt, fill=gray!25] (\ancho/2-0.55,0.35) rectangle (\ancho/2+0.55,-0.45);
+  \node[font=\sffamily\tiny] at (\ancho/2,-0.05) {USB};
+  \draw[fill=black!80] (\ancho/2,-\alto/2-0.3) ++(-0.65,-0.65) rectangle ++(1.3,1.3);
+  \node[text=white, font=\sffamily\tiny, align=center] at (\ancho/2,-\alto/2-0.3) {ATmega\\328P};
+
+  % ---------- Columna izquierda (arriba -> abajo) ----------
+  \foreach \i/\nom/\est/\port in {
+      1/D13/pB/PB5, 2/3V3/pwr/3{,}3\,V, 3/AREF/pwr/AREF,
+      4/A0/pC/PC0, 5/A1/pC/PC1, 6/A2/pC/PC2, 7/A3/pC/PC3,
+      8/A4/pC/PC4, 9/A5/pC/PC5, 10/A6/adc/sólo ADC, 11/A7/adc/sólo ADC,
+      12/5V/pwr/+5\,V, 13/RST/pwr/RESET, 14/GND/pwr/GND, 15/VIN/pwr/VIN}{
+    \coordinate (L\i) at (0,-\i*\paso+\yo);
+    \fill[gray!70] (L\i) ++(0.18,0) circle (2.2pt);
+    \node[pinlbl, anchor=west] at ($(L\i)+(0.32,0)$) {\nom};
+    \draw (L\i) -- ++(-0.3,0) node[\est, anchor=east] {\port};
+  }
+
+  % ---------- Columna derecha (arriba -> abajo) ----------
+  \foreach \i/\nom/\est/\port in {
+      1/D12/pB/PB4, 2/D11/pB/PB3, 3/D10/pB/PB2, 4/D9/pB/PB1, 5/D8/pB/PB0,
+      6/D7/pD/PD7, 7/D6/pD/PD6, 8/D5/pD/PD5, 9/D4/pD/PD4, 10/D3/pD/PD3,
+      11/D2/pD/PD2, 12/GND/pwr/GND, 13/RST/pwr/RESET,
+      14/D0 RX/pD/PD0, 15/D1 TX/pD/PD1}{
+    \coordinate (R\i) at (\ancho,-\i*\paso+\yo);
+    \fill[gray!70] (R\i) ++(-0.18,0) circle (2.2pt);
+    \node[pinlbl, anchor=east] at ($(R\i)+(-0.32,0)$) {\nom};
+    \draw (R\i) -- ++(0.3,0) node[\est, anchor=west] {\port};
+  }
+
+  % ---------- LED integrado en D13 ----------
+  % (debajo del USB; está conectado a D13 = PB5)
+  \draw[fill=yellow!70!orange] (0.55,-0.72) rectangle ++(0.24,-0.15);
+  \node[font=\sffamily\tiny, anchor=west, inner sep=1pt] at (0.82,-0.8) {LED en D13 (PB5)};
+
+  % ---------- Leyenda ----------
+  \begin{scope}[shift={(-1.6,-\alto-0.55)}]
+    \node[pB, anchor=west]  at (0,0)    {PBx};
+    \node[pinlbl, anchor=west] at (1.15,0) {PORTB};
+    \node[pC, anchor=west]  at (2.6,0)  {PCx};
+    \node[pinlbl, anchor=west] at (3.75,0) {PORTC};
+    \node[pD, anchor=west]  at (5.2,0)  {PDx};
+    \node[pinlbl, anchor=west] at (6.35,0) {PORTD};
+  \end{scope}
+
+\end{tikzpicture}

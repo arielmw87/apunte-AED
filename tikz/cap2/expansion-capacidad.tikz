@@ -1,0 +1,71 @@
+% ============================================================
+%  Expansión de CAPACIDAD: cuatro chips 1K × 8 -> memoria 4K × 8
+%  - A0–A9 (10 líneas) van a TODOS los chips: eligen la posición
+%    dentro de cada chip (1024 posiciones).
+%  - A10–A11 (las 2 de mayor peso) entran a un decodificador 2 a 4:
+%    sólo UNA de sus salidas (activas en bajo) se pone en 0 y habilita
+%    el CS del chip correspondiente. Cada chip cubre 1K direcciones.
+%  - D0–D7 es compartido: como sólo un chip está habilitado a la vez,
+%    no hay conflicto en el bus.
+%  NOTA: los cruces de cable SIN punto no conectan; el punto sí.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Separación entre chips: \def\dx  (y la x del primer chip, \def\xo)
+%   - Altura de los buses:    \def\yA (direcciones), \def\yD (datos)
+%   - Decodificador:          la coordenada del nodo (dec) y \def\ys
+%                             (separación vertical entre sus salidas)
+% ============================================================
+\begin{tikzpicture}[
+    >=Stealth,
+    chip/.style={bloque, minimum width=22mm, minimum height=19mm,
+                 font=\sffamily\footnotesize},
+    pin/.style={font=\sffamily\scriptsize},
+    lbl/.style={font=\sffamily\small},
+    busd/.style={line width=2.2pt, draw=black!70},
+    lin/.style={line width=0.7pt},
+  ]
+  \def\xo{2.6}    % x del chip 0
+  \def\dx{2.6}    % distancia entre chips
+  \def\yA{2.4}    % bus de direcciones A0–A9
+  \def\yD{1.6}    % bus de datos D0–D7
+  \def\ys{0.42}   % separación entre salidas del decodificador
+
+  % ---------- 1) Chips con su rango de direcciones ----------
+  \foreach \i/\r in {0/{0x000--0x3FF}, 1/{0x400--0x7FF}, 2/{0x800--0xBFF}, 3/{0xC00--0xFFF}}
+    \node[chip] (c\i) at (\xo+\i*\dx,0)
+      {\textbf{Chip \i}\\1K $\times$ 8\\[2pt]{\ttfamily\scriptsize \r}};
+
+  % ---------- 2) Bus de direcciones A0–A9 (a todos) ----------
+  \draw[bus] (-1.2,\yA) -- ($(c3.north)+(-0.55,\yA-0.95)$);
+  \node[lbl, anchor=east] at (-1.2,\yA) {A0--A9};
+  \pic at (-0.6,\yA) {anchobus=10};
+  \foreach \i in {0,...,3}{
+    \draw[bus, -{Stealth[length=6pt,width=8pt]}] ($(c\i.north)+(-0.55,\yA-0.95)$) -- ($(c\i.north)+(-0.55,0)$);
+    \ifnum\i<3 \fill[teal!60!black] ($(c\i.north)+(-0.55,\yA-0.95)$) circle (2.4pt); \fi
+  }
+
+  % ---------- 3) Bus de datos D0–D7 (compartido, bidireccional) ----------
+  \draw[busd, {Stealth[length=7pt,width=9pt]}-] (-1.2,\yD) -- ($(c3.north)+(0.55,\yD-0.95)$);
+  \node[lbl, anchor=east] at (-1.4,\yD) {D0--D7};
+  \pic at (-0.6,\yD) {anchobus=8};
+  \foreach \i in {0,...,3}{
+    \draw[busd] ($(c\i.north)+(0.55,\yD-0.95)$) -- ($(c\i.north)+(0.55,0)$);
+    \ifnum\i<3 \fill[black!70] ($(c\i.north)+(0.55,\yD-0.95)$) circle (2.4pt); \fi
+  }
+
+  % ---------- 4) Decodificador 2 a 4 ----------
+  \node[bloque, fill=orange!12, minimum width=15mm, minimum height=21mm,
+        font=\sffamily\footnotesize] (dec) at (0,-2.75) {Deco\\2 a 4};
+  \draw[lin, ->] (-1.7,-2.4) node[left, pin]{A10} -- (dec.west |- 0,-2.4);
+  \draw[lin, ->] (-1.7,-3.1) node[left, pin]{A11} -- (dec.west |- 0,-3.1);
+
+  % ---------- 5) Salidas del deco (activas en bajo) -> CS de cada chip ----------
+  \foreach \i in {0,...,3}{
+    \coordinate (y\i) at ($(dec.east)+(0,{(1.5-\i)*\ys})$);
+    \draw[lin, fill=white] ($(y\i)+(0.06,0)$) circle (0.06);
+    \node[pin, anchor=south west, inner sep=1pt] at ($(y\i)+(0.14,0)$) {$\overline{Y_\i}$};
+    \draw[lin, ->] ($(y\i)+(0.12,0)$) -| ($(c\i.south)+(0,-0.12)$);
+    \draw[lin, fill=white] ($(c\i.south)+(0,-0.06)$) circle (0.06);
+    \node[pin, anchor=east] at ($(c\i.south)+(-0.05,-0.32)$) {$\overline{\text{CS}}$};
+  }
+\end{tikzpicture}

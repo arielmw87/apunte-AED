@@ -84,6 +84,7 @@
 % --- Hipervínculos (cargar último) ---
 \usepackage{tikz-timing}
 \usetikztiminglibrary{either}
+\input{tikz/estilos}   % estilos compartidos de los diagramas TikZ
 \usepackage[colorlinks=true,linkcolor=teal!80!black,
             urlcolor=blue!70!black,citecolor=teal]{hyperref}
 
@@ -104,10 +105,14 @@
   {\colorchapter}
 \titlespacing*{\chapter}{0pt}{0pt}{1.5\baselineskip}
 
+% "Capítulo N" en un renglón chico y el título debajo, con todo el ancho
+% de la barra (así los títulos largos entran sin cortarse feo).
 \newcommand{\colorchapter}[1]{%
   \colorbox{teal!70}{%
-    \parbox{\dimexpr\textwidth-2\fboxsep}{%
-      \strut\color{white}\quad Capítulo \thechapter \quad—\quad #1\strut}}}
+    \parbox{\dimexpr\textwidth-2\fboxsep}{\color{white}%
+      \vspace{2pt}%
+      {\normalsize\mdseries\hspace*{10pt}Capítulo \thechapter}\par\vspace{1pt}%
+      \raggedright\leftskip=10pt \strut #1\strut\par\vspace{2pt}}}}
 
 % Sección: barra teal media (igual al ejemplo de la institución)
 \titleformat{name=\section}[block]
@@ -296,20 +301,24 @@
 
 % ============================================================
 %  INSERCIÓN DE ARCHIVOS .tikz EXTERNOS
-%  Uso: \tikzCircuito{nombre-sin-extension}{caption}
-%  Si el archivo tikz/<nombre>.tikz existe → lo muestra con banner.
+%  Uso: \tikzCircuito{nombre-sin-extension}{caption}  → con banner (a revisar)
+%       \tikzFigura{nombre-sin-extension}{caption}    → sin banner (revisado)
+%  Si el archivo tikz/<nombre>.tikz existe → lo muestra.
 %  Si todavía no existe → cae a \imagenPendiente automáticamente.
+%  Cuando el docente aprueba un diagrama, cambiar \tikzCircuito por \tikzFigura.
 % ============================================================
-\newcommand{\tikzCircuito}[2]{%
-  \IfFileExists{tikz/#1.tikz}{%
-    \bannerRevision
+\newcommand{\tikzCircuito}[2]{\tikzFiguraAux{\bannerRevision}{#1}{#2}}
+\newcommand{\tikzFigura}[2]{\tikzFiguraAux{}{#1}{#2}}
+\newcommand{\tikzFiguraAux}[3]{%
+  \IfFileExists{tikz/#2.tikz}{%
     \begin{figure}[H]
+    #1% banner dentro de la figura: no se separa del diagrama
     \centering
-    \input{tikz/#1.tikz}%
-    \caption{#2}%
+    \input{tikz/#2.tikz}%
+    \caption{#3}%
     \end{figure}%
   }{%
-    \imagenPendiente{#2}%
+    \imagenPendiente{#3}%
   }%
 }
 

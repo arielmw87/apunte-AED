@@ -1,0 +1,68 @@
+% ============================================================
+%  Matriz de 64 celdas: tres organizaciones posibles
+%  - Cada cuadradito es UNA celda (1 bit). Las tres matrices tienen
+%    las mismas 64 celdas, agrupadas de distinta forma.
+%  - Una FILA = una PALABRA (lo que se lee/escribe en una dirección).
+%    En cada matriz se resalta en teal una palabra.
+%  - La 64×1 se dibuja cortada (filas 0..15, puntos, filas 62..63).
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Tamaño de celda:        \def\c{0.32}
+%   - Fila resaltada:         \def\fila{2}
+%   - Posición de cada matriz: los \begin{scope}[xshift=...]
+% ============================================================
+\begin{tikzpicture}[
+    celda/.style={draw=black!60, line width=0.4pt},
+    pal/.style={fill=teal!45, draw=teal!60!black, line width=0.6pt},
+    tit/.style={font=\sffamily\small\bfseries},
+    sub/.style={font=\sffamily\scriptsize, align=center},
+    >=Stealth
+  ]
+  \def\c{0.32}    % lado de la celda (cm)
+  \def\fila{2}    % fila (palabra) resaltada
+
+  % ---------- (a) 64 × 1 ----------
+  \begin{scope}[xshift=0cm]
+    % filas 0..15 dibujadas, luego "⋮", luego las 2 últimas: así se ve
+    % MÁS ALTA que la 16×4 (tiene 4 veces más filas).
+    \foreach \r in {0,...,15}
+      \draw[celda] (0,-\r*\c) rectangle (\c,-\r*\c-\c);
+    \fill[pal] (0,-\fila*\c) rectangle (\c,-\fila*\c-\c);
+    \node[font=\small] at (\c/2,-16.9*\c) {$\vdots$};
+    \foreach \r in {18,19}
+      \draw[celda] (0,-\r*\c) rectangle (\c,-\r*\c-\c);
+    % filas
+    \draw[decorate, decoration={brace, amplitude=4pt, mirror}]
+      (-0.12,0) -- (-0.12,-20*\c) node[midway, left=5pt, sub]{64\\filas};
+    \node[tit] at (\c/2,0.55) {64 $\times$ 1};
+    \draw[<-] (\c+0.05,-\fila*\c-\c/2) -- ++(0.6,0) node[right, sub, align=left]{palabra\\de 1 bit};
+  \end{scope}
+
+  % ---------- (b) 8 × 8 ----------
+  \begin{scope}[xshift=3.6cm]
+    \foreach \r in {0,...,7}
+      \foreach \k in {0,...,7}
+        \draw[celda] (\k*\c,-\r*\c) rectangle (\k*\c+\c,-\r*\c-\c);
+    \fill[pal] (0,-\fila*\c) rectangle (8*\c,-\fila*\c-\c);
+    \foreach \k in {0,...,7}
+      \draw[celda] (\k*\c,-\fila*\c) rectangle (\k*\c+\c,-\fila*\c-\c);
+    \draw[decorate, decoration={brace, amplitude=4pt, mirror}]
+      (-0.12,0) -- (-0.12,-8*\c) node[midway, left=5pt, sub]{8\\filas};
+    \node[tit] at (4*\c,0.55) {8 $\times$ 8};
+    \draw[<-] (8*\c+0.05,-\fila*\c-\c/2) -- ++(0.6,0) node[right, sub, align=left]{palabra\\de 8 bits};
+  \end{scope}
+
+  % ---------- (c) 16 × 4 ----------
+  \begin{scope}[xshift=9.0cm]
+    \foreach \r in {0,...,15}
+      \foreach \k in {0,...,3}
+        \draw[celda] (\k*\c,-\r*\c) rectangle (\k*\c+\c,-\r*\c-\c);
+    \fill[pal] (0,-\fila*\c) rectangle (4*\c,-\fila*\c-\c);
+    \foreach \k in {0,...,3}
+      \draw[celda] (\k*\c,-\fila*\c) rectangle (\k*\c+\c,-\fila*\c-\c);
+    \draw[decorate, decoration={brace, amplitude=4pt, mirror}]
+      (-0.12,0) -- (-0.12,-16*\c) node[midway, left=5pt, sub]{16\\filas};
+    \node[tit] at (2*\c,0.55) {16 $\times$ 4};
+    \draw[<-] (4*\c+0.05,-\fila*\c-\c/2) -- ++(0.6,0) node[right, sub, align=left]{palabra\\de 4 bits};
+  \end{scope}
+\end{tikzpicture}

@@ -6,8 +6,10 @@
 $pdflatex = $null
 if (Get-Command pdflatex -ErrorAction SilentlyContinue) {
     $pdflatex = "pdflatex"
-} elseif (Test-Path "C:\texlive\2022\bin\win32\pdflatex.exe") {
-    $pdflatex = "C:\texlive\2022\bin\win32\pdflatex.exe"
+} elseif ($tl = Get-ChildItem "C:\texlive\*\bin\*\pdflatex.exe" -ErrorAction SilentlyContinue |
+               Sort-Object FullName -Descending | Select-Object -First 1) {
+    # TeX Live instalado pero fuera del PATH: usa la version mas nueva
+    $pdflatex = $tl.FullName
 } else {
     Write-Error "No se encontro pdflatex. Instala TeX Live y verifica el PATH."
     exit 1

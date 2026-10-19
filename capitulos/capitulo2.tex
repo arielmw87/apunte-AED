@@ -46,7 +46,7 @@ Múltiplo & Equivale a \\
 
 Internamente, una memoria se organiza como una \textbf{matriz de celdas}, donde cada celda almacena un bit. La forma en que se agrupan esas celdas determina la organización de la memoria.
 
-\imagenPendiente{matriz de celdas --- tres organizaciones posibles (64×1, 8×8, 16×4)}
+\tikzCircuito{cap2/matriz-organizaciones}{Una misma matriz de 64 celdas organizada como 64$\times$1, 8$\times$8 y 16$\times$4. Cada fila es una palabra (resaltada).}
 
 Por ejemplo, una matriz de 64 celdas puede organizarse como:
 
@@ -75,7 +75,7 @@ Los números de posiciones son siempre potencias de 2. El ``16k'' es en realidad
 
 Cada posición de la matriz tiene una \textbf{dirección}: un código binario único que la identifica. Para acceder a una posición se coloca su dirección en el \textbf{bus de direcciones}; un decodificador interno selecciona la fila y columna correspondientes.
 
-\imagenPendiente{esquema de una memoria con bus de direcciones, bus de datos y señales de control (CS, OE, WE)}
+\tikzCircuito{cap2/memoria-buses}{Memoria 1K$\times$8: bus de direcciones (A0--A9), bus de datos bidireccional (D0--D7) y señales de control activas en bajo ($\overline{CS}$, $\overline{OE}$, $\overline{WE}$).}
 
 La cantidad de posiciones direccionables depende del número de líneas del bus de direcciones:
 
@@ -109,7 +109,7 @@ $\overline{WE}$ & \textit{Write Enable} & Habilita la escritura de datos \\
   \item Se activa $\overline{WE}$ (pulso en bajo): el dato queda grabado en la posición seleccionada.
 \end{enumerate}
 
-\imagenPendiente{diagrama de tiempos de una operación de escritura}
+\tikzCircuito{cap2/escritura-timing}{Diagrama de tiempos de una escritura. Los números corresponden a los pasos del texto; el dato se graba en el flanco ascendente de $\overline{WE}$.}
 
 \begin{advertenciabox}
 Escribir en una posición \textbf{destruye} el dato que había antes en esa dirección.
@@ -124,7 +124,7 @@ Escribir en una posición \textbf{destruye} el dato que había antes en esa dire
   \item La CPU lee el dato del bus.
 \end{enumerate}
 
-\imagenPendiente{diagrama de tiempos de una operación de lectura}
+\tikzCircuito{cap2/lectura-timing}{Diagrama de tiempos de una lectura. Los números corresponden a los pasos del texto; el tiempo de acceso va desde que la dirección es válida hasta que el dato es válido.}
 
 \begin{notabox}
 La lectura es \textbf{no destructiva}: el dato permanece almacenado en la memoria después de ser leído.
@@ -146,7 +146,7 @@ Las memorias se clasifican según dos criterios principales:
   \item \textbf{No volátiles:} conservan los datos sin alimentación (ROM y sus variantes).
 \end{itemize}
 
-\imagenPendiente{árbol de clasificación de memorias (RAM $\rightarrow$ SRAM / DRAM; ROM $\rightarrow$ máscara / PROM / EPROM / EEPROM / Flash)}
+\tikzCircuito{cap2/clasificacion-memorias}{Clasificación de las memorias semiconductoras.}
 
 \section{Memorias RAM}
 
@@ -154,7 +154,33 @@ Las memorias se clasifican según dos criterios principales:
 
 Utiliza \textbf{biestables (latches o flip-flops)} como elementos de almacenamiento. Cada celda almacena un bit de forma estable mientras haya alimentación, sin necesidad de refresco.
 
-\tikzCircuito{cap2/celda-SRAM}{Celda básica SRAM: latch con transistores y líneas de selección (bit line / word line)}
+\subsubsection{La idea: una celda hecha con un latch D}
+
+La forma más directa de construir una celda de memoria es con el \textbf{latch D con habilitación} que vimos en el Capítulo 1. Alrededor del latch se agregan dos compuertas que deciden cuándo se puede escribir y cuándo se puede leer:
+
+\begin{itemize}
+  \item \textbf{Escritura:} el latch se habilita solo si la fila está seleccionada \emph{y} se ordena escribir ($EN = \text{Selección} \cdot \text{Escribir}$). En ese momento copia el bit de \emph{Entrada de datos}. En cualquier otro caso $EN = 0$ y el latch \textbf{retiene} el bit.
+  \item \textbf{Lectura:} un \textbf{buffer tri-estado} conecta la salida $Q$ con \emph{Salida de datos} solo si la fila está seleccionada \emph{y} se ordena leer. Si no, la salida queda en alta impedancia y no interfiere con las otras celdas que comparten la misma línea de datos.
+\end{itemize}
+
+\tikzCircuito{cap2/celda-SRAM-latch}{Celda SRAM básica construida con un latch D: la selección de fila habilita la escritura (junto con \emph{Escribir}) y la lectura (junto con \emph{Leer}).}
+
+\subsubsection{La optimización: celda de 6 transistores (6T)}
+
+La celda anterior funciona, pero es \textbf{cara}: cada compuerta lógica está hecha con varios transistores, y la celda completa necesita más de 20. En un chip con millones de celdas eso es inaceptable. Las SRAM reales usan una versión reducida a lo esencial:
+
+\begin{itemize}
+  \item El latch se reduce a \textbf{dos inversores acoplados en cruz} (4 transistores): la salida de cada uno alimenta la entrada del otro, y el bit queda ``trabado'' en los nodos $Q$ y $\overline{Q}$.
+  \item Las compuertas de habilitación y el buffer se reemplazan por \textbf{dos transistores de acceso}, que funcionan como llaves.
+  \item La \textbf{línea de palabra} (WL, \emph{word line}) cumple el papel de la selección de fila: cuando vale 1 cierra las dos llaves.
+  \item La entrada y la salida de datos se unifican en una misma \textbf{línea de bit} (BL, \emph{bit line}), acompañada por su complemento $\overline{\text{BL}}$. Para \textbf{escribir}, el circuito externo fuerza BL y $\overline{\text{BL}}$ con el valor deseado y ``vence'' al latch; para \textbf{leer}, se observa cuál de las dos líneas baja.
+\end{itemize}
+
+\tikzCircuito{cap2/celda-SRAM}{Celda SRAM de 6 transistores: latch de dos inversores (4 transistores) y dos transistores de acceso controlados por la línea de palabra (WL), conectados a las líneas de bit BL y $\overline{\text{BL}}$.}
+
+\begin{notabox}
+Las dos celdas hacen lo mismo: guardan un bit en un biestable y lo conectan al exterior solo cuando la fila está seleccionada. La celda 6T es la que se fabrica realmente porque ocupa mucha menos área de silicio.
+\end{notabox}
 
 \textbf{Características:}
 \begin{itemize}
@@ -192,7 +218,20 @@ Puede ser programada \textbf{una única vez} por el usuario mediante un programa
 
 Puede ser \textbf{borrada mediante luz ultravioleta} a través de una ventana de cuarzo en el encapsulado, y luego reprogramada. El borrado es total (no selectivo) y tarda varios minutos. Reconocible por la ventana transparente en el chip.
 
-\imagenPendiente{foto o dibujo de un chip EPROM con ventana de cuarzo}
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[height=5.2cm, trim=10 31 10 25, clip]{eprom-chip.jpg}% recorte del margen blanco (en bp; la foto mide 240 bp)
+    \caption{Microcontrolador PIC16C765/JW: la versión ``JW'' tiene la memoria de programa en EPROM y se reconoce por la ventana.}
+  \end{subfigure}\hfill
+  \begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[height=5.2cm]{eprom-ventana.jpg}
+    \caption{Detalle de la ventana de cuarzo: a través de ella se ve el chip de silicio y los hilos de conexión.}
+  \end{subfigure}
+  \caption{EPROM con ventana de cuarzo. Para borrarla se expone el chip a luz ultravioleta a través de la ventana; después se tapa con una etiqueta opaca para que la luz ambiente no la borre de a poco.}
+\end{figure}
 
 \subsection{EEPROM (\textit{Electrically Erasable PROM})}
 
@@ -239,7 +278,7 @@ Se usa cuando el ancho de palabra de los chips es menor que el del bus de datos 
 
 \textbf{Ejemplo:} el bus de datos del sistema es de 8 bits, pero se tienen chips de 4 bits de ancho (organizados como 1K $\times$ 4). Se conectan dos chips en paralelo: uno proporciona D0--D3 y el otro D4--D7. Ambos chips responden a la misma dirección simultáneamente.
 
-\imagenPendiente{diagrama de expansión de palabra --- dos chips 1K×4 formando una memoria 1K×8}
+\tikzCircuito{cap2/expansion-palabra}{Expansión de palabra: dos chips 1K$\times$4 en paralelo forman una memoria 1K$\times$8.}
 
 $$\text{Chips necesarios} = \frac{\text{ancho de palabra del sistema}}{\text{ancho de palabra del chip}}$$
 
@@ -247,9 +286,9 @@ $$\text{Chips necesarios} = \frac{\text{ancho de palabra del sistema}}{\text{anc
 
 Se usa cuando la cantidad de posiciones de un único chip es menor que la requerida. Los chips se conectan de forma que cada uno responde a un rango diferente de direcciones. Se usa la señal $\overline{CS}$ de cada chip para habilitarlo solo cuando el bus de direcciones está en su rango.
 
-\textbf{Ejemplo:} se necesitan 4K posiciones de 8 bits, pero solo se tienen chips de 1K $\times$ 8. Se conectan 4 chips: el primero responde a las direcciones 0x000--0x3FF, el segundo a 0x400--0x7FF, y así sucesivamente. Un decodificador (por ejemplo, un 74138) genera las señales $\overline{CS}$ individuales a partir de las líneas de mayor peso del bus de direcciones.
+\textbf{Ejemplo:} se necesitan 4K posiciones de 8 bits, pero solo se tienen chips de 1K $\times$ 8. Se conectan 4 chips: el primero responde a las direcciones 0x000--0x3FF, el segundo a 0x400--0x7FF, y así sucesivamente. Un decodificador de 2 a 4 (por ejemplo, el 74139, o un 74138 usando 4 de sus 8 salidas) genera las señales $\overline{CS}$ individuales a partir de las líneas de mayor peso del bus de direcciones.
 
-\imagenPendiente{diagrama de expansión de capacidad --- cuatro chips 1K×8 formando una memoria 4K×8, con decodificador de dirección}
+\tikzCircuito{cap2/expansion-capacidad}{Expansión de capacidad: cuatro chips 1K$\times$8 y un decodificador 2 a 4 forman una memoria 4K$\times$8.}
 
 $$\text{Chips necesarios} = \frac{\text{capacidad total requerida}}{\text{capacidad de cada chip}}$$
 

@@ -1,0 +1,79 @@
+% ============================================================
+%  ESTILOS COMPARTIDOS DE LOS DIAGRAMAS TikZ
+%  Se carga desde main.tex y _preview.tex (\input{tikz/estilos}),
+%  así los dos documentos dibujan exactamente igual.
+% ============================================================
+
+\usetikzlibrary{shapes.geometric,shapes.misc,fit,
+                decorations.pathreplacing}
+
+% ------------------------------------------------------------
+%  Diagramas de tiempos (tikz-timing)
+%  Uso: \begin{tikztimingtable}[timing/aed] ... \end{tikztimingtable}
+%
+%  Sistema de coordenadas dentro de \extracode (manual tikz-timing §2.4):
+%   - x: 1 unidad = 1 carácter de la señal (timing/xunit).
+%   - y: 1 unidad = altura de la señal (timing/yunit).
+%        La fila 1 va de y=0 (nivel bajo) a y=1 (nivel alto);
+%        la fila k tiene su base en y = -(k-1)*\rowdist.
+%   - \vertlines[estilo]{lista} dibuja líneas verticales en toda la tabla.
+%   - Para poner texto arriba de la primera fila: y = 1.6 aprox.
+%   - Para poner texto debajo de la última fila: y = -(\nrows-1)*\rowdist - 0.8.
+% ------------------------------------------------------------
+\tikzset{
+  timing/aed/.style={
+    timing/slope=0,
+    timing/xunit=6.5mm,
+    timing/x/.style={gray},           % estado desconocido (X): gris, no rojo
+    timing/z/.style={blue!60!black},  % alta impedancia (Z)
+    timing/yunit=4mm,
+    timing/rowdist=2.2,
+    timing/coldist=0.8,
+    timing/font=\sffamily\small,
+    timing/name/.style={font=\sffamily\small},
+    timing/table/lines/.style={gray!45, densely dashed, thin},
+    line width=0.7pt,
+  },
+  % etiqueta de fase / operación arriba del diagrama
+  fase/.style={font=\sffamily\scriptsize, text=teal!60!black, anchor=base},
+  % nota explicativa en cursiva debajo del diagrama
+  nota/.style={font=\sffamily\footnotesize\itshape, anchor=west},
+  % zona resaltada (fondo) para marcar un intervalo
+  zona/.style={fill=yellow!15},
+}
+
+% ------------------------------------------------------------
+%  Diagramas de flujo (Capítulo 4)
+%  Uso: \begin{tikzpicture}[flujo] ... \node[proceso] {...}; ...
+%  Las flechas entre nodos: \draw[flecha] (a) -- (b);
+% ------------------------------------------------------------
+\tikzset{
+  flujo/.style={node distance=6mm and 14mm, font=\sffamily\small, >=Stealth},
+  fbase/.style={draw=teal!60!black, line width=0.8pt, align=center,
+                minimum height=8mm, inner sep=3pt},
+  terminal/.style={fbase, rounded rectangle, fill=teal!12, minimum width=22mm},
+  proceso/.style={fbase, rectangle, fill=white, minimum width=30mm},
+  decision/.style={fbase, diamond, aspect=2, fill=orange!12, inner sep=1pt},
+  entrada/.style={fbase, trapezium, trapezium left angle=70,
+                  trapezium right angle=110, fill=blue!6, minimum width=26mm},
+  conector/.style={fbase, circle, minimum size=6mm, minimum height=6mm},
+  flecha/.style={->, line width=0.8pt, draw=black!75},
+  rotulo/.style={font=\sffamily\scriptsize, inner sep=2pt},
+}
+
+% ------------------------------------------------------------
+%  Diagramas de bloques (memorias, CPU, buses)
+% ------------------------------------------------------------
+\tikzset{
+  bloque/.style={draw, line width=0.8pt, fill=teal!8, align=center,
+                 font=\sffamily\small, minimum height=12mm, minimum width=24mm},
+  bus/.style={line width=2.2pt, draw=teal!60!black},
+  busflecha/.style={bus, {Stealth[length=7pt,width=9pt]}-{Stealth[length=7pt,width=9pt]}},
+  senal/.style={line width=0.7pt, ->, >=Stealth},
+  % marca de ancho de bus (rayita + número) sobre un bus horizontal:
+  %   \pic at (x,y) {anchobus=8};
+  anchobus/.pic={
+    \draw[line width=0.6pt, black] (-0.12,-0.2) -- (0.12,0.2);
+    \node[font=\sffamily\scriptsize, anchor=south west, inner sep=1pt] at (0.06,0.12) {#1};
+  },
+}

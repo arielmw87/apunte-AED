@@ -8,7 +8,7 @@
   % --- Parámetros de tiempo (unidades arbitrarias) ---
   \def\Tsetup{1.5}   % duración t_setup
   \def\Tclkedge{4}   % posición del flanco de CLK
-  \def\Thold{1.0}    % duración t_hold
+  \def\Thold{1.5}    % duración t_hold
   \def\Tpd{1.8}      % retardo de propagación (CLK→Q válido)
   \def\Tend{8}
 
@@ -22,13 +22,15 @@
   \draw[sig] (0,0.8) -- (1.0,0.8)                  % inicio con dato previo (L)
              -- (1.0,0) -- (\Tclkedge-\Tsetup,0)   % transición de D
              -- (\Tclkedge-\Tsetup,0.8)             % D estable = H desde t_setup antes
-             -- (\Tclkedge+\Thold+0.5,0.8)          % D estable hasta después de t_hold
-             -- (\Tclkedge+\Thold+0.5,0)            % D puede cambiar
+             -- (\Tclkedge+\Thold,0.8)          % D estable hasta después de t_hold
+             -- (\Tclkedge+\Thold,0)            % D puede cambiar
              -- (\Tend,0);
   \node[lbl,left] at (0,0.4) {D};
 
-  % zona estable de D (relleno)
-  \fill[teal!12] (\Tclkedge-\Tsetup,0) rectangle (\Tclkedge+\Thold+0.5,0.8);
+  % zona estable de D (relleno, detrás de las señales)
+  \begin{pgfonlayer}{background}
+    \fill[teal!12] (\Tclkedge-\Tsetup,0) rectangle (\Tclkedge+\Thold,0.8);
+  \end{pgfonlayer}
 
   % --- Q ---
   \draw[sig] (0,-1.2) -- (\Tclkedge+\Tpd,-1.2)  % Q mantiene valor anterior
@@ -36,7 +38,9 @@
              -- (\Tend,-0.4);
   \node[lbl,left] at (0,-0.8) {Q};
   % zona de propagación (Q no válido)
-  \fill[orange!15] (\Tclkedge,-1.2) rectangle (\Tclkedge+\Tpd,-0.4);
+  \begin{pgfonlayer}{background}
+    \fill[orange!15] (\Tclkedge,-1.2) rectangle (\Tclkedge+\Tpd,-0.4);
+  \end{pgfonlayer}
   \draw[orange!60,dashed] (\Tclkedge,-1.3) -- (\Tclkedge+\Tpd,-1.3);
 
   % --- Línea del flanco de CLK ---
@@ -48,7 +52,7 @@
     node[midway,above,anno]{$t_{setup}$};
 
   % t_hold
-  \draw[dim] (\Tclkedge,1.5) -- (\Tclkedge+\Thold+0.5,1.5)
+  \draw[dim] (\Tclkedge,1.5) -- (\Tclkedge+\Thold,1.5)
     node[midway,above,anno]{$t_{hold}$};
 
   % t_pd

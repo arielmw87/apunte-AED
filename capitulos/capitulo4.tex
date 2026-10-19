@@ -47,7 +47,7 @@ Flecha & Línea con flecha & Indica el flujo de ejecución entre pasos \\
 \end{tabular}
 \end{table}
 
-\imagenPendiente{tabla visual con los símbolos del diagrama de flujo dibujados}
+\tikzCircuito{cap4/simbolos-flujo}{Símbolos básicos del diagrama de flujo.}
 
 \subsection{Reglas generales}
 
@@ -66,7 +66,7 @@ Todo algoritmo se construye combinando tres estructuras fundamentales:
 
 Los pasos se ejecutan uno tras otro, en el orden en que aparecen. Es la estructura más simple.
 
-\imagenPendiente{diagrama de flujo de una secuencia de tres pasos: Inicio → Paso 1 → Paso 2 → Paso 3 → Fin}
+\tikzCircuito{cap4/secuencia}{Estructura de secuencia: cálculo del área de un rectángulo.}
 
 \textbf{Ejemplo:} calcular el área de un rectángulo.
 \begin{enumerate}
@@ -80,7 +80,7 @@ Los pasos se ejecutan uno tras otro, en el orden en que aparecen. Es la estructu
 
 El flujo se divide en dos caminos según el resultado de una condición. Se evalúa una expresión lógica (verdadera o falsa) y se ejecuta uno u otro bloque de pasos.
 
-\imagenPendiente{diagrama de flujo de una estructura si-sino: rombo con rama Sí y rama No}
+\tikzCircuito{cap4/si-sino}{Estructura de decisión (si--sino): las ramas Sí y No se reúnen al final.}
 
 \textbf{Ejemplo:} determinar si un número es positivo o negativo.
 
@@ -102,7 +102,7 @@ Un bloque de pasos se ejecuta más de una vez, mientras se cumpla una condición
 
 La condición se evalúa \textbf{antes} de ejecutar el bloque. Si la condición es falsa desde el principio, el bloque no se ejecuta nunca.
 
-\imagenPendiente{diagrama de flujo del bucle mientras --- rombo antes del bloque, flecha de retorno}
+\tikzCircuito{cap4/mientras}{Estructura de repetición \emph{mientras}: la condición se evalúa antes del bloque.}
 
 \begin{lstlisting}[style=estilo-pseudocode]
 Mientras condición sea verdadera hacer

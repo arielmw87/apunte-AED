@@ -1,29 +1,21 @@
-\begin{tikztimingtable}[
-  timing/slope=0,
-  timing/coldist=2pt,
-  timing/rowdist=3.8ex,
-  timing/name/.style={font=\small\sffamily, right},
-  xscale=0.9
-]
+% ============================================================
+%  Latch D con habilitación: diagrama de tiempos
+%  - EN=1: el latch es "transparente", Q copia a D.
+%  - EN=0 (zona sombreada): Q retiene el último valor, aunque D cambie.
+%  Coordenadas: ver tikz/estilos.tex (1 carácter = 1 unidad en x).
+% ============================================================
+\begin{tikztimingtable}[timing/aed]
   EN  & 4H 4L 4H \\
-  $D$ & 2L 2H 2H 2L 2L 2H \\
+  $D$ & 2L 4H 4L 2H \\
   $Q$ & 2L 6H 2L 2H \\
   \extracode
     \begin{pgfonlayer}{background}
-      % Zona EN=0 sombreada
-      \fill[yellow!12] (4,-0.5) rectangle (8,-4.2);
-      \draw[lightgray, dashed] (2, 0.4) -- (2,-4.2);
-      \draw[lightgray, dashed] (4, 0.4) -- (4,-4.2);
-      \draw[lightgray, dashed] (6, 0.4) -- (6,-4.2);
-      \draw[lightgray, dashed] (8, 0.4) -- (8,-4.2);
-      \draw[lightgray, dashed] (10,0.4) -- (10,-4.2);
+      \fill[zona] (4,1.2) rectangle (8,{-2*\rowdist-0.2});
+      \vertlines{2,4,6,8,10}
     \end{pgfonlayer}
-    \node[font=\footnotesize\sffamily,above] at (1, 0.4) {Q=D};
-    \node[font=\footnotesize\sffamily,above] at (3, 0.4) {Q=D};
-    \node[font=\footnotesize\sffamily,above] at (6, 0.4) {EN=0: Q retiene};
-    \node[font=\footnotesize\sffamily,above] at (9, 0.4) {Q=D};
-    \node[font=\footnotesize\sffamily,above] at (11,0.4) {Q=D};
-    % Destacar cambio de D ignorado
-    \node[font=\tiny\itshape, teal!70!black] at (7,-4.8)
-      {D cambia a 0 pero Q no cambia (EN=0)};
+    \node[fase] at (2, 1.5) {$Q=D$};
+    \node[fase] at (6, 1.5) {$Q$ retiene};
+    \node[fase] at (10,1.5) {$Q=D$};
+    \node[nota] at (0,{-2*\rowdist-1.1})
+      {En $t{=}6$, D baja a 0 pero Q no cambia porque EN=0.};
 \end{tikztimingtable}

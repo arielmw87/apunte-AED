@@ -1,0 +1,62 @@
+% ============================================================
+%  Expansión de PALABRA: dos chips 1K × 4 -> memoria 1K × 8
+%  - Los dos chips comparten el bus de direcciones (A0–A9) y las
+%    señales de control (CS, OE, WE): responden a la MISMA dirección.
+%  - El chip 1 aporta los 4 bits bajos (D0–D3) y el chip 2 los 4 altos
+%    (D4–D7). Juntos forman el bus de datos de 8 bits.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Separación entre chips:  \def\sep (distancia entre sus x)
+%   - Altura de los buses:     \def\yA (direcciones), \yC (control), \yD (datos)
+%   - Tamaño de los chips:     minimum width/height del estilo "chip"
+% ============================================================
+\begin{tikzpicture}[
+    >=Stealth,
+    chip/.style={bloque, minimum width=26mm, minimum height=20mm},
+    pin/.style={font=\sffamily\scriptsize},
+    lbl/.style={font=\sffamily\small},
+    busc/.style={line width=1.2pt, draw=black!70},
+  ]
+  \def\sep{4.4}   % distancia entre centros de los chips
+  \def\yA{3.0}    % bus de direcciones
+  \def\yC{2.2}    % bus de control
+  \def\yD{-1.9}   % bus de datos
+
+  % ---------- 1) Chips ----------
+  \node[chip] (c1) at (0,0)    {\textbf{Chip 1}\\1K $\times$ 4};
+  \node[chip] (c2) at (\sep,0) {\textbf{Chip 2}\\1K $\times$ 4};
+
+  % ---------- 2) Bus de direcciones (compartido) ----------
+  \draw[bus] (-3,\yA) -- (\sep-0.6,\yA);
+  \node[lbl, anchor=east] at (-3,\yA) {A0--A9};
+  \pic at (-2.3,\yA) {anchobus=10};
+  \foreach \c in {c1,c2}{
+    \draw[bus, -{Stealth[length=6pt,width=8pt]}] ($(\c.north)+(-0.6,0)$) ++(0,\yA-1) -- ($(\c.north)+(-0.6,0)$);
+    \fill[teal!60!black] ($(\c.north)+(-0.6,\yA-1)$) circle (2.2pt);
+    \node[pin, anchor=north] at ($(\c.north)+(-0.6,-0.02)$) {A0--A9};
+  }
+
+  % ---------- 3) Bus de control (compartido) ----------
+  \draw[busc] (-3,\yC) -- (\sep+0.6,\yC);
+  \node[lbl, anchor=east] at (-3,\yC) {$\overline{\text{CS}}$, $\overline{\text{OE}}$, $\overline{\text{WE}}$};
+  \foreach \c in {c1,c2}{
+    \draw[busc, ->] ($(\c.north)+(0.6,\yC-1)$) -- ($(\c.north)+(0.6,0)$);
+    \fill ($(\c.north)+(0.6,\yC-1)$) circle (1.8pt);
+    \node[pin, anchor=north] at ($(\c.north)+(0.6,-0.02)$) {control};
+  }
+
+  % ---------- 4) Datos: cada chip aporta 4 bits ----------
+  % el bus de datos es BIDIRECCIONAL: flecha hacia el chip (escritura)
+  % y hacia el sistema (lectura)
+  \draw[bus, {Stealth[length=6pt,width=8pt]}-] (c1.south) -- (c1.south |- 0,\yD);
+  \draw[bus, {Stealth[length=6pt,width=8pt]}-] (c2.south) -- (c2.south |- 0,\yD);
+  \fill[teal!60!black] (c2.south |- 0,\yD) circle (2.2pt);
+  \pic at ($(c1.south)+(0,-0.55)$) {anchobus=4};
+  \pic at ($(c2.south)+(0,-0.55)$) {anchobus=4};
+  \node[pin, anchor=east] at ($(c1.south)+(-0.1,-0.3)$) {D0--D3};
+  \node[pin, anchor=east] at ($(c2.south)+(-0.1,-0.3)$) {D4--D7};
+  % bus de datos de 8 bits
+  \draw[bus, -{Stealth[length=7pt,width=9pt]}] (c1.south |- 0,\yD) -- (\sep+3.2,\yD);
+  \pic at (\sep+1.6,\yD) {anchobus=8};
+  \node[lbl, anchor=west, align=left] at (\sep+3.3,\yD) {D0--D7\\{\scriptsize(bus de datos,}\\{\scriptsize bidireccional)}};
+\end{tikzpicture}

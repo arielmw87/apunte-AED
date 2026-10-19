@@ -1,0 +1,109 @@
+% ============================================================
+%  Los 7 modos básicos de movimiento de datos en un registro
+%  (figura 9.2 Floyd). Cada registro tiene 4 celdas (4 bits).
+%   (a) entrada serie, desplazamiento a la derecha, salida serie
+%   (b) entrada serie, desplazamiento a la izquierda, salida serie
+%   (c) entrada paralelo, salida serie
+%   (d) entrada serie, salida paralelo
+%   (e) entrada paralelo, salida paralelo
+%   (f) rotación a la derecha   (el bit que sale vuelve a entrar)
+%   (g) rotación a la izquierda
+%  Flechas gruesas = datos que entran/salen.
+%  Flecha fina sobre el registro = sentido del desplazamiento.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Tamaño de cada celda:        \celda (ancho) y \alto
+%   - Separación entre registros:  \dx (columnas) y \dy (filas)
+%   - Posición de cada modo:       el "shift" de cada scope
+% ============================================================
+\begin{tikzpicture}[
+    font=\sffamily\small,
+    >=Stealth,
+    celdas/.style={draw, line width=0.8pt, fill=teal!8},
+    dato/.style={->, line width=1.1pt, draw=teal!60!black},
+    giro/.style={->, line width=0.6pt, draw=orange!80!black},
+    rot/.style={font=\sffamily\scriptsize, align=center},
+    titulo/.style={font=\sffamily\footnotesize, align=center, anchor=north},
+  ]
+  \def\celda{0.55}   % ancho de cada celda
+  \def\alto{0.55}    % alto de cada celda
+  \def\dx{5.3}       % distancia entre columnas
+  \def\dy{3.3}       % distancia entre filas
+  \pgfmathsetmacro{\W}{4*\celda}  % ancho total del registro
+
+  % registro de 4 celdas con esquina inferior izquierda en (0,0)
+  \newcommand{\registro}{%
+    \foreach \i in {0,...,3}
+      \draw[celdas] (\i*\celda,0) rectangle ++(\celda,\alto);}
+  % flecha fina de sentido de desplazamiento (1 = derecha, -1 = izquierda)
+  \newcommand{\sentido}[1]{%
+    \ifnum#1>0
+      \draw[giro] (0.3*\W,\alto+0.15) -- (0.7*\W,\alto+0.15);
+    \else
+      \draw[giro] (0.7*\W,\alto+0.15) -- (0.3*\W,\alto+0.15);
+    \fi}
+
+  % ---------- (a) serie -> derecha -> serie ----------
+  \begin{scope}[shift={(0,0)}]
+    \registro \sentido{1}
+    \draw[dato] (-1.1,\alto/2) -- node[rot,above]{entrada} (0,\alto/2);
+    \draw[dato] (\W,\alto/2) -- node[rot,above]{salida} ++(1.1,0);
+    \node[titulo] at (\W/2,-0.3) {(a) Entrada serie /\\desplaz. derecha / salida serie};
+  \end{scope}
+
+  % ---------- (b) serie -> izquierda -> serie ----------
+  \begin{scope}[shift={(\dx,0)}]
+    \registro \sentido{-1}
+    \draw[dato] (\W+1.1,\alto/2) -- node[rot,above]{entrada} (\W,\alto/2);
+    \draw[dato] (0,\alto/2) -- node[rot,above]{salida} ++(-1.1,0);
+    \node[titulo] at (\W/2,-0.3) {(b) Entrada serie /\\desplaz. izquierda / salida serie};
+  \end{scope}
+
+  % ---------- (c) paralelo -> serie ----------
+  \begin{scope}[shift={(2*\dx,0)}]
+    \registro
+    \foreach \i in {0,...,3}
+      \draw[dato] (\i*\celda+\celda/2,\alto+0.6) -- (\i*\celda+\celda/2,\alto);
+    \node[rot,above] at (\W/2,\alto+0.6) {entrada paralelo};
+    \draw[dato] (\W,\alto/2) -- node[rot,above]{salida} ++(1.1,0);
+    \node[titulo] at (\W/2,-0.3) {(c) Entrada paralelo /\\salida serie};
+  \end{scope}
+
+  % ---------- (d) serie -> paralelo ----------
+  \begin{scope}[shift={(0,-\dy)}]
+    \registro \sentido{1}
+    \draw[dato] (-1.1,\alto/2) -- node[rot,above]{entrada} (0,\alto/2);
+    \foreach \i in {0,...,3}
+      \draw[dato] (\i*\celda+\celda/2,0) -- (\i*\celda+\celda/2,-0.6);
+    \node[rot,right] at (\W,-0.3) {salida\\paralelo};
+    \node[titulo] at (\W/2,-0.85) {(d) Entrada serie /\\salida paralelo};
+  \end{scope}
+
+  % ---------- (e) paralelo -> paralelo ----------
+  \begin{scope}[shift={(\dx,-\dy)}]
+    \registro
+    \foreach \i in {0,...,3}{
+      \draw[dato] (\i*\celda+\celda/2,\alto+0.6) -- (\i*\celda+\celda/2,\alto);
+      \draw[dato] (\i*\celda+\celda/2,0) -- (\i*\celda+\celda/2,-0.6);}
+    \node[rot,right] at (\W,-0.3) {salida\\paralelo};
+    \node[rot,above] at (\W/2,\alto+0.6) {entrada paralelo};
+    \node[titulo] at (\W/2,-0.85) {(e) Entrada paralelo /\\salida paralelo};
+  \end{scope}
+
+  % ---------- (f) rotación a la derecha ----------
+  \begin{scope}[shift={(2*\dx,-\dy)}]
+    \registro \sentido{1}
+    % sale por la derecha y vuelve a entrar por la izquierda (por abajo)
+    \draw[dato] (\W,\alto/2) -- ++(0.35,0) |- (-0.35,-0.35) |- (0,\alto/2);
+    \node[titulo] at (\W/2,-0.55) {(f) Rotación a la derecha};
+  \end{scope}
+
+  % ---------- (g) rotación a la izquierda ----------
+  \begin{scope}[shift={(\dx,-2*\dy+0.4)}]
+    \registro \sentido{-1}
+    % sale por la izquierda y vuelve a entrar por la derecha (por abajo)
+    \draw[dato] (0,\alto/2) -- ++(-0.35,0) |- (\W+0.35,-0.35) |- (\W,\alto/2);
+    \node[titulo] at (\W/2,-0.55) {(g) Rotación a la izquierda};
+  \end{scope}
+
+\end{tikzpicture}

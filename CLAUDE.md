@@ -44,10 +44,13 @@ apunte/
 │   ├── capitulo5.tex  ← Introducción a C
 │   └── capitulo6.tex  ← C Embebido ATmega328
 ├── tikz/
+│   ├── estilos.tex                            ← estilos TikZ compartidos (timing/aed, flujo, bloques)
+│   ├── PENDIENTES.md                          ← estado de cada diagrama (revisado / a revisar)
 │   ├── cap1/                                  ← diagramas del Cap. 1 (Lógica Secuencial)
-│   │   ├── ref/                               ← capturas Floyd (referencia lado a lado)
-│   │   └── originales-web/                    ← en proceso (gráficos pendientes)
+│   │   └── ref/                               ← capturas Floyd (referencia lado a lado)
 │   ├── cap2/                                  ← diagramas del Cap. 2 (Memorias)
+│   ├── cap3/                                  ← diagramas del Cap. 3 (Von Neumann / Harvard)
+│   ├── cap4/                                  ← diagramas de flujo del Cap. 4
 │   └── cap6/                                  ← diagramas del Cap. 6 (C Embebido)
 └── fuentes/                                   ← documentos de referencia originales
     ├── Fundamentos de Sistemas Digitales.pdf  ← Floyd (referencia principal de imágenes)
@@ -57,7 +60,12 @@ apunte/
     └── TPs Programacion embebidos.pdf         ← guía TPs 1-7 (base Cap. 6)
 ```
 
-**Compilar:** ejecutar `compilar.ps1` (o usar el botón "Compilar LaTeX" en VS Code) desde la raíz del proyecto. El CWD debe ser la raíz porque los `\include{capituloX}` e `\input{tikz/...}` son rutas relativas a ese directorio.
+**Compilar:** ejecutar `compilar.ps1` (o usar el botón "Compilar LaTeX" en VS Code) desde la raíz del proyecto. El CWD debe ser la raíz porque los `\include{capituloX}` e `\input{tikz/...}` son rutas relativas a ese directorio. Los scripts buscan `pdflatex` en el PATH o en cualquier `C:\texlive\<año>\bin\...` (en esta PC: TeX Live 2026, esquema custom con latexextra, pictures, langspanish, fontsrecommended, mathscience).
+
+**Convenciones TikZ:**
+- Todos los diagramas de tiempos usan `\begin{tikztimingtable}[timing/aed]` (definido en `tikz/estilos.tex`). Dentro de `\extracode`: x = 1 unidad por carácter, y = 1 unidad por altura de señal, la fila k tiene base en `-(k-1)*\rowdist`. Usar `\vertlines{...}` para líneas guía y los estilos `fase`, `nota`, `zona`. No usar `rowdist`/`coldist` en ex/pt ni `timing/name/.style={right}` (los nombres quedan encima de las señales).
+- Flip-flops con flanco ↓ u otras variantes: `flipflop def={t1=D, c3=1, n3=1, ...}` (manual circuitikz §4.23).
+- Para escribir `.tikz` desde Claude Code usar la herramienta Write/Edit, nunca heredocs/printf/sed de Bash: convierten `\\` en `\` y rompen las tablas de tikz-timing.
 
 ---
 
@@ -89,7 +97,7 @@ Los bloques de AED III aún no se han desarrollado. Temas previstos (conversaci�
 
 ### Imágenes pendientes (para todos los bloques)
 
-Los `.tex` tienen llamadas `\tikzCircuito{cap*/nombre-pendiente}{descripción}` donde todavía no hay diagrama. El docente tomará capturas/recortes del Floyd PDF (en `fuentes/`) y las pasará para convertir a TikZ. El workflow es: imagen Floyd → TikZ en `tikz/capN/nombre.tex` → el macro `\tikzCircuito` lo incluye automáticamente.
+Desde 2026-10-16 todos los gráficos viables en TikZ están hechos (ver `tikz/PENDIENTES.md`; los marcados `[ ]` esperan la revisión del docente). Solo quedan `\imagenPendiente` para las capturas de PSeInt de los ejercicios 1–5 (cap. 4). Las fotos van en `imagenes/` con nombres sin espacios (ej. `eprom-chip.jpg`, `eprom-ventana.jpg`). El workflow para nuevos diagramas es: imagen Floyd → TikZ en `tikz/capN/nombre.tikz` → `\tikzCircuito{capN/nombre}{caption}` lo incluye automáticamente; verificar con `preview-tikz.ps1` (`_preview.tex` muestra cada diagrama, junto a la captura de `ref/` si existe).
 
 ---
 

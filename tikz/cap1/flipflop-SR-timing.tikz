@@ -1,19 +1,19 @@
-\begin{tikztimingtable}[
-  timing/slope=0,
-  timing/coldist=2pt,
-  timing/rowdist=3.8ex,
-  timing/name/.style={font=\small\sffamily, right},
-  xscale=0.9
-]
+% ============================================================
+%  Flip-flop SR disparado por flanco ascendente: diagrama de tiempos
+%  - Las entradas S y R sólo se miran en los flancos ↑ de CLK
+%    (t = 1, 3, 5, 7, 9). Entre flancos, Q no cambia.
+%  - S y R cambian entre flancos (t par) para no violar setup/hold.
+%  Coordenadas: ver tikz/estilos.tex (1 carácter = 1 unidad en x).
+% ============================================================
+\begin{tikztimingtable}[timing/aed]
   CLK & LHLHLHLHLH \\
   $S$ & 2L 2H 6L \\
   $R$ & 6L 2H 2L \\
   $Q$ & 3L 4H 3L \\
   \extracode
     \begin{pgfonlayer}{background}
-      \foreach \t in {1,3,5,7,9}
-        \draw[lightgray,dashed] (\t,0.4) -- (\t,-5.2);
+      \vertlines{1,3,...,9}
     \end{pgfonlayer}
-    \foreach \t/\op in {1/Hold, 3/SET, 5/Hold, 7/RESET, 9/Hold}
-      \node[font=\footnotesize\sffamily,above] at (\t,0.4) {\op};
+    \foreach \x/\op in {1/Hold, 3/SET, 5/Hold, 7/RESET, 9/Hold}
+      \node[fase] at (\x,1.5) {\op};
 \end{tikztimingtable}

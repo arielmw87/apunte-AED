@@ -59,7 +59,7 @@ Un sistema microprogramable se compone de tres elementos:
 
 \section{Arquitectura de un sistema basado en CPU}
 
-Todo sistema microprogramable ---ya sea basado en microprocesador o en microcontrolador--- comparte la misma estructura fundamental. Sus elementos esenciales son:
+Todo sistema microprogramable (ya sea basado en microprocesador o en microcontrolador) comparte la misma estructura fundamental. Sus elementos esenciales son:
 
 \begin{itemize}
   \item Reloj
@@ -193,7 +193,7 @@ La relación entre la CPU y la memoria puede organizarse de dos maneras distinta
 
 La CPU se conecta a una \textbf{única memoria} mediante un \textbf{único juego de buses}. Tanto las instrucciones del programa como los datos se almacenan en el mismo espacio de memoria y viajan por el mismo bus.
 
-\imagenPendiente{diagrama de bloques Von Neumann (CPU --- bus único --- memoria única)}
+\tikzCircuito{cap3/von-neumann}{Arquitectura Von Neumann: una única memoria guarda instrucciones y datos, y la CPU accede a ella por un único juego de buses. Ese bus compartido es el cuello de botella.}
 
 \textbf{Limitaciones:}
 \begin{itemize}
@@ -207,7 +207,7 @@ Es la arquitectura típica de los microprocesadores de uso general (PCs).
 
 La CPU se conecta a \textbf{dos memorias separadas} mediante \textbf{dos juegos de buses independientes}: uno para instrucciones y otro para datos.
 
-\imagenPendiente{diagrama de bloques Harvard (CPU --- bus de programa --- memoria de programa / bus de datos --- memoria de datos)}
+\tikzCircuito{cap3/harvard}{Arquitectura Harvard: memorias de programa y de datos separadas, cada una con su propio bus, lo que permite buscar una instrucción y acceder a un dato al mismo tiempo.}
 
 \textbf{Ventajas:}
 \begin{itemize}

@@ -1,0 +1,38 @@
+% ============================================================
+%  Estructura de DECISIÓN (si - sino)
+%  - El rombo evalúa una condición: tiene exactamente DOS salidas.
+%  - Rama Sí (verdadero) a la izquierda, rama No (falso) a la derecha.
+%  - Las dos ramas se REÚNEN abajo (punto de unión) y el flujo sigue.
+%  Ejemplo del texto: número positivo o negativo.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Separación horizontal de las ramas: el xshift de (si)/(no)
+%   - Distancia vertical:                 node distance en [flujo, ...]
+% ============================================================
+\begin{tikzpicture}[flujo, node distance=5mm]
+
+  \node[terminal]               (ini) {Inicio};
+  \node[entrada, below=of ini]  (lee) {Leer número};
+  \node[decision, below=of lee] (dec) {¿número > 0?};
+
+  % ramas
+  \node[entrada, below=9mm of dec, xshift=-33mm] (si)
+    {Mostrar\\``positivo''};
+  \node[entrada, below=9mm of dec, xshift= 33mm] (no)
+    {Mostrar\\``negativo o cero''};
+
+  % punto de unión y fin
+  \coordinate[below=6mm of dec |- si.south] (union);
+  \node[terminal, below=6mm of union] (fin) {Fin};
+
+  % flechas
+  \draw[flecha] (ini) -- (lee);
+  \draw[flecha] (lee) -- (dec);
+  \draw[flecha] (dec.west) -| node[rotulo, above, pos=0.25] {Sí} (si.north);
+  \draw[flecha] (dec.east) -| node[rotulo, above, pos=0.25] {No} (no.north);
+  \draw[line width=0.8pt, draw=black!75] (si.south) |- (union);
+  \draw[line width=0.8pt, draw=black!75] (no.south) |- (union);
+  \fill[black!75] (union) circle (1.6pt);
+  \draw[flecha] (union) -- (fin);
+
+\end{tikzpicture}
