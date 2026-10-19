@@ -97,49 +97,56 @@
 %  FORMATO DE CAPÍTULOS Y SECCIONES
 % ============================================================
 
-% Capítulo: barra teal oscura con número y título
-\titleformat{\chapter}[block]
-  {\sffamily\bfseries\LARGE}
-  {}
-  {0pt}
-  {\colorchapter}
-\titlespacing*{\chapter}{0pt}{0pt}{1.5\baselineskip}
+% Numeración homogénea en todos los niveles:
+%   Capítulo 4  /  4.3. Sección  /  4.3.1. Subsección  /  4.3.3.1. Subsubsección
+%   (con punto final, igual que el índice)
+% Cada nivel tiene además una variante "numberless" (para \chapter*, que usa
+% el índice, y para \section* si alguna vez se usa), que no muestra número.
 
+% Capítulo: barra teal oscura.
 % "Capítulo N" en un renglón chico y el título debajo, con todo el ancho
 % de la barra (así los títulos largos entran sin cortarse feo).
-\newcommand{\colorchapter}[1]{%
+\newcommand{\barracapitulo}[2]{%
   \colorbox{teal!70}{%
     \parbox{\dimexpr\textwidth-2\fboxsep}{\color{white}%
       \vspace{2pt}%
-      {\normalsize\mdseries\hspace*{10pt}Capítulo \thechapter}\par\vspace{1pt}%
-      \raggedright\leftskip=10pt \strut #1\strut\par\vspace{2pt}}}}
+      {\normalsize\mdseries\hspace*{10pt}#1}\par\vspace{1pt}%
+      \raggedright\leftskip=10pt \strut #2\strut\par\vspace{2pt}}}}
+\newcommand{\colorchapter}[1]{\barracapitulo{Capítulo \thechapter}{#1}}
+\newcommand{\colorchapterSN}[1]{\barracapitulo{}{#1}}
+
+\titleformat{name=\chapter}[block]{\sffamily\bfseries\LARGE}{}{0pt}{\colorchapter}
+\titleformat{name=\chapter,numberless}[block]{\sffamily\bfseries\LARGE}{}{0pt}{\colorchapterSN}
+\titlespacing*{\chapter}{0pt}{0pt}{1.5\baselineskip}
+
+% Sección y subsección: barras teal (media y clara) con el número adelante.
+% #1 color, #2 número (vacío si no lleva), #3 título
+\newcommand{\barraseccion}[3]{%
+  \colorbox{#1}{\parbox{\dimexpr\textwidth-2\fboxsep}{%
+    % si el título no entra en un renglón, la 2.ª línea queda alineada
+    % debajo del texto (no debajo del número)
+    \sbox0{\ #2\ifx\relax#2\relax\else\quad\fi}%
+    \hangindent=\wd0 \hangafter=1 \raggedright
+    \usebox0#3}}}
 
 % Sección: barra teal media (igual al ejemplo de la institución)
-\titleformat{name=\section}[block]
-  {\sffamily\bfseries\Large}
-  {}
-  {0pt}
-  {\colorsection}
+\newcommand{\colorsection}[1]{\barraseccion{teal!40}{\thesection.}{#1}}
+\newcommand{\colorsectionSN}[1]{\barraseccion{teal!40}{}{#1}}
+\titleformat{name=\section}[block]{\sffamily\bfseries\Large}{}{0pt}{\colorsection}
+\titleformat{name=\section,numberless}[block]{\sffamily\bfseries\Large}{}{0pt}{\colorsectionSN}
 \titlespacing{\section}{0pt}{\baselineskip}{\baselineskip}
 
-\newcommand{\colorsection}[1]{%
-  \colorbox{teal!40}{\parbox{\dimexpr\textwidth-2\fboxsep}{\ #1}}}
-
 % Subsección: barra teal clara
-\titleformat{name=\subsection}[block]
-  {\sffamily\bfseries\large}
-  {}
-  {0pt}
-  {\colorsubsection}
+\newcommand{\colorsubsection}[1]{\barraseccion{teal!20}{\thesubsection.}{#1}}
+\newcommand{\colorsubsectionSN}[1]{\barraseccion{teal!20}{}{#1}}
+\titleformat{name=\subsection}[block]{\sffamily\bfseries\large}{}{0pt}{\colorsubsection}
+\titleformat{name=\subsection,numberless}[block]{\sffamily\bfseries\large}{}{0pt}{\colorsubsectionSN}
 \titlespacing{\subsection}{0pt}{0.8\baselineskip}{0.5\baselineskip}
 
-\newcommand{\colorsubsection}[1]{%
-  \colorbox{teal!20}{\parbox{\dimexpr\textwidth-2\fboxsep}{\ #1}}}
-
-% Subsubsección: texto en negrita sin barra
+% Subsubsección: texto en negrita sin barra (mismo formato de número)
 \titleformat{\subsubsection}[hang]
   {\sffamily\bfseries\normalsize}
-  {\thesubsubsection.}{0.5em}{}
+  {\thesubsubsection.}{0.8em}{}
 \titlespacing{\subsubsection}{0pt}{0.6\baselineskip}{0.3\baselineskip}
 
 % Profundidad de numeración y de TOC
