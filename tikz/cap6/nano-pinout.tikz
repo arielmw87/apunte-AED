@@ -8,6 +8,8 @@
 %      PORTB = azul,  PORTC = naranja,  PORTD = violeta.
 %  - A6 y A7 son SÓLO entradas analógicas (no pertenecen a ningún puerto).
 %  - El LED integrado ("L") está conectado a D13 = PB5.
+%  - PD0 (RX) y PD1 (TX) van al conversor USB-serie y los usa el
+%    bootloader para cargar el programa: se marcan como "no usar".
 % ============================================================
 %  CÓMO AJUSTAR:
 %   - Separación entre pines:   \paso
@@ -22,6 +24,8 @@
     pB/.style={tag, fill=blue!15,   draw=blue!60!black},
     pC/.style={tag, fill=orange!20, draw=orange!70!black},
     pD/.style={tag, fill=violet!15, draw=violet!70!black},
+    % PD0/PD1 (RX/TX): reservados para el bootloader -> se dibujan "apagados"
+    pDr/.style={tag, fill=violet!4, draw=violet!50, densely dashed, text=violet!50!black},
     pwr/.style={tag, fill=red!8,    draw=red!50!black, font=\sffamily\scriptsize},
     adc/.style={tag, fill=gray!12,  draw=gray!60, font=\sffamily\scriptsize},
     pinlbl/.style={font=\sffamily\scriptsize},
@@ -56,12 +60,18 @@
       1/D12/pB/PB4, 2/D11/pB/PB3, 3/D10/pB/PB2, 4/D9/pB/PB1, 5/D8/pB/PB0,
       6/D7/pD/PD7, 7/D6/pD/PD6, 8/D5/pD/PD5, 9/D4/pD/PD4, 10/D3/pD/PD3,
       11/D2/pD/PD2, 12/GND/pwr/GND, 13/RST/pwr/RESET,
-      14/D0 RX/pD/PD0, 15/D1 TX/pD/PD1}{
+      14/D0 RX/pDr/PD0, 15/D1 TX/pDr/PD1}{
     \coordinate (R\i) at (\ancho,-\i*\paso+\yo);
     \fill[gray!70] (R\i) ++(-0.18,0) circle (2.2pt);
     \node[pinlbl, anchor=east] at ($(R\i)+(-0.32,0)$) {\nom};
     \draw (R\i) -- ++(0.3,0) node[\est, anchor=west] {\port};
   }
+
+  % ---------- PD0/PD1: reservados (RX/TX del bootloader) ----------
+  \draw[decorate, decoration={brace, amplitude=3pt}, red!60!black, thick]
+    ($(R14)+(1.55,0.2)$) -- ($(R15)+(1.55,-0.2)$)
+    node[midway, right=4pt, font=\sffamily\scriptsize, text=red!60!black, align=left]
+    {RX/TX: los usa el\\bootloader. \textbf{No usar}};
 
   % ---------- LED integrado en D13 ----------
   % (debajo del USB; está conectado a D13 = PB5)

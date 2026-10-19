@@ -85,6 +85,10 @@ Donde \texttt{x} es \texttt{B}, \texttt{C} o \texttt{D} según el puerto.
 
 Las etiquetas D0--D13 y A0--A5 son las que vienen impresas en la placa Arduino: sirven solo para \textbf{ubicar físicamente} cada pin. En nuestros programas nunca usamos esa numeración, sino siempre el \textbf{puerto} y el \textbf{bit} del ATmega (por ejemplo, el LED de la placa está en el bit 5 del puerto B: \texttt{PB5}).
 
+\begin{advertenciabox}
+\textbf{No usar PD0 (RX) ni PD1 (TX).} Estos dos pines están conectados al conversor USB--serie de la placa y los usa el \emph{bootloader} para recibir el programa cuando lo cargamos desde la PC. Si les conectamos un LED, un pulsador o un display, la carga del programa puede fallar o el circuito puede hacer cosas raras mientras se programa. Por eso, en el curso \textbf{se dejan siempre libres}: del puerto D solo usamos de PD2 a PD7.
+\end{advertenciabox}
+
 %──────────────────────────────────────────────────────────────────────────────
 \section{Operadores de manejo de bits}
 
@@ -290,20 +294,58 @@ interrupciones} (TP5).
 %──────────────────────────────────────────────────────────────────────────────
 \section{Escribir en el puerto completo}
 
-Cuando se controlan varios pines simultáneamente (por ejemplo, 8 LEDs o los 7
-segmentos de un display), conviene escribir en el registro completo en lugar de bit
-a bit:
+Cuando se controlan varios pines simultáneamente (por ejemplo, LEDs conectados a
+todo un puerto), conviene escribir en el registro completo en lugar de bit a bit:
 
 \begin{lstlisting}[style=estilo-c]
-PORTD = 0b00110101;   // escribe el valor completo en el puerto D
-PORTB = 0x3F;         // escribe 0x3F en el puerto B (en hexadecimal)
+PORTB = 0b00110101;   // escribe el valor completo en el puerto B
+PORTB = 0x3F;         // lo mismo, pero en hexadecimal
 \end{lstlisting}
 
 \begin{advertenciabox}
-Esto sobreescribe \textbf{todos} los bits del puerto. Si algunos pines están
-configurados como entradas (con pull-up), sobreescribir el registro afectará también
-a esos bits. Hay que tener en cuenta qué pines se usan para qué.
+Esto sobreescribe \textbf{todos} los bits del puerto. Si algunos pines del puerto se
+usan para otra cosa (entradas con pull-up, o PD0/PD1 en el puerto D), también se
+modifican. Por eso, cuando no todos los bits del puerto son ``nuestros'', hay que
+escribir solo algunos bits, enmascarando.
 \end{advertenciabox}
+
+\subsection{Escribir solo algunos bits: enmascarar}
+
+Supongamos que queremos mandar los 4 bits altos de una variable a PD4..PD7 sin tocar
+PD0..PD3 (que pueden estar usados para otra cosa, como PD0 y PD1). Se hace en una sola
+línea, combinando AND y OR (técnica de \textbf{lectura--modificación--escritura}):
+
+\begin{lstlisting}[style=estilo-c]
+PORTD = (PORTD & 0b00001111) | (variable & 0b11110000);
+\end{lstlisting}
+
+\begin{enumerate}
+  \item \texttt{PORTD \& 0b00001111}: \textbf{conserva} los bits del puerto que no son
+        nuestros (PD0..PD3) y pone en 0 los que vamos a escribir (PD4..PD7).
+  \item \texttt{variable \& 0b11110000}: se queda solo con los bits de la variable que
+        queremos mandar (4..7) y descarta el resto.
+  \item El \textbf{OR} (\texttt{|}) junta las dos partes y el resultado se escribe en el puerto.
+\end{enumerate}
+
+\begin{lstlisting}[style=estilo-pseudocode]
+  0 1 0 1 1 0 1 0   (PORTD actual: PD0..PD3 se deben conservar)
+& 0 0 0 0 1 1 1 1   (mascara 0b00001111)
+= 0 0 0 0 1 0 1 0   -> parte que se conserva
+
+  1 0 0 1 0 1 1 0   (variable)
+& 1 1 1 1 0 0 0 0   (mascara 0b11110000)
+= 1 0 0 1 0 0 0 0   -> parte nueva
+
+  0 0 0 0 1 0 1 0
+| 1 0 0 1 0 0 0 0
+= 1 0 0 1 1 0 1 0   -> nuevo PORTD (solo cambiaron PD4..PD7)
+\end{lstlisting}
+
+\begin{notabox}
+Las dos máscaras son siempre \textbf{complementarias}: donde una tiene 1, la otra tiene 0.
+La primera marca qué bits del puerto se conservan; la segunda, qué bits de la variable se
+escriben.
+\end{notabox}
 
 %──────────────────────────────────────────────────────────────────────────────
 \section{Display de 7 segmentos (TP4)}
@@ -322,8 +364,10 @@ Existen dos tipos:
           microcontrolador. Para encender un segmento se pone el pin en \textbf{HIGH (1)}.
 \end{itemize}
 
-Si conectamos los segmentos a, b, c, d, e, f, g del display a los bits 0..6 del
-\texttt{PORTD} (cátodo común), la tabla de patrones para mostrar los dígitos 0 al 9 es:
+Para cada dígito se arma un \textbf{patrón}: un byte donde cada bit indica si un
+segmento se enciende (1) o no (0). Usamos siempre el mismo orden: el bit 0 es el
+segmento a, el bit 1 el b, y así hasta el bit 6, que es el g. Para cátodo común, la
+tabla de patrones de los dígitos 0 al 9 es:
 
 \begin{table}[H]
 \centering
@@ -344,15 +388,54 @@ Si conectamos los segmentos a, b, c, d, e, f, g del display a los bits 0..6 del
 9 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & \texttt{0x6F} \\
 \bottomrule
 \end{tabular}
-\caption{Patrones de display 7 segmentos --- cátodo común, segmentos en \texttt{PORTD} bits 0..6}
+\caption{Patrones de display 7 segmentos --- cátodo común, bit 0 = a \ldots\ bit 6 = g}
 \end{table}
 
-En el código se almacena esta tabla en un arreglo y se indexa con el dígito a mostrar:
+\subsection{Conectar el display: los segmentos en dos puertos}
+
+Qué pin del microcontrolador va a cada segmento lo decide cada uno al armar el
+circuito. Pero hay una restricción: como \textbf{PD0 y PD1 no se usan}, al puerto D le
+quedan solo 6 pines libres, y el display tiene 7 segmentos. Entonces, los segmentos
+\textbf{no entran en un solo puerto} y hay que repartirlos entre dos. Para escribir un
+patrón se usa la técnica de enmascarar de la sección anterior, una vez en cada puerto.
+
+La forma más simple es conectar cada segmento al \textbf{mismo número de bit} que tiene
+en el patrón. Así no hay que desplazar nada: alcanza con elegir, en cada puerto, qué
+bits del patrón le tocan. Por ejemplo (una conexión posible):
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lccccccc}
+\toprule
+Segmento & a & b & c & d & e & f & g \\
+Bit del patrón & 0 & 1 & 2 & 3 & 4 & 5 & 6 \\
+Pin & PB0 & PB1 & PB2 & PB3 & PD4 & PD5 & PD6 \\
+\bottomrule
+\end{tabular}
+\caption{Una conexión posible: a--d en el puerto B y e--g en el puerto D, cada segmento en el mismo bit que en el patrón.}
+\end{table}
+
+Con esa conexión, mostrar un patrón son dos líneas: los bits 0..3 van al puerto B y
+los bits 4..6 al puerto D, conservando en cada puerto los bits que no son del display:
+
+\begin{lstlisting}[style=estilo-c]
+PORTB = (PORTB & 0b11110000) | (patron & 0b00001111); // a..d
+PORTD = (PORTD & 0b10001111) | (patron & 0b01110000); // e..g
+\end{lstlisting}
+
+\begin{notabox}
+Si tu conexión es otra, la tabla de patrones \textbf{no cambia}: cambian solo las
+máscaras (y, si un segmento no quedó en el mismo número de bit que en el patrón, hay
+que desplazarlo con \texttt{<{}<} o \texttt{>{}>}).
+\end{notabox}
+
+En el código se almacena la tabla en un arreglo, se indexa con el dígito a mostrar y
+se usa una función que lleva el patrón a los pines:
 
 \begin{lstlisting}[style=estilo-c]
 #include <avr/io.h>
 
-// Patrones para dígitos 0-9 (cátodo común, segmentos en PORTD bits 0..6)
+// Patrones para dígitos 0-9 (cátodo común, bit 0 = a ... bit 6 = g)
 const uint8_t digitos[10] = {
     0x3F, // 0
     0x06, // 1
@@ -366,9 +449,17 @@ const uint8_t digitos[10] = {
     0x6F  // 9
 };
 
+// Lleva un patrón a los segmentos
+// (conexión de ejemplo: a..d en PB0..PB3, e..g en PD4..PD6)
+void mostrar(uint8_t patron) {
+    PORTB = (PORTB & 0b11110000) | (patron & 0b00001111);
+    PORTD = (PORTD & 0b10001111) | (patron & 0b01110000);
+}
+
 int main(void) {
-    DDRD = 0x7F;          // PD0..PD6 como salidas (segmentos a-g)
-    PORTD = digitos[0];   // mostrar el dígito 0
+    DDRB |= 0b00001111;   // PB0..PB3 como salidas (segmentos a..d)
+    DDRD |= 0b01110000;   // PD4..PD6 como salidas (segmentos e..g)
+    mostrar(digitos[0]);  // mostrar el dígito 0
 
     while (1) {
         // la lógica de conteo iría aquí
@@ -570,26 +661,33 @@ const uint8_t digitos[10] = {
     0x6D, 0x7D, 0x07, 0x7F, 0x6F
 };
 
-// Pines de selección de cada display (en PORTB)
-#define SEL0  PB0
-#define SEL1  PB1
-#define SEL2  PB2
-#define SEL3  PB3
+// Segmentos: la misma conexión que en la sección del display (TP4)
+//   a..d en PB0..PB3, e..g en PD4..PD6
+void mostrar(uint8_t patron) {
+    PORTB = (PORTB & 0b11110000) | (patron & 0b00001111);
+    PORTD = (PORTD & 0b10001111) | (patron & 0b01110000);
+}
+
+// Pines de selección de cada display (en PORTC)
+#define SEL0  PC0
+#define SEL1  PC1
+#define SEL2  PC2
+#define SEL3  PC3
 
 volatile uint8_t display_actual = 0;
-uint8_t valores[4] = {1, 2, 3, 4};  // dígitos a mostrar en cada display
+uint8_t valores[4] = {1, 2, 3, 4};  // dígito de cada display
 
 // ISR cada 1 ms — rota entre los 4 displays
-// Cada display se muestra 1 ms -> frecuencia de refresco = 1/(4x1ms) = 250 Hz
+// Cada display se muestra 1 ms -> refresco = 1/(4 x 1 ms) = 250 Hz
 ISR(TIMER0_COMPA_vect) {
     // Apagar todos los displays
-    PORTB &= ~((1<<SEL0)|(1<<SEL1)|(1<<SEL2)|(1<<SEL3));
+    PORTC &= ~((1<<SEL0)|(1<<SEL1)|(1<<SEL2)|(1<<SEL3));
 
     // Escribir el dígito del display actual en los segmentos
-    PORTD = digitos[valores[display_actual]];
+    mostrar(digitos[valores[display_actual]]);
 
     // Activar solo el display actual
-    PORTB |= (1 << (SEL0 + display_actual));
+    PORTC |= (1 << (SEL0 + display_actual));
 
     // Avanzar al siguiente display
     display_actual++;
@@ -597,8 +695,9 @@ ISR(TIMER0_COMPA_vect) {
 }
 
 int main(void) {
-    DDRD = 0x7F;                    // PD0..PD6 como salidas (segmentos)
-    DDRB |= (1<<SEL0)|(1<<SEL1)|(1<<SEL2)|(1<<SEL3);  // selección
+    DDRB |= 0b00001111;             // PB0..PB3: segmentos a..d
+    DDRD |= 0b01110000;             // PD4..PD6: segmentos e..g
+    DDRC |= (1<<SEL0)|(1<<SEL1)|(1<<SEL2)|(1<<SEL3); // selección
 
     // Timer 0 — modo CTC — 1 ms
     TCCR0A = (1 << WGM01);
@@ -609,7 +708,7 @@ int main(void) {
     sei();
 
     while (1) {
-        // el programa principal puede modificar valores[] en cualquier momento
+        // el programa principal puede cambiar valores[]
     }
     return 0;
 }

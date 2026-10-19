@@ -3,10 +3,11 @@
 %  IDEA CLAVE:
 %   1) Las 7 líneas de segmento (a–g) son COMPARTIDAS por los 4 displays
 %      (bus superior, dibujado como una sola línea con la marca /7).
-%      Salen del PORTD (PD0..PD6), igual que en el código del Cap. 6.
+%      Con la conexión de ejemplo del Cap. 6: a..d en PB0..PB3 y
+%      e..g en PD4..PD6 (PD0/PD1 no se usan: son RX/TX del bootloader).
 %   2) Cada display se enciende de a uno mediante su transistor de
 %      selección de dígito, que conecta el cátodo común a masa.
-%      Las compuertas salen de PB0..PB3 (SEL0..SEL3 en el código).
+%      Las compuertas salen de PC0..PC3 (SEL0..SEL3 en el código).
 %   El micro rota DIG0->DIG1->DIG2->DIG3 muy rápido (>50 Hz) y el ojo
 %   los ve a todos encendidos.
 % ============================================================
@@ -36,7 +37,7 @@
   % --- 2) Bus de segmentos compartido (arriba) ---
   \draw[thick] (-1.6,\ybus) -- (3*\paso+0.6,\ybus);
   \node[left, align=center, font=\sffamily\small] at (-1.6,\ybus)
-    {segmentos a--g\\{\scriptsize (PD0--PD6)}};
+    {segmentos a--g\\{\scriptsize (PB0--PB3 y PD4--PD6)}};
   \draw (-1.0,\ybus-0.15) -- (-0.75,\ybus+0.2);
   \node[sel] at (-0.7,\ybus+0.35) {7};
   \foreach \i in {0,1,2,3}{
@@ -49,7 +50,7 @@
     \node[nmos, anchor=D] (t\i) at (d\i.south |- 0,-1.15) {};
     \draw (t\i.D) -- (d\i.south);                 % cátodo común -> drenador
     \draw (t\i.S) -- (t\i.S |- 0,\ymasa);         % source -> riel de masa
-    \draw (t\i.G) -- ++(-0.35,0) node[sel, left] {PB\i};
+    \draw (t\i.G) -- ++(-0.35,0) node[sel, left] {PC\i};
   }
 
   % --- 4) Riel de masa común ---
@@ -58,6 +59,6 @@
 
   % --- 5) Nota de la selección de dígito ---
   \node[align=center, font=\sffamily\scriptsize] at (1.4*\paso,\ymasa-0.95)
-    {PB0--PB3: selección de dígito (desde el micro) --- se activa uno a la vez};
+    {PC0--PC3: selección de dígito (desde el micro) --- se activa uno a la vez};
 
 \end{tikzpicture}
