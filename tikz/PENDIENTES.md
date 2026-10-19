@@ -78,8 +78,7 @@ Define `timing/aed` para todos los diagramas de tiempos, los nodos de diagramas 
 
 ---
 
-## Imágenes que siguen pendientes (no conviene hacerlas en TikZ)
+## Imágenes pendientes
 
-### Capítulo 4
-
-- [ ] `\imagenPendiente` — Diagramas de flujo ejercicios 1 al 5 (capturas de PSeInt)
+✅ Ninguna. Los ejercicios del Cap. 4 no llevan diagrama a propósito:
+son los alumnos quienes tienen que hacerlos en PSeInt.

@@ -97,7 +97,7 @@ Los bloques de AED III aún no se han desarrollado. Temas previstos (conversaci�
 
 ### Imágenes pendientes (para todos los bloques)
 
-Desde 2026-10-16 todos los gráficos viables en TikZ están hechos (ver `tikz/PENDIENTES.md`; los marcados `[ ]` esperan la revisión del docente). Solo quedan `\imagenPendiente` para las capturas de PSeInt de los ejercicios 1–5 (cap. 4). Las fotos van en `imagenes/` con nombres sin espacios (ej. `eprom-chip.jpg`, `eprom-ventana.jpg`). El workflow para nuevos diagramas es: imagen Floyd → TikZ en `tikz/capN/nombre.tikz` → `\tikzCircuito{capN/nombre}{caption}` lo incluye automáticamente; verificar con `preview-tikz.ps1` (`_preview.tex` muestra cada diagrama, junto a la captura de `ref/` si existe).
+Desde 2026-10-16 todos los gráficos viables en TikZ están hechos (ver `tikz/PENDIENTES.md`; los marcados `[ ]` esperan la revisión del docente). No queda ningún `\imagenPendiente`. Los ejercicios del cap. 4 **no** llevan diagrama de flujo a propósito: los tienen que resolver los alumnos en PSeInt (no agregar soluciones gráficas). Las fotos van en `imagenes/` con nombres sin espacios (ej. `eprom-chip.jpg`, `eprom-ventana.jpg`). El workflow para nuevos diagramas es: imagen Floyd → TikZ en `tikz/capN/nombre.tikz` → `\tikzCircuito{capN/nombre}{caption}` lo incluye automáticamente; verificar con `preview-tikz.ps1` (`_preview.tex` muestra cada diagrama, junto a la captura de `ref/` si existe).
 
 ---
 
