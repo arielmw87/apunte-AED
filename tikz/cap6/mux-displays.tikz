@@ -12,7 +12,8 @@
 %      segmentos encendidos (hasta ~80 mA): un pin del ATmega328 no
 %      soporta más de 40 mA.
 %   El micro rota DIG0->DIG1->DIG2->DIG3 muy rápido y el ojo los ve a
-%   todos encendidos. Para ÁNODO COMÚN ver mux-anodo-comun.tikz.
+%   todos encendidos. Opción con ánodo común: mux-anodo-comun.tikz.
+%   El dígito se dibuja con el pic "sieteseg" (tikz/estilos.tex).
 % ============================================================
 %  CÓMO AJUSTAR:
 %   - Separación entre displays:      \paso
@@ -20,21 +21,21 @@
 %   - Altura del riel de GND:         \ymasa
 %   - Valores de resistencias:        los l= de los to[R, ...]
 %   - Tamaño general:                 scale= en \begin{circuitikz}
+%   NOTA: el punto (\circ) marca una unión real de cables.
 % ============================================================
 \begin{circuitikz}[
     scale=0.85, transform shape,
-    disp/.style={draw, thick, fill=gray!8, minimum width=1.15cm,
-                 minimum height=1.25cm, font=\Large\bfseries},
     sel/.style={font=\sffamily\scriptsize, inner sep=1pt},
     nota/.style={font=\sffamily\scriptsize, text=teal!60!black},
   ]
   \def\paso{3.3}
-  \def\ybus{1.8}
-  \def\ymasa{-3.2}
+  \def\ybus{1.9}
+  \def\ymasa{-3.3}
 
   % --- 1) Los 4 displays en fila ---
   \foreach \i in {0,1,2,3}{
-    \node[disp] (d\i) at (\paso*\i,0) {8.};
+    \node[display7] (d\i) at (\paso*\i,0) {};
+    \pic at (d\i.center) {sieteseg};
     \node[sel, anchor=south west] at (d\i.north east) {DIG\i};
   }
 
@@ -59,8 +60,10 @@
           node[sel, left] {PC\i};                    % base <- micro
   }
 
-  % --- 4) Riel de GND común ---
+  % --- 4) Riel de GND común (con los puntos de unión de cada emisor) ---
   \draw (q0.E |- 0,\ymasa) -- (3*\paso+0.6,\ymasa);
+  \foreach \i in {1,2,3}
+    \node[circ] at (q\i.E |- 0,\ymasa) {};
   \node[ground] at (3*\paso+0.6,\ymasa) {};
 
   % --- 5) Notas ---

@@ -747,28 +747,41 @@ corriente de los segmentos la maneja el transistor.
 
 \tikzCircuito{cap6/mux-displays}{Multiplexado de 4 displays de cátodo común: segmentos compartidos (con sus resistencias) y un transistor NPN por dígito, manejado desde PC0--PC3.}
 
-\subsubsection{Ánodo común: conexión directa al micro}
+\subsubsection{Opción: ánodo común conectado directo al micro}
 
-No siempre se consiguen displays de cátodo común. Con uno de \textbf{ánodo común}, el
-común se puede conectar \textbf{directamente} a un pin del micro, que es el que entrega
-la corriente a los segmentos. Para que eso no supere los 40\,mA del pin:
+No siempre se consiguen displays de cátodo común. Con uno de \textbf{ánodo común} hay
+una opción mucho más sencilla, sin transistores: cada ánodo se conecta a un pin del
+micro a través de \textbf{una sola resistencia}, y los segmentos van directo a sus
+pines, sin resistencias.
 
 \begin{itemize}
-  \item El display tiene que ser de \textbf{alto brillo}, para que se vea bien con
-        pocos mA por segmento.
-  \item Las resistencias de segmento tienen que limitar la corriente total. Por
-        ejemplo, con 1\,k$\Omega$ circulan unos 3\,mA por segmento:
-        $8 \times 3\,\text{mA} = 24\,\text{mA}$, por debajo del máximo.
+  \item El pin de selección \textbf{entrega} la corriente al dígito: se enciende
+        poniéndolo en \textbf{1}. Los segmentos se encienden con \textbf{0}.
+  \item La resistencia del ánodo limita la corriente \emph{total} del dígito, sin
+        importar cuántos segmentos estén encendidos. Con 220\,$\Omega$:
+        $(5\,\text{V} - 2\,\text{V}) / 220\,\Omega \approx 14\,\text{mA}$, bien por
+        debajo de los 40\,mA del pin.
+  \item Conviene usar displays de \textbf{alto brillo}, que se ven bien con poca
+        corriente.
 \end{itemize}
 
-\tikzCircuito{cap6/mux-anodo-comun}{Con display de ánodo común, el común va directo al pin del micro: la selección es activa en alto y los segmentos son activos en bajo.}
+\tikzCircuito{cap6/mux-anodo-comun}{Opción con displays de ánodo común: una resistencia por ánodo, segmentos directo al micro. Más simple, pero con posibles diferencias de brillo.}
+
+\begin{advertenciabox}
+\textbf{Diferencias de brillo.} Con una sola resistencia por dígito, esa corriente se
+\textbf{reparte} entre los segmentos encendidos: un ``1'' (2 segmentos) se ve más
+brillante que un ``8'' (7 segmentos). Además, los LEDs de cada segmento nunca son
+idénticos, y el que necesita un poco menos de tensión se lleva más corriente y brilla
+más. Es una conexión muy práctica para armar rápido, pero el display no se ve parejo.
+\end{advertenciabox}
 
 \subsubsection{¿Con transistor o directo? Diferencias, ventajas y problemas}
 
-La diferencia de fondo es \textbf{quién maneja la corriente del común}. Con transistor,
-el pin del micro solo le da una orden al transistor (una corriente de base chica, de
-unos pocos mA) y es el transistor el que conduce la corriente de todos los segmentos.
-Con la conexión directa, esa corriente pasa \textbf{por el propio pin del micro}.
+La diferencia de fondo es \textbf{quién maneja la corriente del común} y
+\textbf{dónde se limita}. Con transistor, el pin del micro solo le da una orden al
+transistor (una corriente de base chica) y cada segmento tiene su propia resistencia.
+Con la conexión directa, la corriente del dígito pasa \textbf{por el propio pin del
+micro} y la limita una sola resistencia, compartida por todos los segmentos.
 
 \begin{table}[H]
 \centering
@@ -776,34 +789,26 @@ Con la conexión directa, esa corriente pasa \textbf{por el propio pin del micro
 \begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.6cm}
     >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
 \toprule
- & \textbf{Con transistor} & \textbf{Directo al micro} \\
+ & \textbf{Con transistor (cátodo común)} & \textbf{Directo (ánodo común)} \\
 \midrule
-Corriente por el pin & Solo la de base (pocos mA) & La de todos los segmentos encendidos \\
-Brillo & Pleno: se pueden usar $\sim$10\,mA por segmento & Limitado: hay que repartir menos de 40\,mA entre 8 segmentos \\
+Corriente por el pin & Solo la de base (pocos mA) & La de todo el dígito (limitada por la resistencia del ánodo) \\
+Resistencias & Una por segmento (7) y una de base por dígito & Una por dígito (4), en el ánodo \\
+Componentes & Además, un transistor por dígito & Ninguno más \\
+Brillo & Parejo: cada segmento tiene su corriente & Desparejo: la corriente se reparte entre los segmentos encendidos \\
 Display & Cualquiera & Conviene de alto brillo \\
-Componentes & Un transistor y una resistencia de base por dígito & Ninguno extra \\
-Armado & Más cables y más lugares donde equivocarse & Más simple y rápido de armar \\
-Riesgo para el micro & Bajo: el pin trabaja descansado & Si las resistencias son chicas, se supera el máximo del pin y se puede dañar \\
+Armado & Más cables y más lugares donde equivocarse & Mucho más simple y rápido \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \begin{itemize}
-  \item \textbf{Ventaja del transistor:} el micro queda protegido y el display brilla
-        bien, sin importar cuántos segmentos estén encendidos. \textbf{Problema:} más
+  \item \textbf{Con transistor:} el micro trabaja descansado y el display se ve parejo
+        y con buen brillo, sin importar qué dígito se muestre. \textbf{Problema:} más
         componentes y más conexiones en la protoboard.
-  \item \textbf{Ventaja de la conexión directa:} el circuito es mínimo. \textbf{Problema:}
-        hay que calcular bien las resistencias de segmento para no pasar los 40\,mA
-        del pin (y conviene quedar bastante por debajo), y aun así el brillo es menor.
-        Además, cuantos más segmentos se encienden, más se carga el pin: un ``8'' puede
-        verse apenas más tenue que un ``1''.
+  \item \textbf{Directo:} el circuito es mínimo y la resistencia del ánodo protege
+        siempre al pin. \textbf{Problema:} el brillo depende de cuántos segmentos estén
+        encendidos y de las diferencias entre los LEDs.
 \end{itemize}
-
-\begin{notabox}
-Las dos formas de conexión sirven para cualquiera de los dos tipos de display (con la
-lógica correspondiente). En el curso usamos \textbf{transistor para cátodo común} y
-\textbf{conexión directa para ánodo común}, como se muestra en los esquemas.
-\end{notabox}
 
 \begin{table}[H]
 \centering
@@ -812,7 +817,7 @@ lógica correspondiente). En el curso usamos \textbf{transistor para cátodo com
 \toprule
  & \textbf{Cátodo común} & \textbf{Ánodo común} \\
 \midrule
-Conexión del común & Transistor NPN a GND (con resistencia de base) & Directo al pin del micro (display de alto brillo) \\
+Conexión del común & Transistor NPN a GND (con resistencia de base) & Al pin del micro, con una resistencia \\
 Encender un dígito & Pin de selección en \textbf{1} & Pin de selección en \textbf{1} \\
 Encender un segmento & Pin del segmento en \textbf{1} & Pin del segmento en \textbf{0} \\
 En el código & \texttt{mostrar(patron)} & \texttt{mostrar(\char126 patron)} \\
@@ -822,7 +827,7 @@ En el código & \texttt{mostrar(patron)} & \texttt{mostrar(\char126 patron)} \\
 
 \begin{notabox}
 Con ánodo común los segmentos se encienden con \textbf{0}, así que los patrones de la
-tabla se escriben \textbf{invertidos} con el operador \texttt{\~{}} (NOT bit a bit). La
+tabla se escriben \textbf{invertidos} con el operador \texttt{\char126} (NOT bit a bit). La
 tabla de patrones y el resto del programa no cambian.
 \end{notabox}
 

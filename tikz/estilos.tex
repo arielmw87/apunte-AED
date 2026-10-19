@@ -62,6 +62,30 @@
 }
 
 % ------------------------------------------------------------
+%  Dígito de 7 segmentos (para dibujar displays en esquemas)
+%  Uso:  \node[display7] (d) at (x,y) {};   % caja (con anclas para cablear)
+%        \pic at (d.center) {sieteseg};      % el "8." dibujado adentro
+% ------------------------------------------------------------
+\tikzset{
+  display7/.style={draw, thick, fill=black!80, minimum width=1.1cm,
+                   minimum height=1.45cm, inner sep=0pt},
+  sieteseg/.pic={
+    \begin{scope}[line width=2.4pt, line cap=round, red!75!orange]
+      % medio ancho / medio alto del dígito y separación en las esquinas
+      \def\sw{0.24}\def\sh{0.46}\def\sg{0.06}
+      \draw (-\sw+\sg, \sh)  -- (\sw-\sg, \sh);    % a
+      \draw ( \sw, \sh-\sg)  -- (\sw, \sg);        % b
+      \draw ( \sw, -\sg)     -- (\sw, -\sh+\sg);   % c
+      \draw (-\sw+\sg,-\sh)  -- (\sw-\sg,-\sh);    % d
+      \draw (-\sw, -\sg)     -- (-\sw,-\sh+\sg);   % e
+      \draw (-\sw, \sh-\sg)  -- (-\sw, \sg);       % f
+      \draw (-\sw+\sg, 0)    -- (\sw-\sg, 0);      % g
+    \end{scope}
+    \fill[red!75!orange] (0.36,-0.46) circle (1.6pt); % dp
+  },
+}
+
+% ------------------------------------------------------------
 %  Diagramas de bloques (memorias, CPU, buses)
 % ------------------------------------------------------------
 \tikzset{
