@@ -311,20 +311,43 @@ Las funciones sirven para:
   \item \textbf{Hacer el programa más fácil de leer}: \texttt{mostrar(numero)} se entiende mucho mejor que las líneas que hay adentro.
 \end{itemize}
 
-\subsection{Partes de una función}
+\subsection{Prototipo y definición}
+
+Una función se escribe en dos partes:
+
+\begin{itemize}
+  \item El \textbf{prototipo} (o \emph{declaración}): una sola línea, terminada en punto y coma, que dice \textbf{qué} hace la función desde afuera: cómo se llama, qué datos recibe y qué tipo de dato devuelve. Es como el ``contrato'' de la función.
+  \item La \textbf{definición}: el código completo, con las instrucciones entre llaves, que dice \textbf{cómo} lo hace.
+\end{itemize}
 
 \begin{lstlisting}[style=estilo-c]
-int sumar(int a, int b) {   // retorno, nombre, parametros
-    int resultado = a + b;  // cuerpo: lo que hace
-    return resultado;       // valor que devuelve
+// PROTOTIPO: recibe dos int, devuelve un int
+int sumar(int a, int b);
+
+// DEFINICION: la misma primera linea, mas el cuerpo
+int sumar(int a, int b) {
+    int resultado = a + b;
+    return resultado;
 }
 \end{lstlisting}
+
+El compilador lee el programa de arriba hacia abajo, y para poder usar una función tiene que conocerla antes. Por eso vamos a ordenar siempre los programas así:
+
+\begin{enumerate}
+  \item Arriba, los \textbf{prototipos} de todas las funciones.
+  \item Después, \texttt{main()}, que las usa.
+  \item Al final, las \textbf{definiciones}.
+\end{enumerate}
+
+Así, leyendo solo el principio del archivo se ve qué funciones tiene el programa y cómo se usan, sin tener que entrar en los detalles de cada una.
+
+\subsection{Partes de una función}
 
 \begin{itemize}
   \item \textbf{Tipo de retorno} (\texttt{int}): el tipo del valor que la función devuelve.
   \item \textbf{Nombre} (\texttt{sumar}): se usa para llamarla. Sigue las mismas reglas que los nombres de variables.
   \item \textbf{Parámetros} (\texttt{int a, int b}): los datos que la función recibe para trabajar. Cada uno lleva su tipo.
-  \item \textbf{Cuerpo}: las instrucciones, entre llaves.
+  \item \textbf{Cuerpo} (solo en la definición): las instrucciones, entre llaves.
   \item \textbf{\texttt{return}}: termina la función y devuelve el resultado a quien la llamó.
 \end{itemize}
 
@@ -340,11 +363,14 @@ printf("%d\n", sumar(10, 5));   // muestra 15
 Si una función hace algo pero no tiene que devolver un resultado, su tipo de retorno es \texttt{void} (``vacío''). Si además no recibe parámetros, entre los paréntesis también se pone \texttt{void}:
 
 \begin{lstlisting}[style=estilo-c]
-void separador(void) {          // no recibe nada, no devuelve nada
+void separador(void);           // no recibe nada, no devuelve nada
+void mostrar_doble(int x);      // recibe un dato, no devuelve nada
+
+void separador(void) {
     printf("----------\n");
 }
 
-void mostrar_doble(int x) {     // recibe un dato, no devuelve nada
+void mostrar_doble(int x) {
     printf("El doble es %d\n", 2 * x);
 }
 \end{lstlisting}
@@ -354,15 +380,10 @@ void mostrar_doble(int x) {     // recibe un dato, no devuelve nada
 \begin{lstlisting}[style=estilo-c]
 #include <stdio.h>
 
-// Devuelve el mayor de dos numeros
-int mayor(int a, int b) {
-    if (a > b) {
-        return a;
-    } else {
-        return b;
-    }
-}
+// ---------- Prototipos ----------
+int mayor(int a, int b);        // devuelve el mayor de dos numeros
 
+// ---------- Programa principal ----------
 int main(void) {
     int x, y;
     printf("Ingrese dos numeros: ");
@@ -370,15 +391,24 @@ int main(void) {
     printf("El mayor es %d\n", mayor(x, y));
     return 0;
 }
+
+// ---------- Definiciones ----------
+int mayor(int a, int b) {
+    if (a > b) {
+        return a;
+    } else {
+        return b;
+    }
+}
 \end{lstlisting}
 
 \begin{notabox}
-\textbf{Dos detalles importantes:}
-\begin{itemize}
-  \item La función tiene que estar escrita \textbf{antes} de que se la use (por eso \texttt{mayor} está arriba de \texttt{main}). Si se la quiere escribir después, hay que poner antes su \textbf{prototipo}: la primera línea terminada en punto y coma, por ejemplo \texttt{int mayor(int a, int b);}.
-  \item Los parámetros y las variables declaradas dentro de una función son \textbf{locales}: solo existen dentro de esa función. La función recibe una \textbf{copia} de los valores; si los modifica, la variable original no cambia.
-\end{itemize}
+\textbf{Variables locales:} los parámetros y las variables declaradas dentro de una función solo existen dentro de esa función. La función recibe una \textbf{copia} de los valores: si los modifica, la variable original no cambia.
 \end{notabox}
+
+\begin{importantebox}
+\textbf{Pensando en programas más grandes:} separar prototipos y definiciones no es un capricho. Cuando un programa crece, se divide en varios archivos: los prototipos se pasan a un archivo de cabecera (\texttt{.h}) y las definiciones a un archivo \texttt{.c}. Es exactamente lo que hacen las bibliotecas que ya usamos: \texttt{<stdio.h>} contiene los prototipos de \texttt{printf} y \texttt{scanf}, y por eso hay que incluirlo antes de usarlas. Si desde ahora escribimos los programas con este orden, ese paso va a ser natural.
+\end{importantebox}
 
 \section{Constantes y macros: \texttt{\#define}}
 

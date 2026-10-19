@@ -542,13 +542,10 @@ const uint8_t digitos[10] = {
     0x6F  // 9
 };
 
-// Lleva un patrón a los segmentos
-// (conexión de ejemplo: a..d en PB0..PB3, e..g en PD4..PD6)
-void mostrar(uint8_t patron) {
-    PORTB = (PORTB & 0b11110000) | (patron & 0b00001111);
-    PORTD = (PORTD & 0b10001111) | (patron & 0b01110000);
-}
+// ---------- Prototipos ----------
+void mostrar(uint8_t patron);   // lleva un patrón a los segmentos
 
+// ---------- Programa principal ----------
 int main(void) {
     DDRB |= 0b00001111;   // PB0..PB3 como salidas (segmentos a..d)
     DDRD |= 0b01110000;   // PD4..PD6 como salidas (segmentos e..g)
@@ -558,6 +555,13 @@ int main(void) {
         // la lógica de conteo iría aquí
     }
     return 0;
+}
+
+// ---------- Definiciones ----------
+// Conexión de ejemplo: a..d en PB0..PB3, e..g en PD4..PD6
+void mostrar(uint8_t patron) {
+    PORTB = (PORTB & 0b11110000) | (patron & 0b00001111);
+    PORTD = (PORTD & 0b10001111) | (patron & 0b01110000);
 }
 \end{lstlisting}
 
@@ -754,12 +758,8 @@ const uint8_t digitos[10] = {
     0x6D, 0x7D, 0x07, 0x7F, 0x6F
 };
 
-// Segmentos: la misma conexión que en la sección del display (TP4)
-//   a..d en PB0..PB3, e..g en PD4..PD6
-void mostrar(uint8_t patron) {
-    PORTB = (PORTB & 0b11110000) | (patron & 0b00001111);
-    PORTD = (PORTD & 0b10001111) | (patron & 0b01110000);
-}
+// ---------- Prototipos ----------
+void mostrar(uint8_t patron);   // lleva un patrón a los segmentos
 
 // Pines de selección de cada display (en PORTC)
 #define SEL0  PC0
@@ -804,6 +804,14 @@ int main(void) {
         // el programa principal puede cambiar valores[]
     }
     return 0;
+}
+
+// ---------- Definiciones ----------
+// Misma conexión que en la sección del display (TP4):
+//   a..d en PB0..PB3, e..g en PD4..PD6
+void mostrar(uint8_t patron) {
+    PORTB = (PORTB & 0b11110000) | (patron & 0b00001111);
+    PORTD = (PORTD & 0b10001111) | (patron & 0b01110000);
 }
 \end{lstlisting}
 
