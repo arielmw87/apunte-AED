@@ -83,37 +83,7 @@ Donde \texttt{x} es \texttt{B}, \texttt{C} o \texttt{D} según el puerto.
 
 \tikzCircuito{cap6/nano-pinout}{Mapa de pines del Arduino Nano y su correspondencia con los puertos del ATmega328P (PB, PC, PD)}
 
-\subsection{Correspondencia Arduino Nano --- ATmega328}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{ccc}
-\toprule
-\textbf{Pin Arduino} & \textbf{Puerto ATmega} & \textbf{Bit} \\
-\midrule
-D0  & PORTD & 0 \\
-D1  & PORTD & 1 \\
-D2  & PORTD & 2 \\
-D3  & PORTD & 3 \\
-D4  & PORTD & 4 \\
-D5  & PORTD & 5 \\
-D6  & PORTD & 6 \\
-D7  & PORTD & 7 \\
-D8  & PORTB & 0 \\
-D9  & PORTB & 1 \\
-D10 & PORTB & 2 \\
-D11 & PORTB & 3 \\
-D12 & PORTB & 4 \\
-D13 & PORTB & 5 \\
-A0  & PORTC & 0 \\
-A1  & PORTC & 1 \\
-A2  & PORTC & 2 \\
-A3  & PORTC & 3 \\
-A4  & PORTC & 4 \\
-A5  & PORTC & 5 \\
-\bottomrule
-\end{tabular}
-\end{table}
+Las etiquetas D0--D13 y A0--A5 son las que vienen impresas en la placa Arduino: sirven solo para \textbf{ubicar físicamente} cada pin. En nuestros programas nunca usamos esa numeración, sino siempre el \textbf{puerto} y el \textbf{bit} del ATmega (por ejemplo, el LED de la placa está en el bit 5 del puerto B: \texttt{PB5}).
 
 %──────────────────────────────────────────────────────────────────────────────
 \section{Operadores de manejo de bits}

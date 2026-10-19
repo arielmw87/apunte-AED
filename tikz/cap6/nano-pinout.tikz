@@ -1,12 +1,13 @@
 % ============================================================
 %  Mapa de pines del Arduino Nano (vista superior, USB arriba)
-%  - Dentro de la placa: el nombre Arduino de cada pin (D13, A0, ...).
-%  - Fuera de la placa: el puerto/bit del ATmega328P, con un color
-%    por puerto:  PORTB = azul,  PORTC = naranja,  PORTD = violeta.
+%  - Dentro de la placa: el nombre Arduino de cada pin (D13, A0, ...),
+%    tal como está serigrafiado. Sirve SOLO para ubicar el pin físico:
+%    en el curso nunca se programa con esa numeración.
+%  - Fuera de la placa: el puerto/bit del ATmega328P (lo que se usa en
+%    el código), con un color por puerto:
+%      PORTB = azul,  PORTC = naranja,  PORTD = violeta.
 %  - A6 y A7 son SÓLO entradas analógicas (no pertenecen a ningún puerto).
 %  - El LED integrado ("L") está conectado a D13 = PB5.
-%  Coincide con la tabla "Correspondencia Arduino Nano --- ATmega328"
-%  del Capítulo 6.
 % ============================================================
 %  CÓMO AJUSTAR:
 %   - Separación entre pines:   \paso
