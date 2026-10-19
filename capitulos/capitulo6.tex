@@ -703,7 +703,7 @@ int main(void) {
     sei();
 
     while (1) {
-        // el programa principal puede hacer otras cosas sin bloqueos
+        // libre para hacer otras cosas (sin bloqueos)
     }
     return 0;
 }
@@ -725,13 +725,112 @@ requeriría demasiados pines del microcontrolador. La solución es el
 activar un display a la vez, rotando muy rápido ($>$50 Hz) para que el ojo humano
 perciba todos encendidos simultáneamente.
 
-\tikzCircuito{cap6/mux-displays}{Esquema de multiplexado de 4 displays de 7 segmentos: segmentos compartidos, selección individual por dígito}
+\subsection{Conexión de los displays}
+
+Los segmentos de los 4 displays se conectan en paralelo (el segmento a de todos los
+displays al mismo pin, el b al mismo pin, etc.), cada línea con su resistencia
+limitadora. Para elegir qué dígito se enciende se maneja el \textbf{común} de cada
+display.
+
+Hay que tener en cuenta que por el común pasa la corriente de \emph{todos} los
+segmentos encendidos del dígito (hasta 8, contando el punto), y que un pin del
+ATmega328 soporta como máximo \textbf{40\,mA}. Cómo se conecta el común depende del tipo
+de display.
+
+\subsubsection{Cátodo común: con transistor NPN}
+
+Con un display de cátodo común, la corriente de los segmentos tiene que \emph{salir}
+del display por el común hacia GND. Cada común se conecta a GND a través de un
+\textbf{transistor NPN}, que el micro maneja con una \textbf{resistencia de base} de
+alrededor de 1\,k$\Omega$. Así el pin solo entrega la pequeña corriente de base, y la
+corriente de los segmentos la maneja el transistor.
+
+\tikzCircuito{cap6/mux-displays}{Multiplexado de 4 displays de cátodo común: segmentos compartidos (con sus resistencias) y un transistor NPN por dígito, manejado desde PC0--PC3.}
+
+\subsubsection{Ánodo común: conexión directa al micro}
+
+No siempre se consiguen displays de cátodo común. Con uno de \textbf{ánodo común}, el
+común se puede conectar \textbf{directamente} a un pin del micro, que es el que entrega
+la corriente a los segmentos. Para que eso no supere los 40\,mA del pin:
+
+\begin{itemize}
+  \item El display tiene que ser de \textbf{alto brillo}, para que se vea bien con
+        pocos mA por segmento.
+  \item Las resistencias de segmento tienen que limitar la corriente total. Por
+        ejemplo, con 1\,k$\Omega$ circulan unos 3\,mA por segmento:
+        $8 \times 3\,\text{mA} = 24\,\text{mA}$, por debajo del máximo.
+\end{itemize}
+
+\tikzCircuito{cap6/mux-anodo-comun}{Con display de ánodo común, el común va directo al pin del micro: la selección es activa en alto y los segmentos son activos en bajo.}
+
+\subsubsection{¿Con transistor o directo? Diferencias, ventajas y problemas}
+
+La diferencia de fondo es \textbf{quién maneja la corriente del común}. Con transistor,
+el pin del micro solo le da una orden al transistor (una corriente de base chica, de
+unos pocos mA) y es el transistor el que conduce la corriente de todos los segmentos.
+Con la conexión directa, esa corriente pasa \textbf{por el propio pin del micro}.
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.6cm}
+    >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
+\toprule
+ & \textbf{Con transistor} & \textbf{Directo al micro} \\
+\midrule
+Corriente por el pin & Solo la de base (pocos mA) & La de todos los segmentos encendidos \\
+Brillo & Pleno: se pueden usar $\sim$10\,mA por segmento & Limitado: hay que repartir menos de 40\,mA entre 8 segmentos \\
+Display & Cualquiera & Conviene de alto brillo \\
+Componentes & Un transistor y una resistencia de base por dígito & Ninguno extra \\
+Armado & Más cables y más lugares donde equivocarse & Más simple y rápido de armar \\
+Riesgo para el micro & Bajo: el pin trabaja descansado & Si las resistencias son chicas, se supera el máximo del pin y se puede dañar \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{Ventaja del transistor:} el micro queda protegido y el display brilla
+        bien, sin importar cuántos segmentos estén encendidos. \textbf{Problema:} más
+        componentes y más conexiones en la protoboard.
+  \item \textbf{Ventaja de la conexión directa:} el circuito es mínimo. \textbf{Problema:}
+        hay que calcular bien las resistencias de segmento para no pasar los 40\,mA
+        del pin (y conviene quedar bastante por debajo), y aun así el brillo es menor.
+        Además, cuantos más segmentos se encienden, más se carga el pin: un ``8'' puede
+        verse apenas más tenue que un ``1''.
+\end{itemize}
+
+\begin{notabox}
+Las dos formas de conexión sirven para cualquiera de los dos tipos de display (con la
+lógica correspondiente). En el curso usamos \textbf{transistor para cátodo común} y
+\textbf{conexión directa para ánodo común}, como se muestra en los esquemas.
+\end{notabox}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.2cm}
+    >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
+\toprule
+ & \textbf{Cátodo común} & \textbf{Ánodo común} \\
+\midrule
+Conexión del común & Transistor NPN a GND (con resistencia de base) & Directo al pin del micro (display de alto brillo) \\
+Encender un dígito & Pin de selección en \textbf{1} & Pin de selección en \textbf{1} \\
+Encender un segmento & Pin del segmento en \textbf{1} & Pin del segmento en \textbf{0} \\
+En el código & \texttt{mostrar(patron)} & \texttt{mostrar(\char126 patron)} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{notabox}
+Con ánodo común los segmentos se encienden con \textbf{0}, así que los patrones de la
+tabla se escriben \textbf{invertidos} con el operador \texttt{\~{}} (NOT bit a bit). La
+tabla de patrones y el resto del programa no cambian.
+\end{notabox}
 
 \subsection{Principio de funcionamiento}
 
 \begin{enumerate}
-    \item Activar display 1: encender su pin de selección (common), escribir el
-          dígito 1 en los segmentos.
+    \item Activar display 1: activar su pin de selección, escribir el dígito 1 en
+          los segmentos.
     \item Pequeña espera ($\sim$2 ms).
     \item Apagar display 1, activar display 2: escribir el dígito 2 en los segmentos.
     \item Pequeña espera ($\sim$2 ms).
@@ -739,8 +838,8 @@ perciba todos encendidos simultáneamente.
     \item Volver al display 1.
 \end{enumerate}
 
-Si la rotación es más rápida que $\sim$20 ms por display (50 Hz), el parpadeo es
-imperceptible.
+Si el ciclo completo (pasar por los 4 displays) dura menos de $\sim$20 ms, es decir,
+se repite más de 50 veces por segundo, el parpadeo es imperceptible.
 
 \subsection{Implementación con Timer 0}
 

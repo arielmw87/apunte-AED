@@ -1,0 +1,48 @@
+% ============================================================
+%  Selección de un dígito con display de ÁNODO COMÚN (detalle)
+%  - El ánodo común va DIRECTO al pin del micro (sin transistor).
+%    El pin entrega la corriente de todos los segmentos encendidos, así
+%    que hay que limitarla: display de ALTO BRILLO (funciona bien con
+%    pocos mA) y resistencias de segmento de ~1 kOhm (~3 mA por segmento,
+%    8 x 3 mA = 24 mA < 40 mA, el máximo de un pin del ATmega328).
+%  - Selección activa en ALTO: PCn = 1 alimenta el ánodo -> dígito encendido.
+%  - Segmentos activos en BAJO: un segmento se enciende con su pin en 0
+%    -> en el código se escribe el patrón invertido: mostrar(~patron).
+%  - Se dibuja un solo dígito: los otros tres son iguales.
+% ============================================================
+%  CÓMO AJUSTAR:
+%   - Largo del cable del ánodo: el 0.9 del primer \draw
+%   - Valor de las resistencias: el l= del to[R, ...]
+% ============================================================
+\begin{circuitikz}[
+    scale=0.85, transform shape,
+    disp/.style={draw, thick, fill=gray!8, minimum width=1.15cm,
+                 minimum height=1.25cm, font=\Large\bfseries},
+    sel/.style={font=\sffamily\scriptsize, inner sep=1pt},
+    nota/.style={font=\sffamily\scriptsize, text=teal!60!black, align=left},
+  ]
+  % --- Display (el común, ánodo, queda ARRIBA) ---
+  \node[disp] (d) at (0,0) {8.};
+  \node[sel, anchor=north west] at (d.south east) {DIG0};
+
+  % --- Ánodo común directo al pin del micro ---
+  \draw (d.north) -- ++(0,0.9) -- ++(-1.8,0)
+        node[sel, left] {PC0};
+  \node[sel, anchor=west] at ($(d.north)+(0.08,0.4)$) {ánodo común};
+
+  % --- Segmentos (abajo), con su resistencia, hacia el micro ---
+  \draw (d.south) -- ++(0,-0.4)
+        to[R, l_={\scriptsize 7 $\times$ 1\,k$\Omega$}] ++(0,-1.6)
+        node[below, font=\sffamily\small, align=center] {segmentos a--g\\(desde el micro)};
+
+  % --- Notas ---
+  \node[nota, anchor=west] at (2.5,1.0)
+    {Sin transistor: el pin entrega la corriente.\\
+     Selección \textbf{activa en 1}: PC0 = 1 enciende el dígito.};
+  \node[nota, anchor=west] at (2.5,-1.6)
+    {Segmentos \textbf{activos en 0}:\\
+     se escribe {\ttfamily mostrar(\char126 patron)}.};
+  \node[nota, anchor=west, text=red!60!black] at (2.5,-0.3)
+    {Display de \textbf{alto brillo} y resistencias\\
+     que limiten el total a menos de 40\,mA.};
+\end{circuitikz}

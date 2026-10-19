@@ -1,32 +1,36 @@
 % ============================================================
-%  Multiplexado de 4 displays de 7 segmentos (cátodo común)
+%  Multiplexado de 4 displays de 7 segmentos (CÁTODO COMÚN)
 %  IDEA CLAVE:
 %   1) Las 7 líneas de segmento (a–g) son COMPARTIDAS por los 4 displays
-%      (bus superior, dibujado como una sola línea con la marca /7).
-%      Con la conexión de ejemplo del Cap. 6: a..d en PB0..PB3 y
-%      e..g en PD4..PD6 (PD0/PD1 no se usan: son RX/TX del bootloader).
-%   2) Cada display se enciende de a uno mediante su transistor de
-%      selección de dígito, que conecta el cátodo común a masa.
-%      Las compuertas salen de PC0..PC3 (SEL0..SEL3 en el código).
-%   El micro rota DIG0->DIG1->DIG2->DIG3 muy rápido (>50 Hz) y el ojo
-%   los ve a todos encendidos.
+%      (bus superior, una sola línea con la marca /7). Cada línea lleva su
+%      resistencia limitadora (7 resistencias, dibujadas como una).
+%      Conexión de ejemplo del Cap. 6: a..d en PB0..PB3, e..g en PD4..PD6.
+%   2) Cada dígito se enciende con un transistor NPN que conecta su
+%      cátodo común a GND. La base se maneja desde el micro (PC0..PC3)
+%      a través de una resistencia de base.
+%      ¿Por qué un transistor? Por el común pasa la corriente de TODOS los
+%      segmentos encendidos (hasta ~80 mA): un pin del ATmega328 no
+%      soporta más de 40 mA.
+%   El micro rota DIG0->DIG1->DIG2->DIG3 muy rápido y el ojo los ve a
+%   todos encendidos. Para ÁNODO COMÚN ver mux-anodo-comun.tikz.
 % ============================================================
 %  CÓMO AJUSTAR:
-%   - Cantidad/separación de displays: el \foreach y \paso
-%   - Altura del bus de segmentos:     \ybus
-%   - Altura del riel de masa:         \ymasa
-%   - Tamaño general:                  scale= en \begin{tikzpicture}
+%   - Separación entre displays:      \paso
+%   - Altura del bus de segmentos:    \ybus
+%   - Altura del riel de GND:         \ymasa
+%   - Valores de resistencias:        los l= de los to[R, ...]
+%   - Tamaño general:                 scale= en \begin{circuitikz}
 % ============================================================
-\begin{tikzpicture}[
-    scale=0.9, transform shape,
+\begin{circuitikz}[
+    scale=0.85, transform shape,
     disp/.style={draw, thick, fill=gray!8, minimum width=1.15cm,
                  minimum height=1.25cm, font=\Large\bfseries},
     sel/.style={font=\sffamily\scriptsize, inner sep=1pt},
-    >=Stealth
+    nota/.style={font=\sffamily\scriptsize, text=teal!60!black},
   ]
-  \def\paso{2.8}
-  \def\ybus{1.7}
-  \def\ymasa{-3.0}
+  \def\paso{3.3}
+  \def\ybus{1.8}
+  \def\ymasa{-3.2}
 
   % --- 1) Los 4 displays en fila ---
   \foreach \i in {0,1,2,3}{
@@ -34,31 +38,33 @@
     \node[sel, anchor=south west] at (d\i.north east) {DIG\i};
   }
 
-  % --- 2) Bus de segmentos compartido (arriba) ---
-  \draw[thick] (-1.6,\ybus) -- (3*\paso+0.6,\ybus);
-  \node[left, align=center, font=\sffamily\small] at (-1.6,\ybus)
-    {segmentos a--g\\{\scriptsize (PB0--PB3 y PD4--PD6)}};
-  \draw (-1.0,\ybus-0.15) -- (-0.75,\ybus+0.2);
-  \node[sel] at (-0.7,\ybus+0.35) {7};
+  % --- 2) Bus de segmentos compartido, con sus resistencias limitadoras ---
+  \draw[thick] (-3.4,\ybus) node[left, align=center, font=\sffamily\small]
+        {segmentos\\a--g}
+        to[R, l={\scriptsize 7 $\times$ 220\,$\Omega$}] (-1.0,\ybus)
+        -- (3*\paso+0.6,\ybus);
+  \draw (-0.65,\ybus-0.15) -- (-0.4,\ybus+0.2);
+  \node[sel] at (-0.35,\ybus+0.35) {7};
   \foreach \i in {0,1,2,3}{
     \draw (d\i.north) -- (d\i.north |- 0,\ybus);
     \node[circ] at (d\i.north |- 0,\ybus) {};
   }
 
-  % --- 3) Transistor de selección de dígito bajo cada display ---
+  % --- 3) NPN de selección bajo cada display (colector al cátodo común) ---
   \foreach \i in {0,1,2,3}{
-    \node[nmos, anchor=D] (t\i) at (d\i.south |- 0,-1.15) {};
-    \draw (t\i.D) -- (d\i.south);                 % cátodo común -> drenador
-    \draw (t\i.S) -- (t\i.S |- 0,\ymasa);         % source -> riel de masa
-    \draw (t\i.G) -- ++(-0.35,0) node[sel, left] {PC\i};
+    \node[npn, anchor=C] (q\i) at ($(d\i.south)+(0,-0.35)$) {};
+    \draw (d\i.south) -- (q\i.C);                   % cátodo común -> colector
+    \draw (q\i.E) -- (q\i.E |- 0,\ymasa);           % emisor -> GND
+    \draw (q\i.B) to[R, l_={\scriptsize 1\,k$\Omega$}] ++(-1.5,0)
+          node[sel, left] {PC\i};                    % base <- micro
   }
 
-  % --- 4) Riel de masa común ---
-  \draw (t0.S |- 0,\ymasa) -- (3*\paso+0.6,\ymasa);
+  % --- 4) Riel de GND común ---
+  \draw (q0.E |- 0,\ymasa) -- (3*\paso+0.6,\ymasa);
   \node[ground] at (3*\paso+0.6,\ymasa) {};
 
-  % --- 5) Nota de la selección de dígito ---
-  \node[align=center, font=\sffamily\scriptsize] at (1.4*\paso,\ymasa-0.95)
-    {PC0--PC3: selección de dígito (desde el micro) --- se activa uno a la vez};
-
-\end{tikzpicture}
+  % --- 5) Notas ---
+  \node[nota, align=center] at (1.5*\paso,\ymasa-0.8)
+    {PC0--PC3 en 1: se enciende ese dígito (de a uno por vez).\\
+     Segmento en 1: se enciende (cátodo común).};
+\end{circuitikz}
