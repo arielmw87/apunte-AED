@@ -45,6 +45,8 @@ Define `timing/aed` para todos los diagramas de tiempos, los nodos de diagramas 
 
 ## Capítulo 2 — Memorias Digitales
 
+> ✅ Capítulo revisado por el docente: usa `\tikzFigura` (sin banner).
+
 - [ ] ✎ 🆕 `matriz-organizaciones.tikz` — Matriz de 64 celdas: 64×1, 8×8, 16×4
 - [ ] ✎ 🆕 `memoria-buses.tikz` — Memoria 1K×8 con bus de direcciones, datos y control (CS, OE, WE)
 - [ ] ✎ 🆕 `escritura-timing.tikz` — Diagrama de tiempos de escritura (pasos 1–4 numerados)
