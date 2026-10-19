@@ -1,9 +1,9 @@
 % ============================================================
 %  Dos 74HC595 en cascada controlados por un ATmega328P
 %  - Sólo 3 pines del micro manejan 16 salidas:
-%      PB0 (D8)  -> DS   (pin 14)  dato serie
-%      PB1 (D9)  -> SHCP (pin 11)  reloj de desplazamiento
-%      PB2 (D10) -> STCP (pin 12)  reloj del latch de salida
+%      PB0 -> DS   (pin 14)  dato serie
+%      PB1 -> SHCP (pin 11)  reloj de desplazamiento
+%      PB2 -> STCP (pin 12)  reloj del latch de salida
 %  - SHCP y STCP son COMUNES a los dos chips (punto = derivación).
 %  - Cascada: Q7' (pin 9) del U1 entra por DS (pin 14) del U2.
 %  - MR (pin 10, activo en bajo) fijo a +5 V: nunca se borra.
@@ -33,7 +33,7 @@
   % ---------- 1) Microcontrolador ----------
   \draw[chip] (-0.4,0) rectangle (2.4,-5);
   \node[font=\sffamily\small\bfseries] at (1.0,-4.55) {ATmega328P};
-  \foreach \y/\p in {-0.75/{PB0 (D8)}, -2.25/{PB1 (D9)}, -3.75/{PB2 (D10)}}
+  \foreach \y/\p in {-0.75/PB0, -2.25/PB1, -3.75/PB2}
     \node[lbl, anchor=east] at (2.4,\y) {\p};
 
   % ---------- 2) Los dos 74HC595 ----------

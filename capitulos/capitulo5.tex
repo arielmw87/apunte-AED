@@ -443,143 +443,21 @@ Pseudocódigo (PSeInt) & C \\
 
 \section{Ejercicios: los algoritmos del TP en C}
 
-Los siguientes programas son la traducción directa de los diagramas de flujo del Bloque 4. Se pueden compilar y ejecutar en cualquier compilador de C estándar (online: repl.it, OnlineGDB, Tutorialspoint; local: VSCode con GCC).
+Traducir a C los algoritmos de los ejercicios del Bloque 4, partiendo de los diagramas de flujo hechos en PSeInt. Cada programa se debe compilar y probar con distintos valores de entrada, verificando que se comporte igual que el diagrama (se puede usar cualquier compilador de C estándar; ver la sección siguiente).
 
-\subsection{Ejercicio 1 --- Suma de dos valores}
-
-\begin{lstlisting}[style=estilo-c]
-#include <stdio.h>
-
-int main(void) {
-    int a, b, resultado;
-
-    printf("Ingrese el primer numero: ");
-    scanf("%d", &a);
-
-    printf("Ingrese el segundo numero: ");
-    scanf("%d", &b);
-
-    resultado = a + b;
-
-    printf("La suma es: %d\n", resultado);
-
-    return 0;
-}
-\end{lstlisting}
-
-\subsection{Ejercicio 2 --- Operación con tres valores}
-
-\begin{lstlisting}[style=estilo-c]
-#include <stdio.h>
-
-int main(void) {
-    int a, b, c, resultado;
-
-    printf("Ingrese el primer numero: ");
-    scanf("%d", &a);
-
-    printf("Ingrese el segundo numero: ");
-    scanf("%d", &b);
-
-    printf("Ingrese el tercer numero: ");
-    scanf("%d", &c);
-
-    resultado = (a + b) - c;
-
-    printf("El resultado es: %d\n", resultado);
-
-    return 0;
-}
-\end{lstlisting}
-
-\subsection{Ejercicio 3 --- Módulo (valor absoluto)}
-
-\begin{lstlisting}[style=estilo-c]
-#include <stdio.h>
-
-int main(void) {
-    int numero, modulo;
-
-    printf("Ingrese un numero: ");
-    scanf("%d", &numero);
-
-    if (numero < 0) {
-        modulo = -numero;
-    } else {
-        modulo = numero;
-    }
-
-    printf("El modulo es: %d\n", modulo);
-
-    return 0;
-}
-\end{lstlisting}
+\begin{enumerate}
+  \item \textbf{Suma de dos valores:} sumar 2 valores e informar el resultado.
+  \item \textbf{Operación con tres valores:} ingresar 3 valores, sumar los dos primeros, restarle el tercero e informar el resultado.
+  \item \textbf{Módulo de un valor:} calcular el módulo (valor absoluto) de un número, sin usar funciones de biblioteca.
+  \item \textbf{Sensor de temperatura:} informar ``hace calor'' si la temperatura supera los 26°C, ``hace frío'' si es menor a 22°C, y no informar nada en otro caso.
+  \item \textbf{Promedio de una serie de valores:} calcular el promedio de todos los números ingresados; el ingreso termina con un 0.
+\end{enumerate}
 
 \begin{notabox}
-La biblioteca estándar \texttt{<math.h>} tiene la función \texttt{abs()} que hace esto automáticamente, pero aquí lo implementamos manualmente para practicar la estructura \texttt{if/else}.
-\end{notabox}
-
-\subsection{Ejercicio 4 --- Sensor de temperatura}
-
-\begin{lstlisting}[style=estilo-c]
-#include <stdio.h>
-
-int main(void) {
-    float temperatura;
-
-    printf("Ingrese la temperatura: ");
-    scanf("%f", &temperatura);
-
-    if (temperatura > 26.0) {
-        printf("Hace calor\n");
-    } else if (temperatura < 22.0) {
-        printf("Hace frio\n");
-    }
-
-    return 0;
-}
-\end{lstlisting}
-
-\begin{notabox}
-Cuando la temperatura está entre 22° y 26° el programa no imprime nada, tal como pide el enunciado.
-\end{notabox}
-
-\subsection{Ejercicio 5 --- Promedio de una serie de valores}
-
-\begin{lstlisting}[style=estilo-c]
-#include <stdio.h>
-
-int main(void) {
-    int numero;
-    float suma = 0;
-    int cantidad = 0;
-
-    printf("Ingrese numeros (0 para terminar):\n");
-
-    scanf("%d", &numero);
-
-    while (numero != 0) {
-        suma = suma + numero;
-        cantidad++;
-        scanf("%d", &numero);
-    }
-
-    if (cantidad > 0) {
-        printf("El promedio es: %.2f\n", suma / cantidad);
-    } else {
-        printf("No se ingresaron numeros.\n");
-    }
-
-    return 0;
-}
-\end{lstlisting}
-
-\begin{notabox}
-\textbf{Puntos importantes de este ejercicio:}
+\textbf{Para tener en cuenta al pasar a C:}
 \begin{itemize}
-    \item La suma se declara como \texttt{float} para que la división no pierda los decimales.
-    \item El \texttt{if (cantidad > 0)} evita la división por cero si el usuario ingresa 0 inmediatamente.
-    \item El 0 final \textbf{no se suma} porque la condición del \texttt{while} se evalúa antes de acumular.
+  \item Elegir el tipo de cada variable: si un valor puede tener decimales (una temperatura, un promedio), tiene que ser \texttt{float}, y en \texttt{scanf}/\texttt{printf} se usa \texttt{\%f} en lugar de \texttt{\%d}.
+  \item Cada estructura del diagrama tiene su equivalente en C (ver la tabla de la sección anterior). Ojo con \emph{repetir--hasta}: hay que negar la condición.
 \end{itemize}
 \end{notabox}
 

@@ -261,7 +261,7 @@ mientras espera), así que solo conviene usarlas en programas simples.
 Para usar un pin como salida, se pone en 1 el bit correspondiente en \texttt{DDRx}:
 
 \begin{lstlisting}[style=estilo-c]
-DDRD |= (1 << PD5);    // PD5 (pin D5) como salida
+DDRD |= (1 << PD5);    // PD5 como salida
 \end{lstlisting}
 
 \subsection{Configurar un pin como entrada}
@@ -269,7 +269,7 @@ DDRD |= (1 << PD5);    // PD5 (pin D5) como salida
 Para usar un pin como entrada, se pone en 0 el bit correspondiente en \texttt{DDRx}:
 
 \begin{lstlisting}[style=estilo-c]
-DDRD &= ~(1 << PD2);   // PD2 (pin D2) como entrada
+DDRD &= ~(1 << PD2);   // PD2 como entrada
 \end{lstlisting}
 
 \subsection{Activar la resistencia de pull-up interna}
@@ -309,8 +309,8 @@ if (!(PIND & (1 << PD2))) {
 int main(void) {
 
     // Inicialización
-    DDRD |=  (1 << PD5);   // PD5 (D5) como salida -> LED
-    DDRD &= ~(1 << PD2);   // PD2 (D2) como entrada -> pulsador
+    DDRD |=  (1 << PD5);   // PD5 como salida -> LED
+    DDRD &= ~(1 << PD2);   // PD2 como entrada -> pulsador
     PORTD |= (1 << PD2);   // activar pull-up en PD2
 
     while (1) {
@@ -619,8 +619,8 @@ de interrupción} que indica la fuente.
 Los principales vectores disponibles son:
 
 \begin{lstlisting}[style=estilo-c]
-INT0_vect          // Interrupción externa en pin INT0 (D2)
-INT1_vect          // Interrupción externa en pin INT1 (D3)
+INT0_vect          // Interrupción externa en pin INT0 (PD2)
+INT1_vect          // Interrupción externa en pin INT1 (PD3)
 PCINT0_vect        // Cambio de pin en PORTB
 PCINT1_vect        // Cambio de pin en PORTC
 PCINT2_vect        // Cambio de pin en PORTD
@@ -683,12 +683,12 @@ ISR(TIMER0_COMPA_vect) {           // se ejecuta cada 1 ms
     contador_ms++;
     if (contador_ms >= 500) {      // 500 ms
         contador_ms = 0;
-        PORTB ^= (1 << PB5);       // toggle LED (pin D13)
+        PORTB ^= (1 << PB5);       // invierte el LED de la placa (PB5)
     }
 }
 
 int main(void) {
-    DDRB |= (1 << PB5);            // D13 como salida
+    DDRB |= (1 << PB5);            // PB5 (LED de la placa) como salida
 
     // Timer 0 — modo CTC — 1 ms
     TCCR0A = (1 << WGM01);
