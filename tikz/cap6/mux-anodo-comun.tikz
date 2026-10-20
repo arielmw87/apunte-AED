@@ -1,5 +1,7 @@
 % ============================================================
-%  OPCIÓN: multiplexado de 4 displays de ÁNODO COMÚN, sin transistores
+%  Multiplexado con CONEXIÓN DIRECTA, sin transistores
+%  (ejemplo con displays de ÁNODO COMÚN; usar transistores o no es
+%   independiente del tipo de display, ver mux-displays.tikz)
 %  - Cada ánodo común va al pin del micro (PC0..PC3) a través de UNA
 %    resistencia, que limita la corriente total del dígito.
 %  - Los segmentos van directo a los pines del micro (sin resistencias).

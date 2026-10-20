@@ -12,7 +12,10 @@
 %      segmentos encendidos (hasta ~80 mA): un pin del ATmega328 no
 %      soporta más de 40 mA.
 %   El micro rota DIG0->DIG1->DIG2->DIG3 muy rápido y el ojo los ve a
-%   todos encendidos. Opción con ánodo común: mux-anodo-comun.tikz.
+%   todos encendidos.
+%   Usar transistores o no es independiente del tipo de display: este es
+%   el ejemplo "con transistores" (con cátodo común). El ejemplo de
+%   conexión directa (con ánodo común) está en mux-anodo-comun.tikz.
 %   El dígito se dibuja con el pic "sieteseg" (tikz/estilos.tex).
 % ============================================================
 %  CÓMO AJUSTAR:
