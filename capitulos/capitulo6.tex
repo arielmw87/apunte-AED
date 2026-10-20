@@ -89,6 +89,35 @@ Las etiquetas D0--D13 y A0--A5 son las que vienen impresas en la placa Arduino: 
 \textbf{No usar PD0 (RX) ni PD1 (TX).} Estos dos pines están conectados al conversor USB--serie de la placa y los usa el \emph{bootloader} para recibir el programa cuando lo cargamos desde la PC. Si les conectamos un LED, un pulsador o un display, la carga del programa puede fallar o el circuito puede hacer cosas raras mientras se programa. Por eso, en el curso \textbf{se dejan siempre libres}: del puerto D solo usamos de PD2 a PD7.
 \end{advertenciabox}
 
+\subsection{¿Cuánta corriente puede manejar un pin?}
+
+La hoja de datos del ATmega328P da dos números que conviene no confundir:
+
+\begin{itemize}
+  \item \textbf{40\,mA por pin es el máximo absoluto} (\emph{Absolute Maximum Rating}).
+        No es un valor para trabajar: es el límite a partir del cual el chip se puede
+        dañar. El propio fabricante aclara que funcionar en esos valores durante mucho
+        tiempo afecta la confiabilidad del integrado.
+  \item \textbf{20\,mA por pin} (con 5\,V de alimentación) es la corriente con la que el
+        fabricante \textbf{garantiza} que la salida funciona bien: con 20\,mA, una salida
+        en alto da al menos 4,2\,V y una salida en bajo no pasa de 0,9\,V. Con más
+        corriente esos niveles ya no están garantizados.
+\end{itemize}
+
+Además, la corriente \textbf{total} también tiene límite: los pines están agrupados y la
+suma de cada grupo no debe superar entre 100 y 150\,mA (según el grupo y si el pin
+entrega o recibe corriente), y por los pines de alimentación (VCC y GND) del chip no
+pueden circular más de 200\,mA.
+
+\begin{importantebox}
+\textbf{Regla práctica:} diseñar para que cada pin maneje \textbf{20\,mA como máximo}
+(mejor menos), y cuidar que la suma de todos los pines no sea demasiado grande. Un LED
+común se ve bien con 5 a 10\,mA.
+
+\emph{Fuente:} Microchip, hoja de datos ATmega48A/PA/88A/PA/168A/PA/328/P
+(DS40002061B), secciones 29.1 y 30.2.
+\end{importantebox}
+
 %──────────────────────────────────────────────────────────────────────────────
 \section{Operadores de manejo de bits}
 
@@ -104,17 +133,17 @@ modificar bits individuales sin afectar los demás. Para eso usamos los
 \midrule
 \texttt{\&}  & AND bit a bit                    & El bit resultado es 1 solo si ambos operandos tienen 1 \\
 \texttt{|}   & OR bit a bit                     & El bit resultado es 1 si al menos uno de los operandos tiene 1 \\
-\texttt{\^{}}& XOR bit a bit                    & El bit resultado es 1 si los operandos son distintos \\
-\texttt{\~{}}& NOT bit a bit                    & Invierte todos los bits \\
-\texttt{<<}  & Desplazamiento a la izquierda    & Desplaza los bits hacia la izquierda N posiciones \\
-\texttt{>>}  & Desplazamiento a la derecha      & Desplaza los bits hacia la derecha N posiciones \\
+\texttt{\char94}  & XOR bit a bit                & El bit resultado es 1 si los operandos son distintos \\
+\texttt{\char126} & NOT bit a bit                & Invierte todos los bits \\
+\texttt{<{}<}    & Desplazamiento a la izquierda & Desplaza los bits hacia la izquierda N posiciones \\
+\texttt{>{}>}    & Desplazamiento a la derecha  & Desplaza los bits hacia la derecha N posiciones \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \subsection{Desplazamiento de bits}
 
-El operador \texttt{<<} es clave para crear \textbf{máscaras}: valores que tienen un
+El operador \texttt{<{}<} es clave para crear \textbf{máscaras}: valores que tienen un
 único bit en 1 en la posición deseada.
 
 \begin{lstlisting}[style=estilo-c]
@@ -126,7 +155,7 @@ El operador \texttt{<<} es clave para crear \textbf{máscaras}: valores que tien
 
 En la biblioteca \texttt{<avr/io.h>} los bits de cada registro ya tienen nombres
 definidos. Por ejemplo, \texttt{PD3} es el bit 3 del puerto D, y su valor es
-\texttt{3}. Entonces \texttt{(1 << PD3)} genera la máscara para ese bit.
+\texttt{3}. Entonces \texttt{(1 <{}< PD3)} genera la máscara para ese bit.
 
 %──────────────────────────────────────────────────────────────────────────────
 \section{Técnicas de enmascarado}
@@ -150,7 +179,7 @@ Ejemplo: \texttt{PORTD = 0b00000000}, aplicar máscara \texttt{0b00001000}:
 
 \subsection{Poner un bit en 0 (CLEAR)}
 
-Se usa AND con el complemento de la máscara (\texttt{\~{}}):
+Se usa AND con el complemento de la máscara (\texttt{\char126}):
 
 \begin{lstlisting}[style=estilo-c]
 PORTD = PORTD & ~(1 << PD3);  // pone el bit 3 de PORTD en 0
@@ -190,7 +219,7 @@ if (!(PIND & (1 << PD2))) {
 \subsection{Macros para manejar bits}
 
 Las expresiones anteriores se repiten todo el tiempo y es fácil equivocarse con un
-\texttt{\~{}} o un paréntesis. Por eso conviene definirlas una sola vez como
+\texttt{\char126} o un paréntesis. Por eso conviene definirlas una sola vez como
 \textbf{macros} (ver Bloque 5), que reciben el \textbf{registro} y el \textbf{número de bit}:
 
 \begin{lstlisting}[style=estilo-c]
@@ -751,8 +780,9 @@ sección).
 \subsubsection{Conexión con transistores (ejemplo: cátodo común)}
 
 Por el común pasa la corriente de \emph{todos} los segmentos encendidos del dígito (hasta
-8, contando el punto). Con unos 10\,mA por segmento son unos 80\,mA, y un pin del
-ATmega328 soporta como máximo \textbf{40\,mA}. Con un transistor, el pin solo le da una
+8, contando el punto). Con unos 10\,mA por segmento son unos 80\,mA: cuatro veces los
+\textbf{20\,mA} que conviene manejar con un pin, y el doble de su máximo absoluto (ver
+``¿Cuánta corriente puede manejar un pin?''). Con un transistor, el pin solo le da una
 orden: entrega una pequeña corriente de base, a través de una \textbf{resistencia de
 base} de alrededor de 1\,k$\Omega$, y la corriente de los segmentos la maneja el
 transistor. Cada segmento lleva su propia resistencia limitadora.
@@ -771,8 +801,8 @@ segmentos van directo a sus pines, sin resistencias.
 \begin{itemize}
   \item La resistencia del común limita la corriente \emph{total} del dígito, sin
         importar cuántos segmentos estén encendidos. Con 220\,$\Omega$:
-        $(5\,\text{V} - 2\,\text{V}) / 220\,\Omega \approx 14\,\text{mA}$, bien por
-        debajo de los 40\,mA del pin.
+        $(5\,\text{V} - 2\,\text{V}) / 220\,\Omega \approx 14\,\text{mA}$, por
+        debajo de los 20\,mA recomendados por pin.
   \item Conviene usar displays de \textbf{alto brillo}, que se ven bien con poca
         corriente.
   \item En el ejemplo, con displays de ánodo común, el pin de selección

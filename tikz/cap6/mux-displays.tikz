@@ -9,8 +9,8 @@
 %      cátodo común a GND. La base se maneja desde el micro (PC0..PC3)
 %      a través de una resistencia de base.
 %      ¿Por qué un transistor? Por el común pasa la corriente de TODOS los
-%      segmentos encendidos (hasta ~80 mA): un pin del ATmega328 no
-%      soporta más de 40 mA.
+%      segmentos encendidos (hasta ~80 mA): un pin del ATmega328 se
+%      diseña para 20 mA como máximo (40 mA es el máximo absoluto, de daño).
 %   El micro rota DIG0->DIG1->DIG2->DIG3 muy rápido y el ojo los ve a
 %   todos encendidos.
 %   Usar transistores o no es independiente del tipo de display: este es
